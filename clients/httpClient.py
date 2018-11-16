@@ -59,11 +59,9 @@ while True:
 	n += 1
 	if n > 999999:
 		n = 0
-	http_get_action('kvv32/temperature/outdoor/0','stop readings')
-	http_get_value('kvv32/temperature/outdoor/0','TEMPERATURE', 16.1, 'celcius',n,period)
-	http_get_action('kvv32/temperature/outdoor/1','start readings')
-	http_get_value('kvv32/temperature/outdoor/1','TEMPERATURE', 16.2, 'celcius',n,period)
-	http_get_value('kvv32/temperature/outdoor/1','TEMPERATURE', 16.3, 'celcius',n,period)
+	value = n
+	http_get_action('kvv32/temperature/outdoor/0','please do nothing')
+	http_get_value('kvv32/temperature/outdoor/0','TEMPERATURE', value, 'celcius',n,period)
 	time.sleep(period)
 
 #===================================================
