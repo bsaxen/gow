@@ -60,6 +60,14 @@ function writeActionFile($topic, $action)
   return $result;
 }
 //=============================================
+function registrationGPS($url,$topic,$type,$period)
+//=============================================
+{
+  $request = 'http://127.0.0.1/git/gow/gowPlatformServer.php';
+  $request = $request."?do=register&topic=$topic&type=$type&period=$period&url=$url";
+  $res = file_get_contents($request);
+}
+//=============================================
 // End of library
 //=============================================
 
@@ -106,6 +114,8 @@ if($error == 0)
   if (isset($_GET['url'])) {
     $url = $_GET['url'];
   }
+
+  registrationGPS($url,$topic,$type,$period);
 
     //===========================================
     // HTML

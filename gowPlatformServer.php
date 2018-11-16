@@ -7,8 +7,17 @@
 //=============================================
 
 $date         = date_create();
-$gs_ts        = date_format($date, 'Y-m-d H:i:s');
+$ts           = date_format($date, 'Y-m-d H:i:s');
 
+//=============================================
+function registerTopic($topic,$url,$type,$period,$ts)
+//=============================================
+{
+  $fdoc = 'gowPlatformServer_register.gow';
+  $doc = fopen($fdoc, "a+");
+  fwrite($doc, "$ts $topic $url $type $period\n");
+  fclose($doc);
+}
 //=============================================
 function writeSingle($topic,$value)
 //=============================================
@@ -19,32 +28,101 @@ function writeSingle($topic,$value)
   fclose($doc);
 }
 //=============================================
+function readRegister()
+//=============================================
+{
+  $fdoc = 'gowPlatformServer_register.gow';
+  $file = fopen($fdoc, "r");
+  if ($file)
+  {
+      while(! feof($file))
+      {
+        $line = fgets($file);
+        if (strlen($line) > 2)
+        {
+          // 2018-11-16 21:44:30 kvv32/temperature/outdoor/0 http://127.0.0.1/git/gow/ TEMPERATURE 10
+          sscanf($line,"%s %s %s %s %s %s",$p1,$p2,$p3,$p4,$p5,$p6);
+          echo "$p1 $p2 <a href=$p4/$p3>$p3</a> $p5 $p6";
+          echo "<a href=$p4/$p3/doc.html> html</a>";
+          echo "<a href=$p4/$p3/doc.json> json</a>";
+          echo "<a href=$p4/$p3/doc.txt> txt</a>";
+          echo "<br>";
+        }
+      }
+      fclose($file);
+  }
+  else {
+      echo("No clients<br>");
+  }
+}
+//=============================================
+function checkTopic($topic)
+//=============================================
+{
+  $fdoc = 'gowPlatformServer_register.gow';
+  $file = fopen($fdoc, "r");
+  $res = 'new';
+  if ($file)
+  {
+      while(! feof($file))
+      {
+        $line = fgets($file);
+        if (strpos($line, $topic) !== false) {
+          $res = 'old';
+        }
+      }
+      fclose($file);
+  }
+  else {
+      echo("Error open GPS Register file<br>");
+  }
+  return $res;
+}
+//=============================================
 // End of library
 //=============================================
 
 $error = 1;
-
-if (isset($_GET['topic'])) {
-  $topic = $_GET['topic'];
-  $error = 0;
-}
-else
-{
-  $error = 2;
-  echo "error 2";
+if (isset($_GET['do'])) {
+  $do = $_GET['do'];
 }
 
-if($error == 0)
-{
 
-  if (isset($_GET['action'])) {
-    $action = $_GET['action'];
-    writeActionFile($topic, $action);
-    exit;
+
+  if ($do == 'register')
+  {
+    $ok = 0;
+    if (isset($_GET['topic'])) {
+      $topic = $_GET['topic'];
+      $ok++;
+    }
+    if (isset($_GET['type'])) {
+      $type = $_GET['type'];
+      $ok++;
+    }
+    if (isset($_GET['url'])) {
+      $url = $_GET['url'];
+      $ok++;
+    }
+    if (isset($_GET['period'])) {
+      $period = $_GET['period'];
+      $ok++;
+    }
+    if ($ok == 4)
+    {
+      $res = checkTopic($topic);
+      if ($res == 'new')
+      {
+        registerTopic($topic,$url,$type,$period,$ts);
+      }
+    }
+  }
+  if ($do == 'action')
+  {
+
   }
 
+readRegister();
 
-  if (isset($_GET['no'])) {
-    $no = $_GET['no'];
-  }
- }
+
+// End of file
