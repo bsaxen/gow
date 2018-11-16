@@ -60,11 +60,11 @@ function writeActionFile($topic, $action)
   return $result;
 }
 //=============================================
-function registrationGPS($url,$topic,$type,$period)
+function registrationGPS($url,$topic,$type,$period,$hw)
 //=============================================
 {
   $request = 'http://127.0.0.1/git/gow/gowPlatformServer.php';
-  $request = $request."?do=register&topic=$topic&type=$type&period=$period&url=$url";
+  $request = $request."?do=register&topic=$topic&type=$type&period=$period&url=$url&hw=$hw";
   $res = file_get_contents($request);
 }
 //=============================================
@@ -114,8 +114,13 @@ if($error == 0)
   if (isset($_GET['url'])) {
     $url = $_GET['url'];
   }
-
-  registrationGPS($url,$topic,$type,$period);
+  if (isset($_GET['url'])) {
+    $url = $_GET['url'];
+  }
+  if (isset($_GET['hw'])) {
+    $hw = $_GET['hw'];
+  }
+  registrationGPS($url,$topic,$type,$period,$hw);
 
     //===========================================
     // HTML
@@ -147,6 +152,8 @@ if($error == 0)
     fwrite($doc, "GS_TS       ".$gs_ts);
     fwrite($doc, "<br>");
     fwrite($doc, "URL         ".$url);
+    fwrite($doc, "<br>");
+    fwrite($doc, "HW          ".$hw);
     fwrite($doc, "</body></html>");
     fclose($doc);
 
@@ -165,6 +172,7 @@ if($error == 0)
       fwrite($doc, "   \"period\": \"$period\",\n");
       fwrite($doc, "   \"gs_ts\":  \"$gs_ts\"\n");
       fwrite($doc, "   \"url\":    \"$url\"\n");
+      fwrite($doc, "   \"hw\":     \"$hw\"\n");
       fwrite($doc, "}}\n ");
       fclose($doc);
 
@@ -182,6 +190,7 @@ if($error == 0)
     fwrite($doc,   "PERIOD       $period\n");
     fwrite($doc,   "GS_TS        $gs_ts\n");
     fwrite($doc,   "URL          $url\n");
+    fwrite($doc,   "HW           $hw\n");
     fclose($doc);
 
     writeSingle($topic,$value);

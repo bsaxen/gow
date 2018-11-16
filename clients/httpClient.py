@@ -13,9 +13,10 @@ import datetime
 # Configuration
 #===================================================
 period = 10
+hw = 'python'
 
 #===================================================
-def http_get_value( itopic, itype, ivalue, iunit, n, period ):
+def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
 	#url = 'http://gow.simuino.com/gowServer.php'
 	url = 'http://127.0.0.1/git/gow/'
@@ -27,8 +28,9 @@ def http_get_value( itopic, itype, ivalue, iunit, n, period ):
 	data['value'] = ivalue
 	data['unit'] = iunit
 	data['ts'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['period'] = period
+	data['period'] = iperiod
 	data['url'] = url
+	data['hw'] = ihw
 	values = urllib.urlencode(data)
 	req = url + server + '?' + values
 	try: response = urllib2.urlopen(req)
@@ -61,7 +63,7 @@ while True:
 		n = 0
 	value = n
 	http_get_action('kvv32/temperature/outdoor/0','please do nothing')
-	http_get_value('kvv32/temperature/outdoor/0','TEMPERATURE', value, 'celcius',n,period)
+	http_get_value('kvv32/temperature/outdoor/0','TEMPERATURE', value, 'celcius',n,period,hw)
 	time.sleep(period)
 
 #===================================================

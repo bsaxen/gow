@@ -10,12 +10,12 @@ $date         = date_create();
 $ts           = date_format($date, 'Y-m-d H:i:s');
 
 //=============================================
-function registerTopic($topic,$url,$type,$period,$ts)
+function registerTopic($topic,$url,$type,$period,$ts,$hw)
 //=============================================
 {
   $fdoc = 'gowPlatformServer_register.gow';
   $doc = fopen($fdoc, "a+");
-  fwrite($doc, "$ts $topic $url $type $period\n");
+  fwrite($doc, "$ts $topic $url $type $period $hw\n");
   fclose($doc);
 }
 //=============================================
@@ -40,9 +40,11 @@ function readRegister()
         $line = fgets($file);
         if (strlen($line) > 2)
         {
-          // 2018-11-16 21:44:30 kvv32/temperature/outdoor/0 http://127.0.0.1/git/gow/ TEMPERATURE 10
-          sscanf($line,"%s %s %s %s %s %s",$p1,$p2,$p3,$p4,$p5,$p6);
-          echo "$p1 $p2 <a href=$p4/$p3>$p3</a> $p5 $p6";
+          // 2018-11-16 22:12:09 kvv32/temperature/outdoor/0 http://127.0.0.1/git/gow/ TEMPERATURE 10 python
+          sscanf($line,"%s %s %s %s %s %s %s",$p1,$p2,$p3,$p4,$p5,$p6,$p7);
+          //echo $line;
+          //echo "$p1<br>";echo "$p2<br>";echo "$p3<br>";echo "$p4<br>";echo "$p5<br>";echo "$p6<br>";echo "$p7<br>";
+          echo "$p1 $p2 <a href=$p4/$p3>$p3</a> $p5 $p6 $p7";
           echo "<a href=$p4/$p3/doc.html> html</a>";
           echo "<a href=$p4/$p3/doc.json> json</a>";
           echo "<a href=$p4/$p3/doc.txt> txt</a>";
@@ -108,12 +110,16 @@ if (isset($_GET['do'])) {
       $period = $_GET['period'];
       $ok++;
     }
-    if ($ok == 4)
+    if (isset($_GET['hw'])) {
+      $hw = $_GET['hw'];
+      $ok++;
+    }
+    if ($ok == 5)
     {
       $res = checkTopic($topic);
       if ($res == 'new')
       {
-        registerTopic($topic,$url,$type,$period,$ts);
+        registerTopic($topic,$url,$type,$period,$ts,$hw);
       }
     }
   }
