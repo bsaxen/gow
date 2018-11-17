@@ -19,7 +19,7 @@ hw = 'python'
 def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
 	#url = 'http://gow.simuino.com/gowServer.php'
-	url = 'http://127.0.0.1/git/gow/'
+	url = 'http://gow.simuino.com/'
 	server = 'gowServer.php'
 	data = {}
 	data['topic'] = itopic
@@ -42,7 +42,7 @@ def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 def http_get_action( itopic, iaction ):
 #===================================================
 	#url = 'http://gow.simuino.com/gowServer.php'
-	url = 'http://127.0.0.1/git/gow/'
+	url = 'http://gow.simuino.com/'
 	server = 'gowServer.php'
 	data = {}
 	data['topic'] = itopic
@@ -62,8 +62,8 @@ while True:
 	if n > 999999:
 		n = 0
 	value = n
-	http_get_action('kvv32/temperature/outdoor/0','please do nothing')
-	http_get_value('kvv32/temperature/outdoor/0','TEMPERATURE', value, 'celcius',n,period,hw)
+	http_get_action('test/temperature/outdoor/0','please do nothing')
+	http_get_value('test/temperature/outdoor/0','TEMPERATURE', value, 'celcius',n,period,hw)
 	time.sleep(period)
 
 #===================================================
