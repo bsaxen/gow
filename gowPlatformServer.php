@@ -51,10 +51,10 @@ function readRegister()
           echo "6 $p6<br>";
           echo "7 $p7<br>";
           //echo "$p1<br>";echo "$p2<br>";echo "$p3<br>";echo "$p4<br>";echo "$p5<br>";echo "$p6<br>";echo "$p7<br>";
-          echo "$p1 $p2 $p3 $p5 $p6 $p7 ";
-          echo "<a href=$p4/$p3/doc.html> html</a>";
-          echo "<a href=$p4/$p3/doc.json> json</a>";
-          echo "<a href=$p4/$p3/doc.txt> txt</a>";
+          echo "$p1 $p2 $p3 $p4 $p5 $p6 $p7 ";
+          echo "<a href=/$p3/doc.html> html</a>";
+          echo "<a href=/$p3/doc.json> json</a>";
+          echo "<a href=/$p3/doc.txt> txt</a>";
           echo "<br>";
         }
       }
