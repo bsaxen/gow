@@ -63,7 +63,7 @@ function writeActionFile($topic, $action)
 function registrationGPS($url,$topic,$type,$period,$hw)
 //=============================================
 {
-  $request = 'gow.simuino.com/gowPlatformServer.php';
+  $request = 'http://gow.simuino.com/gowPlatformServer.php';
   $request = $request."?do=register&topic=$topic&type=$type&period=$period&url=$url&hw=$hw";
   $res = file_get_contents($request);
 }
