@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-11-16
+// Date.......: 2018-11-17
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -63,7 +63,7 @@ function writeActionFile($topic, $action)
 function registrationGPS($url,$topic,$type,$period,$hw)
 //=============================================
 {
-  $request = 'http://127.0.0.1/git/gow/gowPlatformServer.php';
+  $request = 'gow.simuino.com/gowPlatformServer.php';
   $request = $request."?do=register&topic=$topic&type=$type&period=$period&url=$url&hw=$hw";
   $res = file_get_contents($request);
 }
