@@ -1,10 +1,18 @@
+//=============================================
+// File.......: httpClient.c
+// Date.......: 2018-11-18
+// Author.....: Benny Saxen
+// Description: Basic http client
+//=============================================
+// Configuration
+//=============================================
 
 #include <ESP8266WiFi.h>
 
 const char* ssid     = "my_ssid";
-const char* password = "my_pass";
+const char* password = "my passw";
 
-const char* host = "gow.simuino.com";
+const char* host = "192.168.1.242";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
 
@@ -39,7 +47,7 @@ void setup() {
 int value = 0;
 
 void loop() {
-  delay(5000);
+  delay(10000);
   ++value;
 
   Serial.print("connecting to ");
@@ -54,7 +62,7 @@ void loop() {
   }
 
   // We now create a URI for the request
-  String url = "/gowServer.php";
+  String url = "/git/gow/gowServer.php";
   url += "?topic=";
   url += "my/name/benny/0";
   url += "&no=";
@@ -70,7 +78,7 @@ void loop() {
   url += "&period=";
   url += 10;
   url += "&url=";
-  url += "gow.simuino.com";
+  url += "http://192.168.1.242/git/gow/";
   url += "&hw=";
   url += "esp8266";
       
