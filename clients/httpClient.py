@@ -23,6 +23,7 @@ conf_n_wrap_around = 999999
 #===================================================
 topic1 = 'test/temperature/outdoor/1'
 topic2 = 'test/temperature/outdoor/2'
+topic3 = 'test/electricity/house/0'
 #===================================================
 def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
@@ -45,7 +46,7 @@ def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 	except urllib2.URLError as e:
 		print e.reason
 	the_page = response.read()
-	print the_page
+	print 'Message to ' + itopic + ': ' + the_page
 #===================================================
 def http_get_action( itopic, iaction ):
 #===================================================
@@ -68,9 +69,11 @@ while True:
 		n = 0
 	value = n
 	# Set an action for topic1
-	http_get_action(topic1,'please do nothing')
+	#http_get_action(topic1,'please do nothing')
 	# Send data to topic2
+	http_get_value(topic1,'TEMPERATURE', value, 'celcius',n,conf_period,conf_hw)
 	http_get_value(topic2,'TEMPERATURE', value, 'celcius',n,conf_period,conf_hw)
+	http_get_value(topic3,'ELECTRICITY', value, 'watt',n,conf_period,conf_hw)
 	print 'sleep ' + str(conf_period) + ' sec'
 	time.sleep(conf_period)
 

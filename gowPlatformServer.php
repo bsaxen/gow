@@ -15,47 +15,58 @@ $ts           = date_format($date, 'Y-m-d H:i:s');
 function registerTopic($topic,$url,$type,$period,$ts,$hw)
 //=============================================
 {
-  $fdoc = 'gowPlatformServer_register.gow';
-  $doc = fopen($fdoc, "a+");
+  $file_name = str_replace("/","_",$topic);
+  $file_name = $file_name.".reg";
+  print $file_name;
+  $doc = fopen($file_name, "w");
   fwrite($doc, "$ts $topic $url $type $period $hw\n");
   fclose($doc);
 }
 //=============================================
-function writeSingle($topic,$value)
+function deleteRegistration($topic)
 //=============================================
 {
-  $fdoc = $topic.'/doc.single';
-  $doc = fopen($fdoc, "w");
-  fwrite($doc, "$value");
-  fclose($doc);
+  $file_name = str_replace("/","_",$topic);
+  $file_name = $file_name.".reg";
+  if (file_exists($file_name)) unlink($file_name);
 }
+
 //=============================================
 function readRegister()
 //=============================================
 {
-  $fdoc = 'gowPlatformServer_register.gow';
-  $file = fopen($fdoc, "r");
+  $file = fopen('register.work', "r");
   if ($file)
   {
-      while(! feof($file))
+    echo "<table border=1 bgcolor=\"#00FF00\">";
+    echo "<tr><td>Date</td> <td>Time</td> <td>Topic</td> <td>Domain</td>
+    <td>Type</td> <td>Period</td> <td>hw</td><td>Links</td><td>Delete</td></tr>";
+      while(!feof($file))
       {
         $line = fgets($file);
         if (strlen($line) > 2)
         {
-          // 2018-11-16 22:12:09 kvv32/temperature/outdoor/0 http://127.0.0.1/git/gow/ TEMPERATURE 10 python
-          sscanf($line,"%s %s %s %s %s %s %s",$p1,$p2,$p3,$p4,$p5,$p6,$p7);
-          echo "<table border=1>";
-          echo "<tr><td>Date</td> <td>Time</td> <td>Topic</td> <td>Domain</td>
-          <td>Type</td> <td>Period</td> <td>hw</td><td>Links</td></tr>";
-          echo "<tr><td>$p1</td> <td>$p2</td> <td>$p3</td> <td>$p4</td> <td>$p5</td> <td>$p6</td> <td>$p7</td>
-          <td><a href=gowPlatformServer.php?do=action&topic=$p3&url=$p4>action</a></td></tr>";
-          echo "</table>";
-          echo "<a href=/$p3/doc.html> html</a>";
-          echo "<a href=/$p3/doc.json> json</a>";
-          echo "<a href=/$p3/doc.txt> txt</a>";
-          echo "<br>";
+          $line = trim($line);
+          $file2 = fopen($line, "r");
+          if ($file2)
+          {
+            while(!feof($file2))
+            {
+              $line2 = fgets($file2);
+              if (strlen($line2) > 2)
+              {
+                // 2018-11-16 22:12:09 kvv32/temperature/outdoor/0 http://127.0.0.1/git/gow/ TEMPERATURE 10 python
+                sscanf($line2,"%s %s %s %s %s %s %s",$p1,$p2,$p3,$p4,$p5,$p6,$p7);
+                echo "<tr><td>$p1</td> <td>$p2</td> <td>$p3</td> <td>$p4</td> <td>$p5</td> <td>$p6</td> <td>$p7</td>
+                <td><a href=gowPlatformServer.php?do=action&topic=$p3&url=$p4>action</a></td>
+                <td><a href=gowPlatformServer.php?do=delete&topic=$p3>delete</a></td></tr>";
+              }
+            }
+            fclose($file2);
+          }
         }
       }
+      echo "</table>";
       fclose($file);
   }
   else {
@@ -66,28 +77,23 @@ function readRegister()
 function checkTopic($topic)
 //=============================================
 {
-  $fdoc = 'gowPlatformServer_register.gow';
-  $file = fopen($fdoc, "r");
-  $res = 'new';
-  if ($file)
+  $file_name = str_replace("/","_",$topic);
+  $file_name = $file_name.".reg";
+
+  if (file_exists($file_name))
   {
-      while(! feof($file))
-      {
-        $line = fgets($file);
-        if (strpos($line, $topic) !== false) {
-          $res = 'old';
-        }
-      }
-      fclose($file);
-  }
-  else {
-      echo("Error open GPS Register file<br>");
+      $res = 'exist';
+  } else
+  {
+      $res = 'new';
   }
   return $res;
 }
 //=============================================
 // End of library
 //=============================================
+
+system("ls *.reg > register.work");
 echo "<html>
    <head>
       <title>GOW</title>
@@ -98,9 +104,9 @@ $error = 1;
 if (isset($_GET['do'])) {
   $do = $_GET['do'];
 }
-echo "do=$do<br>";
-  if ($do == 'register')
-  {
+
+if ($do == 'register')
+{
     $ok = 0;
     if (isset($_GET['topic'])) {
       $topic = $_GET['topic'];
@@ -130,9 +136,9 @@ echo "do=$do<br>";
         registerTopic($topic,$url,$type,$period,$ts,$hw);
       }
     }
-  }
-  if ($do == 'action')
-  {
+}
+if ($do == 'action')
+{
     if (isset($_GET['topic'])) {
       $topic = $_GET['topic'];
       $ok++;
@@ -141,8 +147,7 @@ echo "do=$do<br>";
       $url = $_GET['url'];
       $ok++;
     }
-
-    echo "<br><br><h2>Send action to topic</h2>
+    echo "
     <table border=1>
     <form action=\"#\" method=\"get\">
       <input type=\"hidden\" name=\"do\" value=\"create_action\">
@@ -152,9 +157,9 @@ echo "do=$do<br>";
       <tr><td><input type= \"submit\" value=\"Submit\"></td><td></td></tr>
     </form></table>
     ";
-  }
-  if ($do == 'create_action')
-  {
+}
+if ($do == 'create_action')
+{
     if (isset($_GET['furl'])) {
       $furl = $_GET['furl'];
     }
@@ -169,7 +174,14 @@ echo "do=$do<br>";
     //echo "$request";
     $res = file_get_contents($request);
     //echo $res;
-  }
+}
+if ($do == 'delete')
+{
+    if (isset($_GET['topic'])) {
+      $topic = $_GET['topic'];
+      deleteRegistration($topic);
+    }
+}
 readRegister();
 
 
