@@ -7,9 +7,10 @@
 //=============================================
 // Configuration
 //=============================================
-$conf_gps = 'http://gow.simuino.com/gowPlatformServer.php';
+//$conf_gps = 'http://gow.simuino.com/gowPlatformServer.php';
+$conf_gps = 'http://127.0.0.1/git/gow/gowPlatformServer.php';
 //=============================================
-$action_file_name = 'action.gow';
+$conf_action_file_name = 'action.gow';
 //=============================================
 $date         = date_create();
 $gs_ts        = date_format($date, 'Y-m-d H:i:s');
@@ -27,7 +28,8 @@ function writeSingle($topic,$value)
 function readActionFile($topic)
 //=============================================
 {
-  $action_file = $topic.'/'.$action_file_name;
+  global $conf_action_file_name;
+  $action_file = $topic.'/'.$conf_action_file_name;
   $file = fopen($action_file, "r");
   if ($file)
   {
@@ -52,7 +54,8 @@ function readActionFile($topic)
 function writeActionFile($topic, $action)
 //=============================================
 {
-  $action_file = $topic.'/'.$action_file_name;
+  global $conf_action_file_name;
+  $action_file = $topic.'/'.$conf_action_file_name;
   $file = fopen($action_file, "w");
   if ($file)
   {
@@ -68,6 +71,7 @@ function writeActionFile($topic, $action)
 function registrationGPS($url,$topic,$type,$period,$hw)
 //=============================================
 {
+  global $conf_gps;
   $request = $conf_gps;
   $request = $request."?do=register&topic=$topic&type=$type&period=$period&url=$url&hw=$hw";
   $res = file_get_contents($request);
@@ -77,7 +81,6 @@ function registrationGPS($url,$topic,$type,$period,$hw)
 //=============================================
 
 $error = 1;
-
 if (isset($_GET['topic'])) {
   $topic = $_GET['topic'];
   $error = 0;
@@ -128,6 +131,7 @@ if($error == 0)
   if (isset($_GET['hw'])) {
     $hw = $_GET['hw'];
   }
+
   registrationGPS($url,$topic,$type,$period,$hw);
 
     //===========================================

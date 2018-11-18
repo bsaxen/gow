@@ -12,7 +12,8 @@ import datetime
 #===================================================
 # Configuration
 #===================================================
-conf_gs_url        = 'http://gow.simuino.com/'
+#conf_gs_url        = 'http://gow.simuino.com/'
+conf_gs_url        = 'http://127.0.0.1/git/gow/'
 conf_server_name   = 'gowServer.php'
 conf_period        = 10
 conf_hw            = 'python'
@@ -20,8 +21,8 @@ conf_n_wrap_around = 999999
 #===================================================
 # Topics
 #===================================================
-topic1 = 'test/temperature/outdoor/0'
-topic2 = 'test/temperature/outdoor/1'
+topic1 = 'test/temperature/outdoor/1'
+topic2 = 'test/temperature/outdoor/2'
 #===================================================
 def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
@@ -53,14 +54,12 @@ def http_get_action( itopic, iaction ):
 	data = {}
 	data['topic'] = itopic
 	data['action'] = iaction
-
 	values = urllib.urlencode(data)
 	req = url + server + '?' + values
 	try: response = urllib2.urlopen(req)
 	except urllib2.URLError as e:
 		print e.reason
 	the_action = response.read()
-	print the_action
 #===================================================
 n = 0
 while True:
@@ -72,6 +71,7 @@ while True:
 	http_get_action(topic1,'please do nothing')
 	# Send data to topic2
 	http_get_value(topic2,'TEMPERATURE', value, 'celcius',n,conf_period,conf_hw)
+	print 'sleep ' + str(conf_period) + ' sec'
 	time.sleep(conf_period)
 
 #===================================================
