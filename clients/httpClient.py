@@ -1,7 +1,7 @@
 # =============================================
 # File: http_client.py
 # Author: Benny Saxen
-# Date: 2018-11-16
+# Date: 2018-11-18
 # Description:
 # =============================================
 import urllib
@@ -12,15 +12,22 @@ import datetime
 #===================================================
 # Configuration
 #===================================================
-period = 10
-hw = 'python'
-
+conf_gs_url        = 'http://gow.simuino.com/'
+conf_server_name   = 'gowServer.php'
+conf_period        = 10
+conf_hw            = 'python'
+conf_n_wrap_around = 999999
+#===================================================
+# Topics
+#===================================================
+topic1 = 'test/temperature/outdoor/0'
+topic2 = 'test/temperature/outdoor/1'
 #===================================================
 def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
 	#url = 'http://gow.simuino.com/gowServer.php'
-	url = 'http://gow.simuino.com/'
-	server = 'gowServer.php'
+	url = conf_gs_url
+	server = conf_server_name
 	data = {}
 	data['topic'] = itopic
 	data['no'] = n
@@ -41,9 +48,8 @@ def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
 def http_get_action( itopic, iaction ):
 #===================================================
-	#url = 'http://gow.simuino.com/gowServer.php'
-	url = 'http://gow.simuino.com/'
-	server = 'gowServer.php'
+	url = conf_gs_url
+	server = conf_server_name
 	data = {}
 	data['topic'] = itopic
 	data['action'] = iaction
@@ -53,18 +59,20 @@ def http_get_action( itopic, iaction ):
 	try: response = urllib2.urlopen(req)
 	except urllib2.URLError as e:
 		print e.reason
-	the_page = response.read()
-	print the_page
+	the_action = response.read()
+	print the_action
 #===================================================
 n = 0
 while True:
 	n += 1
-	if n > 999999:
+	if n > conf_n_wrap_around:
 		n = 0
 	value = n
-	http_get_action('test/temperature/outdoor/0','please do nothing')
-	http_get_value('test/temperature/outdoor/0','TEMPERATURE', value, 'celcius',n,period,hw)
-	time.sleep(period)
+	# Set an action for topic1
+	http_get_action(topic1,'please do nothing')
+	# Send data to topic2
+	http_get_value(topic2,'TEMPERATURE', value, 'celcius',n,conf_period,conf_hw)
+	time.sleep(conf_period)
 
 #===================================================
 # End of file

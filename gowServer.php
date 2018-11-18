@@ -1,11 +1,16 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-11-17
+// Date.......: 2018-11-18
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
-
+// Configuration
+//=============================================
+$conf_gps = 'http://gow.simuino.com/gowPlatformServer.php';
+//=============================================
+$action_file_name = 'action.gow';
+//=============================================
 $date         = date_create();
 $gs_ts        = date_format($date, 'Y-m-d H:i:s');
 
@@ -22,7 +27,7 @@ function writeSingle($topic,$value)
 function readActionFile($topic)
 //=============================================
 {
-  $action_file = $topic.'/action.gow';
+  $action_file = $topic.'/'.$action_file_name;
   $file = fopen($action_file, "r");
   if ($file)
   {
@@ -47,7 +52,7 @@ function readActionFile($topic)
 function writeActionFile($topic, $action)
 //=============================================
 {
-  $action_file = $topic.'/action.gow';
+  $action_file = $topic.'/'.$action_file_name;
   $file = fopen($action_file, "w");
   if ($file)
   {
@@ -63,7 +68,7 @@ function writeActionFile($topic, $action)
 function registrationGPS($url,$topic,$type,$period,$hw)
 //=============================================
 {
-  $request = 'http://gow.simuino.com/gowPlatformServer.php';
+  $request = $conf_gps;
   $request = $request."?do=register&topic=$topic&type=$type&period=$period&url=$url&hw=$hw";
   $res = file_get_contents($request);
 }
@@ -76,6 +81,9 @@ $error = 1;
 if (isset($_GET['topic'])) {
   $topic = $_GET['topic'];
   $error = 0;
+  if (!is_dir($topic)) {
+    mkdir($topic, 0777, true);
+  }
 }
 else
 {
@@ -125,10 +133,6 @@ if($error == 0)
     //===========================================
     // HTML
     //===========================================
-
-    if (!is_dir($topic)) {
-    mkdir($topic, 0777, true);
-    }
 
     $fdoc = $topic.'/doc.html';
 
@@ -193,9 +197,14 @@ if($error == 0)
     fwrite($doc,   "HW           $hw\n");
     fclose($doc);
 
+    //===========================================
+    // Single value
+    //===========================================
     writeSingle($topic,$value);
 
+    // Check if any action is present for this client/topic
     echo readActionFile($topic);
   }
 
+// End of file
   ?>
