@@ -1,20 +1,23 @@
 //=============================================
 // File.......: httpClient.c
-// Date.......: 2018-11-18
+// Date.......: 2018-11-20
 // Author.....: Benny Saxen
 // Description: Basic http client
 //=============================================
 // Configuration
 //=============================================
-
-#include <ESP8266WiFi.h>
-
-const char* ssid     = "my_ssid";
-const char* password = "my passw";
-
-const char* host = "192.168.1.242";
+char* publishTopic = "test/topic/here/0";
+int period = 10;
+const char* ssid       = "my_ssid";
+const char* password   = "my passw";
+const char* host       = "192.168.1.242";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
+//=============================================
+#include <ESP8266WiFi.h>
+
+
+
 
 void setup() {
   Serial.begin(115200);
@@ -47,7 +50,7 @@ void setup() {
 int value = 0;
 
 void loop() {
-  delay(10000);
+  delay(period*1000);
   ++value;
 
   Serial.print("connecting to ");
@@ -63,8 +66,9 @@ void loop() {
 
   // We now create a URI for the request
   String url = "/git/gow/gowServer.php";
-  url += "?topic=";
-  url += "my/name/benny/0";
+  url += "?do=data";
+  url += "&topic=";
+  url += publishTopic;
   url += "&no=";
   url += value;
   url += "&type=";
@@ -100,8 +104,9 @@ void loop() {
 
   // Read all the lines of the reply from server and print them to Serial
   while (client.available()) {
-    String line = client.readStringUntil('\r');
-    Serial.print(line);
+    String action = client.readStringUntil('\r');
+    Serial.print(action);
+    // Do something based upon the action string
   }
 
   Serial.println();
