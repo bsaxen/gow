@@ -17,7 +17,7 @@ conf_gs_url        = 'http://127.0.0.1/git/gow/'
 conf_server_name   = 'gowServer.php'
 conf_period        = 10
 conf_hw            = 'python'
-conf_n_wrap_around = 999999
+conf_wrap          = 999999
 #===================================================
 # Topics
 #===================================================
@@ -34,6 +34,7 @@ def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 	data['do'] = 'data'
 	data['topic'] = itopic
 	data['no'] = n
+	data['wrap'] = conf_wrap
 	data['type'] = itype
 	data['value'] = ivalue
 	data['unit'] = iunit
@@ -66,7 +67,7 @@ def http_get_action( itopic, iaction ):
 n = 0
 while True:
 	n += 1
-	if n > conf_n_wrap_around:
+	if n > conf_wrap:
 		n = 0
 	value = n
 	# Set an action for topic1
