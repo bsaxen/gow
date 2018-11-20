@@ -7,7 +7,8 @@
 // Configuration
 //=============================================
 char* publishTopic = "test/topic/here/0";
-int period = 10;
+int conf_period = 10;
+int conf_wrap   = 999999;
 const char* ssid       = "my_ssid";
 const char* password   = "my passw";
 const char* host       = "192.168.1.242";
@@ -50,7 +51,7 @@ void setup() {
 int value = 0;
 
 void loop() {
-  delay(period*1000);
+  delay(conf_period*1000);
   ++value;
 
   Serial.print("connecting to ");
@@ -65,12 +66,14 @@ void loop() {
   }
 
   // We now create a URI for the request
-  String url = "/git/gow/gowServer.php";
+  String url = "/gowServer.php";
   url += "?do=data";
   url += "&topic=";
   url += publishTopic;
   url += "&no=";
   url += value;
+  url += "&wrap=";
+  url += conf_wrap;
   url += "&type=";
   url += "TEMPERATURE";
   url += "&value=";
@@ -80,7 +83,7 @@ void loop() {
   url += "&unit=";
   url += "celcius";
   url += "&period=";
-  url += 10;
+  url += conf_period;
   url += "&url=";
   url += "http://192.168.1.242/git/gow/";
   url += "&hw=";
