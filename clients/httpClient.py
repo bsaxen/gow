@@ -1,7 +1,7 @@
 # =============================================
 # File: http_client.py
 # Author: Benny Saxen
-# Date: 2018-11-18
+# Date: 2018-11-20
 # Description:
 # =============================================
 import urllib
@@ -31,6 +31,7 @@ def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 	url = conf_gs_url
 	server = conf_server_name
 	data = {}
+	data['do'] = 'data'
 	data['topic'] = itopic
 	data['no'] = n
 	data['type'] = itype
