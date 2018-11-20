@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-11-19
+// Date.......: 2018-11-20
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -68,37 +68,61 @@ function writeActionFile($topic, $action)
   }
   return $result;
 }
-//=============================================
-function createTopic($topic)
-//=============================================
-{
 
-}
 //=============================================
 function deleteTopic($topic)
 //=============================================
 {
-
+  // remove reg file
+  $filename = str_replace("/","_",$topic);
+  $filename = $filename.".reg";
+  if (file_exists($filename)) unlink($filename);
+  
+  // remove directory content
+  $dirname = $topic;
+  array_map('unlink', glob("$dirname/*.*"));
+  // remove directory
+  rmdir($dirname);
 }
+
 //=============================================
-function findTopic($topic)
+function listAllTopics()
 //=============================================
 {
-
+  system("ls *.reg > register.work");
+  $file = fopen('register.work', "r");
+  if ($file)
+  {
+    while(!feof($file))
+    {
+      $line = fgets($file);
+      if (strlen($line) > 2)
+      {
+          $line = trim($line); 
+          echo $line.':';
+      }
+  }
 }
-//=============================================
-function listAllTopics($topic)
-//=============================================
-{
 
-}
 //=============================================
 function searchTopics($search)
 //=============================================
 {
-
+  system("ls *.reg > register.work");
+  $file = fopen('register.work', "r");
+  if ($file)
+  {
+    while(!feof($file))
+    {
+      $line = fgets($file);
+      if (strlen($line) > 2)
+      {
+          $line = trim($line); 
+          $pos = strpos($line, $search);
+          if $pos === true) echo $line.':';
+      }
+  }
 }
-
 
 //=============================================
 // End of library
@@ -110,10 +134,10 @@ if (isset($_GET['do']))
   
     if ($do == 'list')
     {
-      listAllTopics($list);
+      listAllTopics();
     }
   
-    if ($do == 'find')
+    if ($do == 'search')
     {
       $search = 'void';
       $search = $_GET['search'];
@@ -149,13 +173,6 @@ if (isset($_GET['do']))
       {
         deleteTopic($topic);
       }
-
-
-
-
-
-
-
 
       if ($do == 'data') 
       { 
