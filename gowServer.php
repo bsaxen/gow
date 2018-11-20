@@ -184,6 +184,7 @@ if (isset($_GET['do']))
       { 
         // Default values
         $no = 999;
+        $wrap = 999
         $type = 'no_type';
         $value = 999;
         $ts = 'no_device_timestamp';
@@ -193,6 +194,9 @@ if (isset($_GET['do']))
 
         if (isset($_GET['no'])) {
           $no = $_GET['no'];
+        }
+        if (isset($_GET['wrap'])) {
+          $no = $_GET['wrap'];
         }
         if (isset($_GET['type'])) {
           $type = $_GET['type'];
@@ -240,6 +244,8 @@ if (isset($_GET['do']))
         fwrite($doc, "<br>");
         fwrite($doc, "NO          ".$no);
         fwrite($doc, "<br>");
+        fwrite($doc, "WRAP        ".$wrap);
+        fwrite($doc, "<br>");
         fwrite($doc, "TYPE        ".$type);
         fwrite($doc, "<br>");
         fwrite($doc, "VALUE       ".$value);
@@ -266,6 +272,7 @@ if (isset($_GET['do']))
         fwrite($doc, "{\"gow\": {\n");
         fwrite($doc, "   \"topic\":  \"$topic\",\n");
         fwrite($doc, "   \"no\":     \"$no\",\n");
+        fwrite($doc, "   \"wrap\":   \"$wrap\",\n");
         fwrite($doc, "   \"type\":   \"$type\",\n");
         fwrite($doc, "   \"value\":  \"$value\",\n");
         fwrite($doc, "   \"unit\":   \"$unit\",\n");
@@ -284,6 +291,7 @@ if (isset($_GET['do']))
         $doc = fopen($fdoc, "w");
         fwrite($doc,   "TOPIC        $topic\n");
         fwrite($doc,   "NO           $no\n");
+        fwrite($doc,   "WRAP         $wrap\n");
         fwrite($doc,   "TYPE         $type\n");
         fwrite($doc,   "VALUE        $value\n");
         fwrite($doc,   "UNIT         $unit\n");
