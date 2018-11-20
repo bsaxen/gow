@@ -9,6 +9,7 @@
 //=============================================
 // No configuration
 //=============================================
+
 $conf_action_file_name = 'action.gow';
 //=============================================
 $date         = date_create();
@@ -101,6 +102,7 @@ function listAllTopics()
           $line = trim($line); 
           echo $line.':';
       }
+    }
   }
 }
 
@@ -115,12 +117,14 @@ function searchTopics($search)
     while(!feof($file))
     {
       $line = fgets($file);
+
       if (strlen($line) > 2)
       {
           $line = trim($line); 
           $pos = strpos($line, $search);
-          if $pos === true) echo $line.':';
+          if ($pos !== false) echo $line.':';
       }
+    }
   }
 }
 
@@ -135,6 +139,7 @@ if (isset($_GET['do']))
     if ($do == 'list')
     {
       listAllTopics();
+      exit;
     }
   
     if ($do == 'search')
@@ -142,6 +147,7 @@ if (isset($_GET['do']))
       $search = 'void';
       $search = $_GET['search'];
       searchTopics($search);
+      exit;
     }
   
     // Check if topic is given
