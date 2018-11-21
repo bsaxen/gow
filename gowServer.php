@@ -202,7 +202,7 @@ if (isset($_GET['do']))
       { 
         // Default values
         $no = 999;
-        $wrap = 999
+        $wrap = 999;
         $ts = 'no_device_timestamp';
         $period = 999;
         $url = 'no_url';
