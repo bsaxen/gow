@@ -212,10 +212,10 @@ if (isset($_GET['do']))
           $no = $_GET['no'];
         }
         if (isset($_GET['wrap'])) {
-          $no = $_GET['wrap'];
+          $wrap = $_GET['wrap'];
         }
         if (isset($_GET['type'])) {
-          $ts = $_GET['type'];
+          $type = $_GET['type'];
         }
         if (isset($_GET['ts'])) {
           $ts = $_GET['ts'];
@@ -283,6 +283,9 @@ if (isset($_GET['do']))
         fwrite($doc, "URL         ".$url);
         fwrite($doc, "<br>");
         fwrite($doc, "HW          ".$hw);
+        fwrite($doc, "<br>");
+        fwrite($doc, "npar          ".$npar);
+        fwrite($doc, "<br>");
         for ($ii = 1;$ii <= $npar; $ii++)
         {
           $par = 'p'.$ii;
