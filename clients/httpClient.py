@@ -1,7 +1,7 @@
 # =============================================
-# File: http_client.py
+# File: httpClient.py
 # Author: Benny Saxen
-# Date: 2018-11-20
+# Date: 2018-11-21
 # Description:
 # =============================================
 import urllib
@@ -36,8 +36,10 @@ def http_get_value( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 	data['no'] = n
 	data['wrap'] = conf_wrap
 	data['type'] = itype
-	data['value'] = ivalue
-	data['unit'] = iunit
+	data['p1'] = 'value'
+	data['v1'] = ivalue
+	data['p2'] = 'unit'
+	data['v2'] = iunit
 	data['ts'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['period'] = iperiod
 	data['url'] = url
