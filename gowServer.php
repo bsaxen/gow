@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-11-20
+// Date.......: 2018-11-21
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -164,7 +164,7 @@ if (isset($_GET['do']))
     else
     {
       $error = 2;
-      echo "error 2";
+      echo "Error: no topic specified";
     }
   
     // API when topic is available
@@ -185,8 +185,6 @@ if (isset($_GET['do']))
         // Default values
         $no = 999;
         $wrap = 999
-        $type = 'no_type';
-        $value = 999;
         $ts = 'no_device_timestamp';
         $period = 999;
         $url = 'no_url';
@@ -199,13 +197,7 @@ if (isset($_GET['do']))
           $no = $_GET['wrap'];
         }
         if (isset($_GET['type'])) {
-          $type = $_GET['type'];
-        }
-        if (isset($_GET['value'])) {
-          $value = $_GET['value'];
-        }
-        if (isset($_GET['unit'])) {
-          $unit = $_GET['unit'];
+          $ts = $_GET['type'];
         }
         if (isset($_GET['ts'])) {
           $ts = $_GET['ts'];
@@ -219,8 +211,24 @@ if (isset($_GET['do']))
         if (isset($_GET['hw'])) {
           $hw = $_GET['hw'];
         }
-
-
+        
+        $npar = 0;
+        for ($ii = 1;$ii < 10; $ii++)
+        {
+          $ok = 0;
+          $$par = p.$ii;
+          if (isset($_GET[$par])) {
+            $par = $_GET[$par];
+            $ok++;
+          }
+          $$val = v.$ii;
+          if (isset($_GET[$val])) {
+            $var = $_GET[$var];
+            $ok++;
+          }
+          if( $ok == 2) $npar++;
+        }
+        
         //===========================================
         // Registration
         //===========================================
@@ -248,10 +256,6 @@ if (isset($_GET['do']))
         fwrite($doc, "<br>");
         fwrite($doc, "TYPE        ".$type);
         fwrite($doc, "<br>");
-        fwrite($doc, "VALUE       ".$value);
-        fwrite($doc, "<br>");
-        fwrite($doc, "UNIT        ".$unit);
-        fwrite($doc, "<br>");
         fwrite($doc, "TS          ".$ts);
         fwrite($doc, "<br>");
         fwrite($doc, "PERIOD      ".$period);
@@ -261,6 +265,12 @@ if (isset($_GET['do']))
         fwrite($doc, "URL         ".$url);
         fwrite($doc, "<br>");
         fwrite($doc, "HW          ".$hw);
+        for ($ii = 1;$ii <= $npar; $ii++)
+        {
+          $$par = p.$ii;
+          $$par = v.$ii;
+          fwrite($doc, "$par        ".$val);
+        }
         fwrite($doc, "</body></html>");
         fclose($doc);
 
@@ -274,13 +284,17 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"no\":     \"$no\",\n");
         fwrite($doc, "   \"wrap\":   \"$wrap\",\n");
         fwrite($doc, "   \"type\":   \"$type\",\n");
-        fwrite($doc, "   \"value\":  \"$value\",\n");
-        fwrite($doc, "   \"unit\":   \"$unit\",\n");
         fwrite($doc, "   \"ts\":     \"$ts\",\n");
         fwrite($doc, "   \"period\": \"$period\",\n");
         fwrite($doc, "   \"gs_ts\":  \"$gs_ts\"\n");
         fwrite($doc, "   \"url\":    \"$url\"\n");
         fwrite($doc, "   \"hw\":     \"$hw\"\n");
+        for ($ii = 1;$ii <= $npar; $ii++)
+        {
+          $$par = p.$ii;
+          $$par = v.$ii;
+          fwrite($doc, "   \"$par\":   \"$$val\",\n");
+        }
         fwrite($doc, "}}\n ");
         fclose($doc);
 
@@ -293,22 +307,26 @@ if (isset($_GET['do']))
         fwrite($doc,   "NO           $no\n");
         fwrite($doc,   "WRAP         $wrap\n");
         fwrite($doc,   "TYPE         $type\n");
-        fwrite($doc,   "VALUE        $value\n");
-        fwrite($doc,   "UNIT         $unit\n");
         fwrite($doc,   "TS           $ts\n");
         fwrite($doc,   "PERIOD       $period\n");
         fwrite($doc,   "GS_TS        $gs_ts\n");
         fwrite($doc,   "URL          $url\n");
         fwrite($doc,   "HW           $hw\n");
+        for ($ii = 1;$ii <= $npar; $ii++)
+        {
+          $$par = p.$ii;
+          $$par = v.$ii;
+          fwrite($doc,   "$par       $val\n");
+        }
         fclose($doc);
 
         //===========================================
         // Single value
         //===========================================
-        $fdoc = $topic.'/doc.single';
-        $doc = fopen($fdoc, "w");
-        fwrite($doc, "$value");
-        fclose($doc);
+        //$fdoc = $topic.'/doc.single';
+        //$doc = fopen($fdoc, "w");
+        //fwrite($doc, "$value");
+        //fclose($doc);
 
         // Check if any action is present for this client/topic
         echo readActionFile($topic);
