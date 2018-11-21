@@ -236,12 +236,12 @@ if (isset($_GET['do']))
           $ok = 0;
           $par = 'p'.$ii;
           if (isset($_GET[$par])) {
-            $par = $_GET[$par];
+            ${$par} = $_GET[$par];
             $ok++;
           }
           $val = 'v'.$ii;
           if (isset($_GET[$val])) {
-            $val = $_GET[$val];
+            ${$val} = $_GET[$val];
             $ok++;
           }
           if( $ok == 2) $npar++;
