@@ -7,23 +7,41 @@
 //=============================================
 // Configuration
 //=============================================
-// No configuration
+$conf_max_paramaters = 10;
 //=============================================
 
+
+//=============================================
+// API
+// gowServer.php?do=list
+// gowServer.php?do=search&search=<string>
+// gowServer.php?do=action&topic=<topic>
+// gowServer.php?do=delete&topic=<topic>
+// gowServer.php?topic=<topic>
+//              &do     = data
+//              &no     = 3
+//              &wrap   = 999999
+//              &type   = 'temperature'
+//              &ts     = '2018-12-01 23:12:31'
+//              &period = 10
+//              &url    = http://gow.zimuino.com
+//              &hw     = 'python'
+//              &p1     = 'value'
+//              &v1     = 17.1
+//              &p2     = 'unit'
+//              &v2     = 'celcius'
+//              ... max 10 p,v
+//=============================================
+
+
+//=============================================
+// Library
+//=============================================
 $conf_action_file_name = 'action.gow';
 //=============================================
 $date         = date_create();
 $gs_ts        = date_format($date, 'Y-m-d H:i:s');
 
-//=============================================
-function writeSingle($topic,$value)
-//=============================================
-{
-  $fdoc = $topic.'/doc.single';
-  $doc = fopen($fdoc, "w");
-  fwrite($doc, "$value");
-  fclose($doc);
-}
 //=============================================
 function readActionFile($topic)
 //=============================================
@@ -213,17 +231,17 @@ if (isset($_GET['do']))
         }
         
         $npar = 0;
-        for ($ii = 1;$ii < 10; $ii++)
+        for ($ii = 1;$ii < $conf_max_paramaters; $ii++)
         {
           $ok = 0;
-          $$par = p.$ii;
+          $par = 'p'.$ii;
           if (isset($_GET[$par])) {
             $par = $_GET[$par];
             $ok++;
           }
-          $$val = v.$ii;
+          $val = 'v'.$ii;
           if (isset($_GET[$val])) {
-            $var = $_GET[$var];
+            $val = $_GET[$val];
             $ok++;
           }
           if( $ok == 2) $npar++;
@@ -267,9 +285,9 @@ if (isset($_GET['do']))
         fwrite($doc, "HW          ".$hw);
         for ($ii = 1;$ii <= $npar; $ii++)
         {
-          $$par = p.$ii;
-          $$par = v.$ii;
-          fwrite($doc, "$par        ".$val);
+          $par = 'p'.$ii;
+          $par = 'v'.$ii;
+          fwrite($doc, "${$par}        ".${$val});
         }
         fwrite($doc, "</body></html>");
         fclose($doc);
@@ -291,9 +309,9 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"hw\":     \"$hw\"\n");
         for ($ii = 1;$ii <= $npar; $ii++)
         {
-          $$par = p.$ii;
-          $$par = v.$ii;
-          fwrite($doc, "   \"$par\":   \"$$val\",\n");
+          $par = 'p'.$ii;
+          $par = 'v'.$ii;
+          fwrite($doc, "   \"${$par}\":   \"${$val}\",\n");
         }
         fwrite($doc, "}}\n ");
         fclose($doc);
@@ -314,9 +332,9 @@ if (isset($_GET['do']))
         fwrite($doc,   "HW           $hw\n");
         for ($ii = 1;$ii <= $npar; $ii++)
         {
-          $$par = p.$ii;
-          $$par = v.$ii;
-          fwrite($doc,   "$par       $val\n");
+          $par = 'p'.$ii;
+          $par = 'v'.$ii;
+          fwrite($doc,   "${$par}       ${$val}\n");
         }
         fclose($doc);
 
