@@ -290,7 +290,8 @@ if (isset($_GET['do']))
         {
           $par = 'p'.$ii;
           $par = 'v'.$ii;
-          fwrite($doc, "${$par}        ".${$val});
+          fwrite($doc, "hej ${$par}        da ".${$val});
+          fwrite($doc, "<br>");
         }
         fwrite($doc, "</body></html>");
         fclose($doc);
