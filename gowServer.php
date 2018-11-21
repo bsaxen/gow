@@ -289,7 +289,7 @@ if (isset($_GET['do']))
         for ($ii = 1;$ii <= $npar; $ii++)
         {
           $par = 'p'.$ii;
-          $var = 'v'.$ii;
+          $val = 'v'.$ii;
           fwrite($doc, "${$par}        ".${$val});
           fwrite($doc, "<br>");
         }
@@ -314,7 +314,7 @@ if (isset($_GET['do']))
         for ($ii = 1;$ii <= $npar; $ii++)
         {
           $par = 'p'.$ii;
-          $var = 'v'.$ii;
+          $val = 'v'.$ii;
           fwrite($doc, "   \"${$par}\":   \"${$val}\",\n");
         }
         fwrite($doc, "}}\n ");
@@ -337,7 +337,7 @@ if (isset($_GET['do']))
         for ($ii = 1;$ii <= $npar; $ii++)
         {
           $par = 'p'.$ii;
-          $var = 'v'.$ii;
+          $val = 'v'.$ii;
           fwrite($doc,   "${$par}       ${$val}\n");
         }
         fclose($doc);
