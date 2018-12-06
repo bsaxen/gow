@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-11-21
+// Date.......: 2018-12-06
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -308,15 +308,15 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"type\":   \"$type\",\n");
         fwrite($doc, "   \"ts\":     \"$ts\",\n");
         fwrite($doc, "   \"period\": \"$period\",\n");
-        fwrite($doc, "   \"gs_ts\":  \"$gs_ts\"\n");
-        fwrite($doc, "   \"url\":    \"$url\"\n");
-        fwrite($doc, "   \"hw\":     \"$hw\"\n");
+        fwrite($doc, "   \"gs_ts\":  \"$gs_ts\",\n");
+        fwrite($doc, "   \"url\":    \"$url\",\n");
         for ($ii = 1;$ii <= $npar; $ii++)
         {
           $par = 'p'.$ii;
           $val = 'v'.$ii;
           fwrite($doc, "   \"${$par}\":   \"${$val}\",\n");
         }
+        fwrite($doc, "   \"hw\":     \"$hw\"\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
 
