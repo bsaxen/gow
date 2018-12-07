@@ -1,41 +1,52 @@
 #!/usr/bin/python
+#=============================================
+# File.......: gowMysql.py
+# Date.......: 2018-12-07
+# Author.....: Benny Saxen
+# Description: GOW application template
+#=============================================
+# Libraries
+#=============================================
 import MySQLdb
 import requests
 import json
 import urllib2
 import time
-
-
-while True:
-    scUrl = "http://gow.simuino.com/kvv32/test/temperature/0/doc.json"
-    print scUrl
-    r = urllib2.urlopen(scUrl)
-
-
+#=============================================
+# Configuration
+#=============================================
+cDbHost     = '192.168.1.85'
+cDbName     = 'gow'
+cDbUser     = 'folke'
+cDbPassword = 'something'
+#=============================================
+def gowReadJsonParameter(url,par):
+#=============================================
+    r = urllib2.urlopen(url)
     j = json.load(r)
-    x =  j['gow']['value']
-    period =  float(j['gow']['period'])
-    print x
-
-
-
-    db = MySQLdb.connect(host="192.168.1.85",
-                     user="folke",
-                     #passwd="asdasd",
-                     db="gow")
+    x =  j['gow'][par]
+    return x
+#=============================================
+def gowMysqlInsert(xTable,xPar):
+#=============================================
+    db = MySQLdb.connect(host=cDbHost,
+                     user=cDbUser,
+                     #passwd=cDbPassword,
+                     db=cDbName)
     cursor = db.cursor()
-
     sql = "INSERT INTO `temperatur1` (`id`, `value`, `ts`) VALUES (NULL," + str(x) + ", CURRENT_TIMESTAMP)"
-    print sql
     cursor.execute(sql)
-
     db.commit()
-    #cursor.execute("SELECT * FROM temperatur1")
-    #numrows = cursor.rowcount
-    #print numrows
-    #for x in range(0, numrows):
-    #    row = cursor.fetchone()
-    #    print row[0], "-->", row[1], "-->", row[2]
     db.close()
+#=============================================
+while True:
+#=============================================
+    url = "http://gow.simuino.com/kvv32/test/temperature/0/doc.json"
+    
+    period = float(gowReadJsonParameter(url,'period'))
+    x      = float(gowReadJsonParameter(url,'value'))
+    
+    gowMysqlInsert('temperatur1','value',x)
 
+    
     time.sleep(period)
