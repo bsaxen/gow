@@ -15,10 +15,9 @@ $conf_max_paramaters = 10;
 // API
 // gowServer.php?do=list
 // gowServer.php?do=search&search=<string>
-// gowServer.php?do=action&topic=<topic>
+// gowServer.php?do=action&topic=<topic>&order=<order>
 // gowServer.php?do=delete&topic=<topic>
-// gowServer.php?topic=<topic>
-//              &do     = data
+// gowServer.php?do=data&topic=<topic>
 //              &no     = 3
 //              &wrap   = 999999
 //              &type   = 'temperature'
