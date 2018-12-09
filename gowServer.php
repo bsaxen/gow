@@ -74,7 +74,7 @@ function readActionFileList($topic)
   $result = ' ';
   system("ls *_gow.action > action.work");
   $action_file = $topic.'/action.work';
-  $file = fopen('register.work', "r");
+  $file = fopen('action.work', "r");
   if ($file)
   {
       // Read first line only
