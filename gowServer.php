@@ -72,7 +72,7 @@ function readActionFileList($topic)
 //=============================================
 {
   $result = ' ';
-  $do = 'ls '.$topic'./*_gow.action > '.$topic.'/action.work');
+  $do = 'ls '.$topic.'/*_gow.action > '.$topic.'/action.work');
   system($do);
   $action_file = $topic.'/action.work';
   $file = fopen('action.work', "r");
