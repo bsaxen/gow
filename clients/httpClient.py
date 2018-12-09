@@ -1,7 +1,7 @@
 # =============================================
 # File: httpClient.py
 # Author: Benny Saxen
-# Date: 2018-11-21
+# Date: 2018-12-09
 # Description:
 # =============================================
 import urllib
@@ -61,8 +61,9 @@ def placeOrder( itopic, iaction ):
 	url = conf_gs_url
 	server = conf_server_name
 	data = {}
-	data['topic'] = itopic
-	data['action'] = iaction
+	data['do']     = 'action'
+	data['topic']  = itopic
+	data['order']  = iaction
 	values = urllib.urlencode(data)
 	req = url + server + '?' + values
 	try: response = urllib2.urlopen(req)
