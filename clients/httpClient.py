@@ -18,12 +18,18 @@ conf_server_name   = 'gowServer.php'
 conf_period        = 10
 conf_hw            = 'python'
 conf_wrap          = 999999
+conf_security      = 0 # 0 = no security
+conf_secret        = 'my secret'
 #===================================================
 # Topics
 #===================================================
 topic1 = 'test/temperature/outdoor/1'
 topic2 = 'test/temperature/outdoor/2'
 topic3 = 'test/electricity/house/0'
+#===================================================
+def evaluateAction( action):
+	print action	
+#===================================================
 #===================================================
 def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
@@ -55,6 +61,7 @@ def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 		print e.reason
 	the_page = response.read()
 	print 'Message to ' + itopic + ': ' + the_page
+	evaluateAction(the_page)
 #===================================================
 def placeOrder( itopic, iaction ):
 #===================================================
