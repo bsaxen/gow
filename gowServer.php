@@ -84,7 +84,6 @@ function readActionFileList($topic)
           $line = trim($line);
           $result = readActionFile($topic,$line);
       }
-    }
   }
   return $result;
 }
