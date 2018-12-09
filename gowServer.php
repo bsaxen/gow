@@ -73,6 +73,7 @@ function readActionFileList($topic)
 {
   $result = ' ';
   $do = 'ls '.$topic.'/*_gow.action > '.$topic.'/action.work');
+  echo $do; 
   system($do);
   $action_file = $topic.'/action.work';
   $file = fopen('action.work', "r");
@@ -80,6 +81,7 @@ function readActionFileList($topic)
   {
       // Read first line only
       $line = fgets($file);
+      echo "line:".$line;
       if (strlen($line) > 2)
       {
           $line = trim($line);
