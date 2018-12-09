@@ -42,7 +42,7 @@ $date         = date_create();
 $gs_ts        = date_format($date, 'Y-m-d H:i:s');
 
 //=============================================
-function readActionFile($action_fil)
+function readActionFile($action_file)
 //=============================================
 {
   $file = fopen($action_file, "r");
