@@ -31,7 +31,7 @@ def placeOrder(top,act):
 	url = conf_gs_url
 	server = conf_server_name
 	data = {}
-  data['do'] = 'action'
+  	data['do'] = 'action'
 	data['topic'] = itop
 	data['order'] = act
 	values = urllib.urlencode(data)
