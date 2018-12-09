@@ -42,10 +42,9 @@ $date         = date_create();
 $gs_ts        = date_format($date, 'Y-m-d H:i:s');
 
 //=============================================
-function readActionFile($topic,$fil)
+function readActionFile($action_fil)
 //=============================================
 {
-  $action_file = $topic.'/'.$fil;
   $file = fopen($action_file, "r");
   if ($file)
   {
@@ -85,7 +84,7 @@ function readActionFileList($topic)
       if (strlen($line) > 2)
       {
           $line = trim($line);
-          $result = readActionFile($topic,$line);
+          $result = readActionFile($line);
       }
   }
   return $result;
