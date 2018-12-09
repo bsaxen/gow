@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-12-06
+// Date.......: 2018-12-09
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -15,7 +15,7 @@ $conf_max_paramaters = 10;
 // API
 // gowServer.php?do=list
 // gowServer.php?do=search&search=<string>
-// gowServer.php?do=action&topic=<topic>&order=<order>
+// gowServer.php?do=action&topic=<topic>&order=<order>&tag=<tag>
 // gowServer.php?do=delete&topic=<topic>
 // gowServer.php?do=data&topic=<topic>
 //              &no     = 3
@@ -42,11 +42,10 @@ $date         = date_create();
 $gs_ts        = date_format($date, 'Y-m-d H:i:s');
 
 //=============================================
-function readActionFile($topic)
+function readActionFile($topic,$fil)
 //=============================================
 {
-  global $conf_action_file_name;
-  $action_file = $topic.'/'.$conf_action_file_name;
+  $action_file = $topic.'/'.$fil;
   $file = fopen($action_file, "r");
   if ($file)
   {
@@ -69,11 +68,35 @@ function readActionFile($topic)
   return $result;
 }
 //=============================================
-function writeActionFile($topic, $action)
+function readActionFileList($topic)
 //=============================================
 {
-  global $conf_action_file_name;
-  $action_file = $topic.'/'.$conf_action_file_name;
+  $result = ' ';
+  system("ls *_gow.action > action.work");
+  $action_file = $topic.'/action.work';
+  $file = fopen('register.work', "r");
+  if ($file)
+  {
+      // Read first line only
+      $line = fgets($file);
+      if (strlen($line) > 2)
+      {
+          $line = trim($line);
+          $result = readActionFile($topic,$line);
+      }
+    }
+  }
+  return $result;
+}
+//=============================================
+function writeActionFile($topic, $action, $tag)
+//=============================================
+{
+  if (is_null($topic))  return;
+  if (is_null($action)) return;
+  if (is_null($tag)) $tag = 'notag';
+  
+  $action_file = $topic.'/'.$tag.'_gow.action';
   $file = fopen($action_file, "w");
   if ($file)
   {
@@ -190,7 +213,8 @@ if (isset($_GET['do']))
       if ($do == 'action') 
       {
         $order = $_GET['order'];
-        writeActionFile($topic, $order);
+        $tag   = $_GET['tag'];
+        writeActionFile($topic, $order, $tag);
       }
       if ($do == 'delete') 
       {
@@ -350,7 +374,7 @@ if (isset($_GET['do']))
         //fclose($doc);
 
         // Check if any action is present for this client/topic
-        echo readActionFile($topic);
+        echo readActionFileList($topic);
       } // data
  } // error
 } // do
