@@ -377,6 +377,7 @@ if (isset($_GET['do']))
       } // data
  } // error
 } // do
-
+else
+  echo "Server ok";
 // End of file
 ?>
