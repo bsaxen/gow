@@ -74,8 +74,8 @@ function readActionFileList($topic)
   $do = 'ls '.$topic.'/*_gow.action > '.$topic.'/action.work';
   echo $do; 
   system($do);
-  $action_file = $topic.'/action.work';
-  $file = fopen('action.work', "r");
+  $list_file = $topic.'/action.work';
+  $file = fopen($list_file, "r");
   if ($file)
   {
       // Read first line only
