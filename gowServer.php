@@ -24,6 +24,7 @@ $conf_max_paramaters = 10;
 //              &ts     = '2018-12-01 23:12:31'
 //              &period = 10
 //              &url    = http://gow.zimuino.com
+//              &devtyp = 1
 //              &hw     = 'python'
 //              &p1     = 'value'
 //              &v1     = 17.1
@@ -31,7 +32,7 @@ $conf_max_paramaters = 10;
 //              &v2     = 'celcius'
 //              ... max 10 p,v
 //=============================================
-
+// devtyp:  1=sensor, 2=actuator, 3=sensor/actuator 4= none
 
 //=============================================
 // Library
@@ -176,6 +177,8 @@ function searchTopics($search)
 if (isset($_GET['do'])) 
 {
     $do = $_GET['do'];
+    $devtyp = 0;
+    if (isset($_GET['devtyp'])) $devtyp = $_GET['devtyp'];
   
     if ($do == 'list')
     {
