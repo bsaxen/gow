@@ -1,9 +1,9 @@
 <?php
 //=============================================
-// File.......: gowPlatformServer.php
-// Date.......: 2018-11-18
+// File.......: gowDeviceManager.php
+// Date.......: 2018-12-12
 // Author.....: Benny Saxen
-// Description: Glass Of Water Platform Server
+// Description: Glass Of Water Platform Device Manager
 //=============================================
 // Configuration
 //=============================================
