@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2018-12-07
+# Date.......: 2018-12-15
 # Author.....: Benny Saxen
 # Description: GOW application template
 #=============================================
@@ -27,14 +27,14 @@ def gowReadJsonParameter(url,par):
     x =  j['gow'][par]
     return x
 #=============================================
-def gowMysqlInsert(xTable,xPar):
+def gowMysqlInsert(xTable,xPar,xValue):
 #=============================================
     db = MySQLdb.connect(host=cDbHost,
                      user=cDbUser,
                      #passwd=cDbPassword,
                      db=cDbName)
     cursor = db.cursor()
-    sql = "INSERT INTO `temperatur1` (`id`, `value`, `ts`) VALUES (NULL," + str(x) + ", CURRENT_TIMESTAMP)"
+    sql = "INSERT INTO "+ xTable + " (`id`, " + xPar + ", `ts`) VALUES (NULL," + str(xValue) + ", CURRENT_TIMESTAMP)"
     cursor.execute(sql)
     db.commit()
     db.close()
