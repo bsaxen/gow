@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-12-09
+// Date.......: 2018-12-16
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -25,6 +25,7 @@ $conf_max_paramaters = 10;
 //              &period = 10
 //              &url    = http://gow.zimuino.com
 //              &devtyp = 1
+//              &message = 0
 //              &hw     = 'python'
 //              &p1     = 'value'
 //              &v1     = 17.1
@@ -32,8 +33,8 @@ $conf_max_paramaters = 10;
 //              &v2     = 'celcius'
 //              ... max 10 p,v
 //=============================================
-// devtyp:  1=sensor, 2=actuator, 3=sensor/actuator 4= none
-
+// devtyp:   1=sensor, 2=actuator, 3=sensor/actuator 4= none
+// message:  0=no_support, 1=support
 //=============================================
 // Library
 //=============================================
@@ -61,7 +62,7 @@ function readActionFile($action_file)
       // Delete file
       if (file_exists($action_file)) unlink($action_file);
   }
-  else 
+  else
   {
       $result = ":void:";
   }
@@ -73,7 +74,7 @@ function readActionFileList($topic)
 {
   $result = ' ';
   $do = 'ls '.$topic.'/*_gow.action > '.$topic.'/action.work';
-  echo $do; 
+  echo $do;
   system($do);
   $list_file = $topic.'/action.work';
   $file = fopen($list_file, "r");
@@ -97,7 +98,7 @@ function writeActionFile($topic, $action, $tag)
   if (is_null($topic))  return;
   if (is_null($action)) return;
   if (is_null($tag)) $tag = 'notag';
-  
+
   $action_file = $topic.'/'.$tag.'_gow.action';
   $file = fopen($action_file, "w");
   if ($file)
@@ -105,7 +106,7 @@ function writeActionFile($topic, $action, $tag)
     fwrite($file,$action);
     fclose($file);
   }
-  else 
+  else
   {
       $result = " ";
   }
@@ -120,7 +121,7 @@ function deleteTopic($topic)
   $filename = str_replace("/","_",$topic);
   $filename = $filename.".reg";
   if (file_exists($filename)) unlink($filename);
-  
+
   // remove directory content
   $dirname = $topic;
   array_map('unlink', glob("$dirname/*.*"));
@@ -141,7 +142,7 @@ function listAllTopics()
       $line = fgets($file);
       if (strlen($line) > 2)
       {
-          $line = trim($line); 
+          $line = trim($line);
           echo $line.':';
       }
     }
@@ -162,7 +163,7 @@ function searchTopics($search)
 
       if (strlen($line) > 2)
       {
-          $line = trim($line); 
+          $line = trim($line);
           $pos = strpos($line, $search);
           if ($pos !== false) echo $line.':';
       }
@@ -174,18 +175,18 @@ function searchTopics($search)
 // End of library
 //=============================================
 
-if (isset($_GET['do'])) 
+if (isset($_GET['do']))
 {
     $do = $_GET['do'];
     $devtyp = 0;
     if (isset($_GET['devtyp'])) $devtyp = $_GET['devtyp'];
-  
+
     if ($do == 'list')
     {
       listAllTopics();
       exit;
     }
-  
+
     if ($do == 'search')
     {
       $search = 'void';
@@ -193,14 +194,14 @@ if (isset($_GET['do']))
       searchTopics($search);
       exit;
     }
-  
+
     // Check if topic is given
     $error = 1;
-    if (isset($_GET['topic'])) 
+    if (isset($_GET['topic']))
     {
       $topic = $_GET['topic'];
       $error = 0;
-      if (!is_dir($topic)) 
+      if (!is_dir($topic))
       {
          mkdir($topic, 0777, true);
       }
@@ -210,23 +211,23 @@ if (isset($_GET['do']))
       $error = 2;
       echo "Error: no topic specified";
     }
-  
+
     // API when topic is available
     if($error == 0)
     {
-      if ($do == 'action') 
+      if ($do == 'action')
       {
         $order = $_GET['order'];
         $tag   = $_GET['tag'];
         writeActionFile($topic, $order, $tag);
       }
-      if ($do == 'delete') 
+      if ($do == 'delete')
       {
         deleteTopic($topic);
       }
 
-      if ($do == 'data') 
-      { 
+      if ($do == 'data')
+      {
         // Default values
         $no = 999;
         $wrap = 999;
@@ -256,7 +257,10 @@ if (isset($_GET['do']))
         if (isset($_GET['hw'])) {
           $hw = $_GET['hw'];
         }
-        
+        if (isset($_GET['message'])) {
+          $msg = $_GET['message'];
+        }
+
         $npar = 0;
         for ($ii = 1;$ii < $conf_max_paramaters; $ii++)
         {
@@ -273,7 +277,7 @@ if (isset($_GET['do']))
           }
           if( $ok == 2) $npar++;
         }
-        
+
         //===========================================
         // Registration
         //===========================================
@@ -283,7 +287,7 @@ if (isset($_GET['do']))
         $doc = fopen($filename, "w");
         fwrite($doc, "$gs_ts $ts $topic $url $type $period $hw");
         fclose($doc);
-  
+
         //===========================================
         // HTML
         //===========================================
@@ -311,7 +315,9 @@ if (isset($_GET['do']))
         fwrite($doc, "<br>");
         fwrite($doc, "HW          ".$hw);
         fwrite($doc, "<br>");
-        fwrite($doc, "npar          ".$npar);
+        fwrite($doc, "message     ".$message);
+        fwrite($doc, "<br>");
+        fwrite($doc, "npar        ".$npar);
         fwrite($doc, "<br>");
         for ($ii = 1;$ii <= $npar; $ii++)
         {
@@ -343,7 +349,8 @@ if (isset($_GET['do']))
           $val = 'v'.$ii;
           fwrite($doc, "   \"${$par}\":   \"${$val}\",\n");
         }
-        fwrite($doc, "   \"hw\":     \"$hw\"\n");
+        fwrite($doc, "   \"hw\":      \"$hw\"\n");
+        fwrite($doc, "   \"message\": \"$message\"\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
 
@@ -360,6 +367,7 @@ if (isset($_GET['do']))
         fwrite($doc,   "PERIOD       $period\n");
         fwrite($doc,   "GS_TS        $gs_ts\n");
         fwrite($doc,   "URL          $url\n");
+        fwrite($doc,   "MESSSAGE     $message\n");
         fwrite($doc,   "HW           $hw\n");
         for ($ii = 1;$ii <= $npar; $ii++)
         {
