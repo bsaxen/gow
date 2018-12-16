@@ -258,11 +258,11 @@ if (isset($_GET['do']))
           $hw = $_GET['hw'];
         }
         if (isset($_GET['message'])) {
-          $msg = $_GET['message'];
+          $message = $_GET['message'];
         }
         else
         {
-          $msg = 1;
+          $message = 1;
         }
 
         $npar = 0;
