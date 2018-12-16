@@ -34,7 +34,7 @@ $conf_max_paramaters = 10;
 //              ... max 10 p,v
 //=============================================
 // devtyp:   1=sensor, 2=actuator, 3=sensor/actuator 4= none
-// message:  0=no_support, 1=support
+// message:  1=no_support, 2=support
 //=============================================
 // Library
 //=============================================
@@ -260,8 +260,9 @@ if (isset($_GET['do']))
         if (isset($_GET['message'])) {
           $msg = $_GET['message'];
         }
-        else {
-          $msg = 0;
+        else
+        {
+          $msg = 1;
         }
 
         $npar = 0;
