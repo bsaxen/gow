@@ -260,6 +260,9 @@ if (isset($_GET['do']))
         if (isset($_GET['message'])) {
           $msg = $_GET['message'];
         }
+        else {
+          $msg = 0;
+        }
 
         $npar = 0;
         for ($ii = 1;$ii < $conf_max_paramaters; $ii++)
