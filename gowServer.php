@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-12-16
+// Date.......: 2018-12-17
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -74,7 +74,7 @@ function readActionFileList($topic)
 {
   $result = ' ';
   $do = 'ls '.$topic.'/*_gow.action > '.$topic.'/action.work';
-  echo $do;
+  //echo $do;
   system($do);
   $list_file = $topic.'/action.work';
   $file = fopen($list_file, "r");
@@ -82,7 +82,7 @@ function readActionFileList($topic)
   {
       // Read first line only
       $line = fgets($file);
-      echo "line:".$line;
+      //echo "line:".$line;
       if (strlen($line) > 2)
       {
           $line = trim($line);
