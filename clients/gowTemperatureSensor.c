@@ -1,5 +1,5 @@
 //=============================================
-// File.......: esp8266_temperature_sensor.c
+// File.......: gowTemperatureSensor.c
 // Date.......: 2018-11-23
 // Author.....: Benny Saxen
 // Description: Signal from D1 pin. 
