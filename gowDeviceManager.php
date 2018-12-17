@@ -2,7 +2,7 @@
 session_start();
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2018-12-16
+// Date.......: 2018-12-17
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
 //=============================================
@@ -37,12 +37,14 @@ function restApi($api,$url,$topic)
 function getStatus($doc)
 //=============================================
 {
+  global $g_message;
   $url = str_replace(".html", ".json", $doc);
   $json = file_get_contents($url);
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
-  $period = $res['gow']['period'];
-  $timestamp = $res['gow']['gs_ts'];
+  $period      = $res['gow']['period'];
+  $g_message   = $res['gow']['message'];
+  $timestamp   = $res['gow']['gs_ts'];
   $now = date_create('now')->format('Y-m-d H:i:s');
   $diff = strtotime($now) - strtotime($timestamp);
   if ($diff > $period) $res = $timestamp;
@@ -50,6 +52,17 @@ function getStatus($doc)
     $res = 0;
   }
   return ($res);
+}
+
+
+//=============================================
+function sendMessage($url,$topic,$msg,$tag)
+//=============================================
+{
+  echo "Send message $msg tag=$tag to $url/$topic<br>";
+  $call = 'http://'.$url.'/gowServer.php?do=action&topic='.$topic.'&order='.$msg.'&tag='.$tag;
+  $res = file_get_contents($call);
+  //gowServer.php?do=action&topic=<topic>&order=<order>&tag=<tag>
 }
 //=============================================
 // End of library
@@ -100,21 +113,33 @@ if (isset($_GET['do'])) {
     $topic = $_GET['topic'];
     restApi($api,$url,$topic);
   }
+  if($do == 'form')
+  {
+    $api   = $_GET['api'];
+    $url   = $_GET['url'];
+    $topic = $_GET['topic'];
+    $form_send = 1;
+  }
 }
 
 if (isset($_POST['do'])) {
   $do = $_POST['do'];
+
   if ($do == 'add_domain')
   {
     $dn = $_POST['domain'];
     if (strlen($dn) > 2)addDomain($dn);
   }
 
-  /*
-  $request = $furl;
-  $request = $request."gowServer.php?topic=$ftopic&action=$faction";
-  $res = file_get_contents($request);
- */
+  if ($do == 'send_message')
+  {
+    $url   = $_POST['url'];
+    $topic = $_POST['topic'];
+    $msg   = $_POST['message'];
+    $tag   = $_POST['tag'];
+    if (strlen($msg) > 2)sendMessage($url,$topic,$msg,$tag);
+  }
+
 }
 
 //=============================================
@@ -140,6 +165,23 @@ echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
      echo ("<a href=gowDeviceManager.php?do=select&sel_format=json>json</a> ");
      echo ("<a href=gowDeviceManager.php?do=select&sel_format=txt>txt</a> ");
    }
+echo " form: $form_send<br>";
+if ($form_send == 1)
+{
+  echo "<br><br>
+  <table border=0>";
+  echo "
+  <form action=\"#\" method=\"post\">
+    <input type=\"hidden\" name=\"do\" value=\"send_message\">
+    <tr><td>Url</td><td> <input type=\"text\" name=\"url\" value=$url></td>
+    <tr><td>Topic</td><td> <input type=\"text\" name=\"topic\" value=$topic></td>
+    <tr><td>Tag</td><td> <input type=\"text\" name=\"tag\" ></td>
+    <tr><td>Message</td><td> <input type=\"text\" name=\"message\"></td>
+    <td><input type= \"submit\" value=\"Send\"></td></tr>
+  </form>
+  </table>";
+}
+
 
    $do = 'ls *.domain > domain.list';
    system($do);
@@ -147,16 +189,17 @@ echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
    if ($file)
    {
      echo "<br><br>
-     <table border=1>";
+     <table border=0>";
      echo "
      <form action=\"#\" method=\"post\">
        <input type=\"hidden\" name=\"do\" value=\"add_domain\">
-       <tr><td>Add Domain</td><td> <input type=\"text\" name=\"domain\" size=40></td>
+       <tr><td>Add Domain</td><td> <input type=\"text\" name=\"domain\"></td>
        <td><input type= \"submit\" value=\"Add Domain\"></td></tr>
      </form>
      ";
-
-     echo "<tr bgcolor=\"#FFC300\"><td>Domain</td><td>Status/Topic</td><td>Edit</td></tr>";
+     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td></tr>";
+     echo "<tr bgcolor=\"#FFC300\"><td>Domain</td><td>Status/Topic</td><td>Message</td><td>Edit</td></tr>";
+     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td></tr>";
 
      while(!feof($file))
      {
@@ -182,6 +225,7 @@ echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
            else {
              echo "<tr><td>$url</td><td bgcolor=\"#DAF7A6\">CONNECTED</td>";
            }
+           echo "<td></td>";
            echo "<td><a href=gowDeviceManager.php?do=delete&domain=$url>delete</a></td></tr>";
 
            $data = explode(":",$res);
@@ -210,6 +254,12 @@ echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
                echo "<td><a href=gowDeviceManager.php?do=select&sel_url=$url&sel_path=$link>$link</a></td>";
                $rest = 'http://'.$url.'?do=delete&topic='.$link;
                //echo "<tr><td></td><td><a href=gowDeviceManager.php?do=select&sel_doc=$doc>$link</a></td>";
+               if ($g_message == 2) {
+                  echo "<td><a href=gowDeviceManager.php?do=form&api=action&url=$url&topic=$link>send</a></td>";
+              }
+              else {
+                  echo "<td></td>";
+              }
                echo "<td><a href=gowDeviceManager.php?do=rest&api=delete&url=$url&topic=$link>remove</a></td></tr>";
              }
            }
