@@ -254,7 +254,7 @@ if ($form_send == 1)
                echo "<td><a href=gowDeviceManager.php?do=select&sel_url=$url&sel_path=$link>$link</a></td>";
                $rest = 'http://'.$url.'?do=delete&topic='.$link;
                //echo "<tr><td></td><td><a href=gowDeviceManager.php?do=select&sel_doc=$doc>$link</a></td>";
-               if ($g_message == 2) {
+               if ($g_message == 2 and $status == 0 ) {
                   echo "<td><a href=gowDeviceManager.php?do=form&api=action&url=$url&topic=$link>send</a></td>";
               }
               else {
