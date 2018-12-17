@@ -1,5 +1,5 @@
 //=============================================
-// File.......: nilm.c
+// File.......: gowNilm.c
 // Date.......: 2018-12-17
 // Author.....: Benny Saxen
 // Description: nilm - electricity 
