@@ -353,7 +353,7 @@ if (isset($_GET['do']))
           $val = 'v'.$ii;
           fwrite($doc, "   \"${$par}\":   \"${$val}\",\n");
         }
-        fwrite($doc, "   \"hw\":      \"$hw\"\n");
+        fwrite($doc, "   \"hw\":      \"$hw\",\n");
         fwrite($doc, "   \"message\": \"$message\"\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
