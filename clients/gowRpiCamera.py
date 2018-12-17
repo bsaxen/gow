@@ -1,5 +1,5 @@
 # =============================================
-# File:        piCamera.py
+# File:        gowRpiCamera.py
 # Author:      Benny Saxen
 # Date:        2018-12-08
 # Description: application for running a picamera
