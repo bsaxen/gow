@@ -1,4 +1,21 @@
-
+//=============================================
+// File.......: nilm.c
+// Date.......: 2018-12-17
+// Author.....: Benny Saxen
+// Description: nilm - electricity 
+//=============================================
+// Configuration
+//=============================================
+char* publishTopic = "kvv32/nilm/0";
+int conf_period = 5;
+int conf_wrap   = 999999;
+const char* ssid       = "my_ssid";
+const char* password   = "my passw";
+const char* host       = "192.168.1.242";
+const char* streamId   = "....................";
+const char* privateKey = "....................";
+//=============================================
+#include <ESP8266WiFi.h>
 
 const byte interrupt_pin = 5;
 const byte led_pin = 4;
@@ -29,9 +46,8 @@ void ICACHE_RAM_ATTR measure(){
     digitalWrite(led_pin,LOW);
 }
 //===============================================================
-void setup(void){
-
-    electric_meter_pulses =  loaded_configuration.app_generic_a;
+void setup(){
+//===============================================================
     bounce_value = 36000./electric_meter_pulses; // based on max power = 100 000 Watt
 
     pinMode(interrupt_pin, INPUT_PULLUP);
@@ -40,8 +56,73 @@ void setup(void){
     attachInterrupt(interrupt_pin, measure, FALLING);
 
 }
-
+//===============================================================
 void loop(void){
+//===============================================================
+  delay(conf_period*1000);
+  ++value;
 
+  Serial.print("connecting to ");
+  Serial.println(host);
+
+  // Use WiFiClient class to create TCP connections
+  WiFiClient client;
+  const int httpPort = 80;
+  if (!client.connect(host, httpPort)) {
+    Serial.println("connection failed");
+    return;
+  }
+
+  // We now create a URI for the request
+  String url = "/gowServer.php";
+  url += "?do=data";
+  url += "&topic=";
+  url += publishTopic;
+  url += "&no=";
+  url += elpow;
+  url += "&wrap=";
+  url += conf_wrap;
+  url += "&type=";
+  url += "ELECTRICITY";
+  url += "&value=";
+  url += value;
+  url += "&ts=";
+  url += "-";
+  url += "&unit=";
+  url += "watt";
+  url += "&period=";
+  url += conf_period;
+  //url += "&url=";
+  //url += "http://192.168.1.242/git/gow/";
+  url += "&hw=";
+  url += "esp8266";
+  url += "&message=";
+  url += "2";
+    
+  Serial.print("Requesting URL: ");
+  Serial.println(url);
+
+  // This will send the request to the server
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
+               "Connection: close\r\n\r\n");
+  unsigned long timeout = millis();
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
+    }
+  }
+
+  // Read all the lines of the reply from server and print them to Serial
+  while (client.available()) {
+    String action = client.readStringUntil('\r');
+    Serial.print(action);
+    // Do something based upon the action string
+  }
+
+  Serial.println();
+  Serial.println("closing connection");
 }
 
