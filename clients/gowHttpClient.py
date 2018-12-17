@@ -1,5 +1,5 @@
 # =============================================
-# File: httpClient.py
+# File: gowHttpClient.py
 # Author: Benny Saxen
 # Date: 2018-12-09
 # Description:
