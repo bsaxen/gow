@@ -1,26 +1,3 @@
-///
-/// @file   main.cpp
-/// @Author Adam Saxen
-/// @date   Oktober, 2016
-/// @brief  Boiler plate application for running stepper motor
-///
-
-#include <ioant.h>
-using namespace ioant;
-/// @brief on_message() function
-/// Function definition for handling received MQTT messages
-///
-/// @param received_topic contains the complete topic structure
-/// @param message is the proto message recieved
-///
-/// Proto message is casted to appropriate message
-///
-void on_message(Ioant::Topic received_topic, ProtoIO* message);
-
-// ############################################################################
-// Everything above this line is mandatory
-// ############################################################################
-
 
 int DIR   = 4;   // D2
 int STEP  = 5;   // D1
@@ -28,13 +5,16 @@ int SLEEP = 12;  // D6
 int MS1   = 13;  // D7
 int MS2   = 14;  // D5
 
+int SW    = 15;  // D8
+
+
 // Stepper Motor Characteristics
 float stepper_resolution = 1.5;
 int stepper_gearbox = 5;  // factor of scaling down rotation
 int stepper_mode = 1; // full step (0,0), half step (1,0), 1/4 step (0,1), and 1/8 step (1,1 : default).
 
 //================================================
-void stepCW(int steps,int dd)
+int stepCW(int steps,int dd)
 //================================================
 {
   int i;
@@ -47,14 +27,17 @@ void stepCW(int steps,int dd)
       delay(dd);
       digitalWrite(STEP, LOW);
       delay(dd);
+      if (digitalRead(SW) == HIGH) return 2;
     }
   digitalWrite(DIR, LOW);
-  digitalWrite(SLEEP, LOW); // Set the Sleep mode to SLEEP.
+  digitalWrite(SLEEP, LOW); // Set the Sleep mode to SLEEP.Serial.println
+  return 1;
 }
 
 //================================================
-void stepCCW(int steps,int dd)
-//================================================
+int stepCCW(int steps,int dd)
+//================================================  current_pos +=  number_of_step;
+
 {
   int i;
   digitalWrite(DIR, HIGH);
@@ -66,19 +49,25 @@ void stepCCW(int steps,int dd)
       delay(dd);
       digitalWrite(STEP, LOW);
       delay(dd);
+      if (digitalRead(SW) == HIGH) return 2;
+        
     }
   digitalWrite(DIR, LOW);
   digitalWrite(SLEEP, LOW); // Set the Sleep mode to SLEEP.
+  return 1;
 }
 
+int current_pos = 0;
+
 void setup(void){
+   Serial.begin(9600);
     //Initialize
-    Ioant::GetInstance(on_message);
     pinMode(DIR,OUTPUT);
     pinMode(STEP,OUTPUT);
     pinMode(SLEEP,OUTPUT);
     pinMode(MS1,OUTPUT);
     pinMode(MS2,OUTPUT);
+    pinMode(SW, INPUT);
 
     digitalWrite(MS1,LOW);
     digitalWrite(MS2,LOW);
@@ -86,68 +75,111 @@ void setup(void){
     digitalWrite(DIR,LOW);
     digitalWrite(STEP,LOW);
     //Possible settings are (MS1/MS2) : full step (0,0), half step (1,0), 1/4 step (0,1), and 1/8 step (1,1)
-
-    //Subscribe stepper commands
-    Ioant::Topic subscribe_topic = IOANT->GetConfiguredTopic();
-    subscribe_topic.message_type = ProtoIO::MessageTypes::RUNSTEPPERMOTORRAW;
-    IOANT->Subscribe(subscribe_topic);
+    reset_pos();
 }
 
 void loop(void){
-    // Monitors Wifi connection and loops MQTT connection. Attempt reconnect if lost
-    IOANT->UpdateLoop();
+ Serial.println(digitalRead(SW) );
+ delay(2000);
+ go_to_pos(current_pos, 100);
+ delay(1000);
+ go_to_pos(current_pos, 200);
+ 
+}
+
+int FULL_STEP = 1;
+int HALF_STEP = 2;
+int QUARTER_STEP = 3;
+int CLOCKWISE = 1;
+int COUNTER_CLOCKWISE = 2;
+
+
+
+//Find current potted plant
+void go_to_pos(int cur, int pos)
+{
+  int delta = pos -cur;
+    Serial.print( "delta = ");
+      Serial.println(delta);
+  if (delta > 0)
+  {
+    move_stepper(1, 1, delta, 100);
+  }
+  else 
+  {
+    move_stepper(2, 1, abs(delta), 100);
+  }
+  current_pos += delta;
+}
+
+void reset_pos()
+{
+   Serial.println( "Reset position...");
+  move_stepper(2,1,300,100);
+   move_stepper(1,1,10, 100);
+   current_pos = 10;
+    Serial.println( "Reset finnished!");
 }
 
 // Function for handling received MQTT messages
-void on_message(Ioant::Topic received_topic, ProtoIO* message){
+void move_stepper(int dir, int step_size, int number_of_step, int delay_between_steps){
+        int sw = 0;
+      
+        
+        Serial.println( "Stepper awake");
 
-    if (received_topic.message_type == ProtoIO::MessageTypes::RUNSTEPPERMOTORRAW)
-    {
-        ULOG_DEBUG << "Stepper awake";
-        RunStepperMotorRawMessage *msg = static_cast<RunStepperMotorRawMessage*>(message);
-        if(msg->data.number_of_step < 1 || msg->data.number_of_step > 500) return;
-        if(msg->data.delay_between_steps < 1 || msg->data.delay_between_steps > 1000) return;
-
-        if(msg->data.step_size == RunStepperMotorRaw_StepSize_FULL_STEP)
+        if(step_size == FULL_STEP)
         {
-            ULOG_DEBUG << "Stepper FULL STEP";
+            Serial.println( "Sstepstepper FULL STEP");
             digitalWrite(MS1,LOW);
             digitalWrite(MS2,LOW);
         }
-        else if (msg->data.step_size == RunStepperMotorRaw_StepSize_HALF_STEP)
+        else if (step_size == HALF_STEP)
         {
-            ULOG_DEBUG << "Stepper HALF STEP";
+            Serial.println( "Stepper HALF STEP");
             digitalWrite(MS1,HIGH);
             digitalWrite(MS2,LOW);
         }
-        else if (msg->data.step_size == RunStepperMotorRaw_StepSize_QUARTER_STEP)
+        else if (step_size == QUARTER_STEP)
         {
-            ULOG_DEBUG << "Stepper QUARTER STEP";
+            Serial.println( "Stepper QUARTER STEP");
             digitalWrite(MS1,LOW);
             digitalWrite(MS2,HIGH);
         }
         else // default fullstep
         {
-            ULOG_DEBUG << "Stepper DEFAULT FULL STEP";
+            Serial.println( "Steppernumber_of_step DEFAULT FULL STEP");
             digitalWrite(MS1,LOW);
             digitalWrite(MS2,LOW);
         }
 
-        if(msg->data.direction == RunStepperMotorRaw_Direction_CLOCKWISE)
+        if(dir == CLOCKWISE)
         {
-            ULOG_DEBUG << "Stepper motor CW -->";
-            stepCW(msg->data.number_of_step,msg->data.delay_between_steps);
+            current_pos +=  number_of_step;
+
+            Serial.println( "Stepper motor CW -->");
+            sw = stepCW(number_of_step, delay_between_steps);
         }
-        else if(msg->data.direction == RunStepperMotorRaw_Direction_COUNTER_CLOCKWISE)
+        else if(dir == COUNTER_CLOCKWISE)
         {
-            ULOG_DEBUG << "Stepper motor CCW  <--";
-            stepCCW(msg->data.number_of_step,msg->data.delay_between_steps);
+            current_pos -=  number_of_step;
+
+            Serial.println( "Stepper motor CCW  <--");
+            sw = stepCCW(number_of_step, delay_between_steps);
         }
         else
-            ULOG_DEBUG << "ERROR: Unknown direction for stepper motor";
+            Serial.println( "ERROR: Unknown direction for stepper motor");
 
         digitalWrite(MS1,LOW);
         digitalWrite(MS2,LOW);
-        ULOG_DEBUG << "Stepper sleeping";
-    }
+        Serial.println( "Stepper sleeping");
+
+        if(sw == 2)
+        {
+          current_pos = 0;
+          Serial.println("RESET");
+        }
+       
+       Serial.print( "current position: ");
+       Serial.println(current_pos);  
 }
