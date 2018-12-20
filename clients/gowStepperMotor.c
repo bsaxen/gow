@@ -1,17 +1,38 @@
+//=============================================
+// File.......: gpwStepperMotor.c
+// Date.......: 2018-12-20
+// Author.....: Benny Saxen
+// Description: 
+//=============================================
+// Configuration
+//=============================================
+#include <ESP8266WiFi.h>
+char* publishTopic = "huskvarna/carl/stepper/0";
+int conf_period = 10;
+int conf_wrap   = 999999;
+const char* ssid       = "my_ssid";
+const char* password   = "my passw";
+const char* host       = "192.168.1.242";
+const char* streamId   = "....................";
+const char* privateKey = "....................";
+
+//================================================
+// Globals
+//================================================
+int current_pos = 0;
+int loop_counter = 0;
+int FULL_STEP = 1;
+int HALF_STEP = 2;
+int QUARTER_STEP = 3;
+int CLOCKWISE = 1;
+int COUNTER_CLOCKWISE = 2;
 
 int DIR   = 4;   // D2
 int STEP  = 5;   // D1
 int SLEEP = 12;  // D6
 int MS1   = 13;  // D7
 int MS2   = 14;  // D5
-
 int SW    = 15;  // D8
-
-
-// Stepper Motor Characteristics
-float stepper_resolution = 1.5;
-int stepper_gearbox = 5;  // factor of scaling down rotation
-int stepper_mode = 1; // full step (0,0), half step (1,0), 1/4 step (0,1), and 1/8 step (1,1 : default).
 
 //================================================
 int stepCW(int steps,int dd)
@@ -56,47 +77,9 @@ int stepCCW(int steps,int dd)
   digitalWrite(SLEEP, LOW); // Set the Sleep mode to SLEEP.
   return 1;
 }
-
-int current_pos = 0;
-
-void setup(void){
-   Serial.begin(9600);
-    //Initialize
-    pinMode(DIR,OUTPUT);
-    pinMode(STEP,OUTPUT);
-    pinMode(SLEEP,OUTPUT);
-    pinMode(MS1,OUTPUT);
-    pinMode(MS2,OUTPUT);
-    pinMode(SW, INPUT);
-
-    digitalWrite(MS1,LOW);
-    digitalWrite(MS2,LOW);
-    digitalWrite(SLEEP,LOW);
-    digitalWrite(DIR,LOW);
-    digitalWrite(STEP,LOW);
-    //Possible settings are (MS1/MS2) : full step (0,0), half step (1,0), 1/4 step (0,1), and 1/8 step (1,1)
-    reset_pos();
-}
-
-void loop(void){
- Serial.println(digitalRead(SW) );
- delay(2000);
- go_to_pos(current_pos, 100);
- delay(1000);
- go_to_pos(current_pos, 200);
- 
-}
-
-int FULL_STEP = 1;
-int HALF_STEP = 2;
-int QUARTER_STEP = 3;
-int CLOCKWISE = 1;
-int COUNTER_CLOCKWISE = 2;
-
-
-
-//Find current potted plant
+//================================================
 void go_to_pos(int cur, int pos)
+//================================================
 {
   int delta = pos -cur;
     Serial.print( "delta = ");
@@ -111,8 +94,9 @@ void go_to_pos(int cur, int pos)
   }
   current_pos += delta;
 }
-
+//================================================
 void reset_pos()
+//================================================
 {
    Serial.println( "Reset position...");
   move_stepper(2,1,300,100);
@@ -121,8 +105,9 @@ void reset_pos()
     Serial.println( "Reset finnished!");
 }
 
-// Function for handling received MQTT messages
+//================================================
 void move_stepper(int dir, int step_size, int number_of_step, int delay_between_steps){
+//================================================
         int sw = 0;
       
         
@@ -183,3 +168,114 @@ void move_stepper(int dir, int step_size, int number_of_step, int delay_between_
        Serial.print( "current position: ");
        Serial.println(current_pos);  
 }
+
+
+
+//================================================
+void setup(void){
+//================================================
+   Serial.begin(9600);
+    //Initialize
+    pinMode(DIR,OUTPUT);
+    pinMode(STEP,OUTPUT);
+    pinMode(SLEEP,OUTPUT);
+    pinMode(MS1,OUTPUT);
+    pinMode(MS2,OUTPUT);
+    pinMode(SW, INPUT);
+
+    digitalWrite(MS1,LOW);
+    digitalWrite(MS2,LOW);
+    digitalWrite(SLEEP,LOW);
+    digitalWrite(DIR,LOW);
+    digitalWrite(STEP,LOW);
+    //Possible settings are (MS1/MS2) : full step (0,0), half step (1,0), 1/4 step (0,1), and 1/8 step (1,1)
+    reset_pos();
+  
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,
+     would try to act as both a client and an access-point and could cause
+     network-issues with your other WiFi-devices on your WiFi-network. */
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+  loop_counter = 0;
+}
+//================================================
+void loop(void){
+//================================================
+ // Use WiFiClient class to create TCP connections
+  loop_counter += 1;
+  WiFiClient client;
+  const int httpPort = 80;
+  if (!client.connect(host, httpPort)) {
+    Serial.println("connection failed");
+    return;
+  }
+  
+ Serial.println(digitalRead(SW) );
+ delay(2000);
+ go_to_pos(current_pos, 100);
+ delay(1000);
+ go_to_pos(current_pos, 200);
+  
+  
+ String url = "/gowServer.php";
+  url += "?do=data";
+  url += "&topic=";
+  url += publishTopic;
+  url += "&no=";
+  url += loop_counter;
+  url += "&wrap=";
+  url += conf_wrap;
+  url += "&type=";
+  url += "STEPPER";
+  url += "&p1=";
+  url += "value";
+  url += "&v1=";
+  url += current_pos;
+  url += "&period=";
+  url += '2';
+  url += "&hw=";
+  url += "esp8266";
+      
+  Serial.print("Requesting URL: ");
+  Serial.println(url);
+
+  // This will send the request to the server
+  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+               "Host: " + host + "\r\n" +
+               "Connection: close\r\n\r\n");
+  unsigned long timeout = millis();
+  while (client.available() == 0) {
+    if (millis() - timeout > 5000) {
+      Serial.println(">>> Client Timeout !");
+      client.stop();
+      return;
+    }
+  }
+
+  // Read all the lines of the reply from server and print them to Serial
+  while (client.available()) {
+    String action = client.readStringUntil('\r');
+    Serial.print(action);
+    // Do something based upon the action string
+  }
+
+  Serial.println();
+  Serial.println("closing connection");
+  
+}
+
+
+
