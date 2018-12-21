@@ -207,7 +207,7 @@ void gow_publish()
   url += "&type=";
   url += "STEPPER";
   url += "&p1=";
-  url += "value";
+  url += "position";
   url += "&v1=";
   url += current_pos;
   url += "&period=";
