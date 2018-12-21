@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gpwStepperMotor.c
-// Date.......: 2018-12-20
+// Date.......: 2018-12-21
 // Author.....: Benny Saxen
 // Description: 
 //=============================================
@@ -8,11 +8,11 @@
 //=============================================
 #include <ESP8266WiFi.h>
 char* publishTopic = "huskvarna/carl/stepper/0";
-int conf_period = 20;
+int conf_period = 10;
 int conf_wrap   = 999999;
 const char* ssid       = "bridge";
-const char* password   = "mypwsd";
-const char* host       = "some.com";
+const char* password   = "pswd";
+const char* host       = "x.com";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
 
@@ -99,10 +99,10 @@ void reset_pos()
 //================================================
 {
    Serial.println( "Reset position...");
-  move_stepper(2,1,300,100);
+   move_stepper(2,1,300,100);
    move_stepper(1,1,10, 100);
    current_pos = 10;
-    Serial.println( "Reset finnished!");
+   Serial.println( "Reset finished!");
 }
 
 //================================================
@@ -111,8 +111,11 @@ void move_stepper(int dir, int step_size, int number_of_step, int delay_between_
         int sw = 0;
       
         
-        Serial.println( "Stepper awake");
-
+        Serial.print( " dir=");Serial.println( dir);
+        Serial.print( " step_size=");Serial.println( step_size);
+        Serial.print( " steps=");Serial.println( number_of_step);
+        Serial.print( " delay=");Serial.println( delay_between_steps);
+             
         if(step_size == FULL_STEP)
         {
             Serial.println( "Sstepstepper FULL STEP");
@@ -235,6 +238,27 @@ void gow_publish()
       x = x+2;
       action.toCharArray(buf,x);
       Serial.println(buf);
+      
+      if(strstr(buf,"reset") != NULL)
+      {
+        reset_pos();
+      }
+      else
+      {
+           for (char* p = buf; p = strchr(p, ','); ++p) 
+           {
+              *p = ' ';
+           }
+           for (char* p = buf; p = strchr(p, ':'); ++p) 
+           {
+              *p = ' ';
+           }
+           Serial.println(buf);
+           int dir,step_size,steps,step_delay;
+           sscanf(buf,"%d %d %d %d", &dir,&step_size,&steps,&step_delay);
+           move_stepper(dir,step_size,steps,step_delay);
+      }
+
     }
 
     
@@ -293,7 +317,5 @@ void loop(void){
   
   gow_publish();
 
-  delay(5000);
+  delay(conf_period*1000);
 }
-
-
