@@ -3,6 +3,11 @@
 // Date.......: 2018-12-21
 // Author.....: Benny Saxen
 // Description: 
+// Message Api: 
+// move,dir,step-size,steps,delay  example: 1,1,40,5
+// reset                      reset position to zero
+// reboot
+// period,x                   set period to x seconds
 //=============================================
 // Configuration
 //=============================================
@@ -171,10 +176,19 @@ void move_stepper(int dir, int step_size, int number_of_step, int delay_between_
        Serial.print( "current position: ");
        Serial.println(current_pos);  
 }
-
+//================================================
+void software_Reset() // Restarts program from beginning but does not reset the peripherals and registers
+//================================================
+{
+asm volatile ("  jmp 0");  
+}  
 //================================================
 void gow_publish()
+//================================================
 {
+  int dir,step_size,steps,step_delay;
+  char order[10];
+  
   WiFiClient client;
   const int httpPort = 80;
   if (!client.connect(host, httpPort)) {
@@ -239,11 +253,16 @@ void gow_publish()
       action.toCharArray(buf,x);
       Serial.println(buf);
       
-      if(strstr(buf,"reset") != NULL)
+      // RESET
+      if(strstr(buf,"reboot") != NULL)
+      {
+        software_Reset();
+      }
+      else if(strstr(buf,"reset") != NULL)
       {
         reset_pos();
       }
-      else
+      else if(strstr(buf,"move") != NULL)// move stepper
       {
            for (char* p = buf; p = strchr(p, ','); ++p) 
            {
@@ -254,11 +273,22 @@ void gow_publish()
               *p = ' ';
            }
            Serial.println(buf);
-           int dir,step_size,steps,step_delay;
-           sscanf(buf,"%d %d %d %d", &dir,&step_size,&steps,&step_delay);
+           sscanf(buf,"%s %d %d %d %d",order, &dir,&step_size,&steps,&step_delay);
            move_stepper(dir,step_size,steps,step_delay);
       }
-
+      else if(strstr(buf,"period") != NULL)// set new period
+      {
+           for (char* p = buf; p = strchr(p, ','); ++p) 
+           {
+              *p = ' ';
+           }
+           for (char* p = buf; p = strchr(p, ':'); ++p) 
+           {
+              *p = ' ';
+           }
+           Serial.println(buf);
+           sscanf(buf,"%s %d,order, &conf_period);
+      }
     }
 
     
