@@ -1,13 +1,13 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-12-17
+// Date.......: 2018-12-22
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
 // Configuration
 //=============================================
-$conf_max_paramaters = 10;
+$conf_max_paramaters = 16;
 //=============================================
 
 
@@ -347,6 +347,7 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"period\": \"$period\",\n");
         fwrite($doc, "   \"gs_ts\":  \"$gs_ts\",\n");
         fwrite($doc, "   \"url\":    \"$url\",\n");
+        fwrite($doc, "   \"npar\":    \"$npar\",\n");
         for ($ii = 1;$ii <= $npar; $ii++)
         {
           $par = 'p'.$ii;
@@ -373,6 +374,7 @@ if (isset($_GET['do']))
         fwrite($doc,   "URL          $url\n");
         fwrite($doc,   "MESSSAGE     $message\n");
         fwrite($doc,   "HW           $hw\n");
+        fwrite($doc,   "NPAR         $npar\n");
         for ($ii = 1;$ii <= $npar; $ii++)
         {
           $par = 'p'.$ii;
