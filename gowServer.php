@@ -154,7 +154,7 @@ function listTopicDataStreams($topic)
 //=============================================
 {
   system("ls $topic/ds-* > $topic/ds.work");
-  $file = fopen('ds.work', "r");
+  $file = fopen("$topic/ds.work", "r");
   if ($file)
   {
     while(!feof($file))
@@ -387,7 +387,7 @@ if (isset($_GET['do']))
           $par = 'p'.$ii;
           $val = 'v'.$ii;
 
-          $fds = $topic.'/gs-'.$ii.'.json';
+          $fds = $topic.'/ds-'.$ii.'.json';
           $ds  = fopen($fds, "w");
           fwrite($ds, "{\"gow\": {\n");
           fwrite($ds, "   \"${$par}\":   \"${$val}\",\n");
