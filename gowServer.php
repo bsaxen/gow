@@ -296,7 +296,7 @@ if (isset($_GET['do']))
         // HTML
         //===========================================
 
-        $fdoc = $topic.'/doc.html';
+        $fdoc = $topic.'/device.html';
 
         $doc = fopen($fdoc, "w");
         fwrite($doc, "<html>");
@@ -327,6 +327,16 @@ if (isset($_GET['do']))
         {
           $par = 'p'.$ii;
           $val = 'v'.$ii;
+          
+          $fds = $topic.'/'.$par.'.html';
+          $ds = fopen($fds, "w");
+          fwrite($ds, "<html>");
+          fwrite($ds, "<body bgcolor=\"red\">");
+          fwrite($ds, "${$par}        ".${$val});
+          fwrite($ds, "<br>");
+          fwrite($ds, "</body></html>");
+          fclose($ds);
+          
           fwrite($doc, "${$par}        ".${$val});
           fwrite($doc, "<br>");
         }
@@ -336,7 +346,7 @@ if (isset($_GET['do']))
         //===========================================
         // JSON
         //===========================================
-        $fdoc = $topic.'/doc.json';
+        $fdoc = $topic.'/device.json';
         $doc = fopen($fdoc, "w");
         fwrite($doc, "{\"gow\": {\n");
         fwrite($doc, "   \"topic\":  \"$topic\",\n");
@@ -352,6 +362,15 @@ if (isset($_GET['do']))
         {
           $par = 'p'.$ii;
           $val = 'v'.$ii;
+          
+          $fds = $topic.'/'.$par.'.json';
+          $ds  = fopen($fds, "w");
+          fwrite($ds, "{\"gow\": {\n");
+          fwrite($ds, "   \"${$par}\":   \"${$val}\",\n");
+          fwrite($doc, "   \"end\":      \"file\"\n");
+          fwrite($ds, "}}\n ");
+          fclose($ds); 
+          
           fwrite($doc, "   \"${$par}\":   \"${$val}\",\n");
         }
         fwrite($doc, "   \"hw\":      \"$hw\",\n");
@@ -362,7 +381,7 @@ if (isset($_GET['do']))
         //===========================================
         // TXT
         //===========================================
-        $fdoc = $topic.'/doc.txt';
+        $fdoc = $topic.'/device.txt';
         $doc = fopen($fdoc, "w");
         fwrite($doc,   "TOPIC        $topic\n");
         fwrite($doc,   "NO           $no\n");
@@ -379,6 +398,12 @@ if (isset($_GET['do']))
         {
           $par = 'p'.$ii;
           $val = 'v'.$ii;
+          
+          $fds = $topic.'/'.$par.'.txt';
+          $ds = fopen($fds, "w");
+          fwrite($ds,   "${$par}       ${$val}\n");
+          fclose($ds);
+          
           fwrite($doc,   "${$par}       ${$val}\n");
         }
         fclose($doc);
