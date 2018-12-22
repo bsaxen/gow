@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowTemperatureSensor.c
-// Date.......: 2018-11-23
+// Date.......: 2018-12-22
 // Author.....: Benny Saxen
 // Description: Signal from D1 pin. 
 // 4.7kOhm between signal and Vcc
@@ -117,22 +117,17 @@ void loop()
     url += "TEMPERATURE";
 
     url += "&p1=";
-    url += "value";
-    url += "&v1=";
     url += temps[0];
+    url += "&v1=";
+    url += "celcius";
 
     url += "&ts=";
     url += "void;
-
-    url += "&p2=";
-    url += "unit";
-    url += "&v2=";
-    url += "celcius";
-
+        
     url += "&period=";
     url += conf_period;
     url += "&url=";
-    url += "http://gow:simuino.com";
+    url += "gow.simuino.com";
     url += "&hw=";
     url += "esp8266";
 
