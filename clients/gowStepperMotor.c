@@ -206,9 +206,9 @@ void gow_publish()
   url += conf_wrap;
   url += "&type=";
   url += "STEPPER";
-  url += "&p1=";
-  url += "position";
   url += "&v1=";
+  url += "position";
+  url += "&p1=";
   url += current_pos;
   url += "&period=";
   url += conf_period;
@@ -287,7 +287,7 @@ void gow_publish()
               *p = ' ';
            }
            Serial.println(buf);
-           sscanf(buf,"%s %d,order, &conf_period);
+           sscanf(buf,"%s %d",order, &conf_period);
       }
     }
 
