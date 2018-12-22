@@ -13,7 +13,8 @@ $conf_max_paramaters = 16;
 
 //=============================================
 // API
-// gowServer.php?do=list
+// gowServer.php?do=list_topics               list topics
+// gowServer.php?do=list_datastreams&topic    list data streams
 // gowServer.php?do=search&search=<string>
 // gowServer.php?do=action&topic=<topic>&order=<order>&tag=<tag>
 // gowServer.php?do=delete&topic=<topic>
@@ -148,7 +149,25 @@ function listAllTopics()
     }
   }
 }
-
+//=============================================
+function listTopicDataStreams($topic)
+//=============================================
+{
+  system("ls $topic/ds-* > $topic/ds.work");
+  $file = fopen('ds.work', "r");
+  if ($file)
+  {
+    while(!feof($file))
+    {
+      $line = fgets($file);
+      if (strlen($line) > 2)
+      {
+          $line = trim($line);
+          echo $line.':';
+      }
+    }
+  }
+}
 //=============================================
 function searchTopics($search)
 //=============================================
@@ -181,7 +200,7 @@ if (isset($_GET['do']))
     $devtyp = 0;
     if (isset($_GET['devtyp'])) $devtyp = $_GET['devtyp'];
 
-    if ($do == 'list')
+    if ($do == 'list_topics')
     {
       listAllTopics();
       exit;
@@ -215,6 +234,11 @@ if (isset($_GET['do']))
     // API when topic is available
     if($error == 0)
     {
+      if ($do == 'list_datastreams')
+      {
+        listTopicDataStreams($topic);
+        exit;
+      }
       if ($do == 'action')
       {
         $order = $_GET['order'];
@@ -327,7 +351,7 @@ if (isset($_GET['do']))
         {
           $par = 'p'.$ii;
           $val = 'v'.$ii;
-          
+
           $fds = $topic.'/ds-'.$ii.'.html';
           $ds = fopen($fds, "w");
           fwrite($ds, "<html>");
@@ -336,7 +360,7 @@ if (isset($_GET['do']))
           fwrite($ds, "<br>");
           fwrite($ds, "</body></html>");
           fclose($ds);
-          
+
           fwrite($doc, "${$par}        ".${$val});
           fwrite($doc, "<br>");
         }
@@ -362,15 +386,15 @@ if (isset($_GET['do']))
         {
           $par = 'p'.$ii;
           $val = 'v'.$ii;
-          
+
           $fds = $topic.'/gs-'.$ii.'.json';
           $ds  = fopen($fds, "w");
           fwrite($ds, "{\"gow\": {\n");
           fwrite($ds, "   \"${$par}\":   \"${$val}\",\n");
           fwrite($ds, "   \"end\":      \"file\"\n");
           fwrite($ds, "}}\n ");
-          fclose($ds); 
-          
+          fclose($ds);
+
           fwrite($doc, "   \"${$par}\":   \"${$val}\",\n");
         }
         fwrite($doc, "   \"hw\":      \"$hw\",\n");
@@ -398,12 +422,12 @@ if (isset($_GET['do']))
         {
           $par = 'p'.$ii;
           $val = 'v'.$ii;
-          
+
           $fds = $topic.'/ds-'.$ii.'.txt';
           $ds = fopen($fds, "w");
           fwrite($ds,   "${$par}       ${$val}\n");
           fclose($ds);
-          
+
           fwrite($doc,   "${$par}       ${$val}\n");
         }
         fclose($doc);
