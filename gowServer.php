@@ -328,7 +328,7 @@ if (isset($_GET['do']))
           $par = 'p'.$ii;
           $val = 'v'.$ii;
           
-          $fds = $topic.'/'.$par.'.html';
+          $fds = $topic.'/'.$ii.'.html';
           $ds = fopen($fds, "w");
           fwrite($ds, "<html>");
           fwrite($ds, "<body bgcolor=\"red\">");
@@ -363,7 +363,7 @@ if (isset($_GET['do']))
           $par = 'p'.$ii;
           $val = 'v'.$ii;
           
-          $fds = $topic.'/'.$par.'.json';
+          $fds = $topic.'/'.$ii.'.json';
           $ds  = fopen($fds, "w");
           fwrite($ds, "{\"gow\": {\n");
           fwrite($ds, "   \"${$par}\":   \"${$val}\",\n");
@@ -399,7 +399,7 @@ if (isset($_GET['do']))
           $par = 'p'.$ii;
           $val = 'v'.$ii;
           
-          $fds = $topic.'/'.$par.'.txt';
+          $fds = $topic.'/'.$ii.'.txt';
           $ds = fopen($fds, "w");
           fwrite($ds,   "${$par}       ${$val}\n");
           fclose($ds);
