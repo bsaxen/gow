@@ -2,7 +2,7 @@
 session_start();
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2018-12-17
+// Date.......: 2018-12-22
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
 //=============================================
@@ -157,7 +157,7 @@ echo("<h1>GOW Device Manager 2018-12-16</h1>");
 echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
    //echo ("<a href=#>refresh</a><br>");
 
-   $doc = 'http://'.$sel_url.'/'.$sel_path.'/doc.'.$sel_format;
+   $doc = 'http://'.$sel_url.'/'.$sel_path.'/device.'.$sel_format;
    echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
    if($sel_url)
    {
@@ -242,7 +242,7 @@ if ($form_send == 1)
                $link = $topic[0];
                for ($jj=1;$jj<$topic_num;$jj++)
                   $link = $link."/$topic[$jj]";
-               $doc = 'http://'.$url.'/'.$link.'/doc.html';
+               $doc = 'http://'.$url.'/'.$link.'/device.html';
                $status = getStatus($doc);
                if ($status == 0)
                {
