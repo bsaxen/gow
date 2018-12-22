@@ -367,7 +367,7 @@ if (isset($_GET['do']))
           $ds  = fopen($fds, "w");
           fwrite($ds, "{\"gow\": {\n");
           fwrite($ds, "   \"${$par}\":   \"${$val}\",\n");
-          fwrite($doc, "   \"end\":      \"file\"\n");
+          fwrite($ds, "   \"end\":      \"file\"\n");
           fwrite($ds, "}}\n ");
           fclose($ds); 
           
