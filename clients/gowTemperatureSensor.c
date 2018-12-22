@@ -30,8 +30,10 @@ int nsensors = 0;
 int counter = 0;
 /// END OF - CUSTOM variables
 
-/// Custom function definitions
-void SetUpTemperatureSensors(){
+//=============================================
+void SetUpTemperatureSensors()
+//=============================================
+{
 
     pinMode(ONE_WIRE_BUS, INPUT);
     sensor.begin();
@@ -47,8 +49,10 @@ void SetUpTemperatureSensors(){
 }
 
 
-
-void setup() {
+//=============================================
+void setup() 
+//=============================================
+{
   Serial.begin(115200);
   delay(10);
 
@@ -78,11 +82,17 @@ void setup() {
 
 
 
-
+//=============================================
 void loop()
+//=============================================
 {
   float temps[10];
+  int i;
+  char order[10];
+  char buf[100];
+    
   delay(conf_period*1000);
+    
   ++counter;
     //Retrieve one or more temperature values
     sensor.requestTemperatures();
@@ -115,11 +125,17 @@ void loop()
     url += conf_wrap;
     url += "&type=";
     url += "TEMPERATURE";
-
-    url += "&p1=";
-    url += temps[0];
-    url += "&v1=";
-    url += "celcius";
+    for (i=0;i<nsensors,i++)
+    {
+        url += "&p";
+        url += i;
+        url += "=";
+        url += temps[i];
+        url += "&v";
+        url += i;
+        url += "=";
+        url += "celcius";
+    }
 
     url += "&ts=";
     url += "void;
@@ -148,10 +164,31 @@ void loop()
     }
 
     // Read all the lines of the reply from server and print them to Serial
-    while (client.available()) {
+    while (client.available()) 
+    {
       String action = client.readStringUntil('\r');
-      Serial.print(action);
-      // Do something based upon the action string
+      if (action.indexOf(':') == 1) 
+      {
+        int x = action.lastIndexOf(':');
+        Serial.print("Order received");
+        Serial.println(x);
+        x = x+2;
+        action.toCharArray(buf,x);
+        Serial.println(buf);  
+        if(strstr(buf,"period") != NULL)// set new period
+        {
+           for (char* p = buf; p = strchr(p, ','); ++p) 
+           {
+              *p = ' ';
+           }
+           for (char* p = buf; p = strchr(p, ':'); ++p) 
+           {
+              *p = ' ';
+           }
+           Serial.println(buf);
+           sscanf(buf,"%s %d",order, &conf_period);
+        }
+      }
     }
 
     Serial.println();
