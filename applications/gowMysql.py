@@ -41,7 +41,7 @@ def gowMysqlInsert(xTable,xPar,xValue):
 #=============================================
 while True:
 #=============================================
-    url = "http://gow.simuino.com/kvv32/test/temperature/0/doc.json"
+    url = "http://gow.simuino.com/kvv32/test/temperature/0/device.json"
     
     period = float(gowReadJsonParameter(url,'period'))
     x      = float(gowReadJsonParameter(url,'value'))
