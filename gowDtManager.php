@@ -1,10 +1,11 @@
 <?php
 session_start();
+$sel_twin = $_SESSION["twin"];
 //=============================================
-// File.......: gowDtManager.php
-// Date.......: 2018-12-21
+// File.......: web_template.php
+// Date.......: 2018-12-25
 // Author.....: Benny Saxen
-// Description: Glass Of Water Digital Twin Manager
+// Description:
 //=============================================
 // Configuration
 //=============================================
@@ -12,278 +13,323 @@ session_start();
 //=============================================
 $date         = date_create();
 $ts           = date_format($date, 'Y-m-d H:i:s');
+
 //=============================================
 // library
 //=============================================
-
-//=============================================
-function addDomain ($domain)
-//=============================================
+function prettyPrint( $json )
 {
-  echo("[$domain]");
-  $domain = $domain.'.domain';
-  $fh = fopen($domain, 'w') or die("Can't add domain $domain");
+    $result = '';
+    $level = 0;
+    $in_quotes = false;
+    $in_escape = false;
+    $ends_line_level = NULL;
+    $json_length = strlen( $json );
+
+    for( $i = 0; $i < $json_length; $i++ ) {
+        $char = $json[$i];
+        $new_line_level = NULL;
+        $post = "";
+        if( $ends_line_level !== NULL ) {
+            $new_line_level = $ends_line_level;
+            $ends_line_level = NULL;
+        }
+        if ( $in_escape ) {
+            $in_escape = false;
+        } else if( $char === '"' ) {
+            $in_quotes = !$in_quotes;
+        } else if( ! $in_quotes ) {
+            switch( $char ) {
+                case '}': case ']':
+                    $level--;
+                    $ends_line_level = NULL;
+                    $new_line_level = $level;
+                    break;
+
+                case '{': case '[':
+                    $level++;
+                case ',':
+                    $ends_line_level = $level;
+                    break;
+
+                case ':':
+                    $post = " ";
+                    break;
+
+                case " ": case "\t": case "\n": case "\r":
+                    $char = "";
+                    $ends_line_level = $new_line_level;
+                    $new_line_level = NULL;
+                    break;
+            }
+        } else if ( $char === '\\' ) {
+            $in_escape = true;
+        }
+        if( $new_line_level !== NULL ) {
+            $result .= "\n".str_repeat( "\t", $new_line_level );
+        }
+        $result .= $char.$post;
+    }
+    echo $result;
+    $file = fopen('test.json', "w");
+    if ($file)
+    {
+      fwrite($file,$result);
+      fclose($file);
+    }
+    return $result;
+}
+
+function prettyTolk( $json )
+{
+    global $rank;
+    $result = '';
+    $level = 0;
+    $in_quotes = false;
+    $in_escape = false;
+    $ends_line_level = NULL;
+    $json_length = strlen( $json );
+
+    for( $i = 0; $i < $json_length; $i++ ) {
+        $char = $json[$i];
+        $new_line_level = NULL;
+        $post = "";
+        if( $ends_line_level !== NULL ) {
+            $new_line_level = $ends_line_level;
+            $ends_line_level = NULL;
+        }
+        if ( $in_escape ) {
+            $in_escape = false;
+        } else if( $char === '"' )
+        {
+            $in_quotes = !$in_quotes;
+        }
+        else if( ! $in_quotes )
+        {
+            //echo "benny $level $word<br>";
+            $rank[$word] = $level;
+            //echo "level=$rank[$word]<br>";
+            $word = '';
+            switch( $char )
+            {
+                case '}': case ']':
+                    $level--;
+                    $ends_line_level = NULL;
+                    $new_line_level = $level;
+                    break;
+
+                case '{': case '[':
+                    $level++;
+
+                case ',':
+                    $ends_line_level = $level;
+                    break;
+
+                case ':':
+                    $post = " ";
+                    break;
+
+                case " ": case "\t": case "\n": case "\r":
+                    $char = "";
+                    $ends_line_level = $new_line_level;
+                    $new_line_level = NULL;
+                    break;
+            }
+        } else if ( $char === '\\' ) {
+            $in_escape = true;
+        }
+        else {
+          $word .= $char;
+        }
+        if( $new_line_level !== NULL ) {
+            $result .= "\n".str_repeat( "\t", $new_line_level );
+        }
+        $result .= $char.$post;
+        //echo "$level $char<br>";
+    }
+    //echo $result;
+    //$obj = json_decode($json);
+    //$key = "id";
+    //$fname = $obj[$key];
+
+    return $result;
 }
 //=============================================
-function restApi($api,$url,$topic)
+function generateHtml($inp)
 //=============================================
 {
-  echo("RestApi [$api] url=$url topic=$topic<br>");
-  $call = 'http://'.$url.'/gowServer.php?do='.$api.'&topic='.$topic;
-  $res = file_get_contents($call);
-}
+  global $rank;
+  $jsonIterator = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode($inp, TRUE)),RecursiveIteratorIterator::SELF_FIRST);
+  echo("<table border=1>");
+  $level = 0;
+  //echo "<tr><td>KEY</td><td>PAR</td><td>level</td><td>count</td><td>next</td><tr>";
+  foreach ($jsonIterator as $key => $val) {
 
+    //$rank[$key]
+    echo "<tr>";
+    for($ii=1;$ii<$rank[$key];$ii++)echo "<td></td>";
+
+    //echo "<td>$key</td><td>$val</td><tr>";
+      if(is_array($val))
+      {
+        echo "<td bgcolor=\"#FD6969\">$key</td>";
+        //echo "<tr bgcolor=\"#FFF000\"><td>$key</td><td></td><td >$level</td><td>$nn[$level]</td><td>$count</td></tr>";
+      }
+      else
+      {
+          echo "<td bgcolor=\"#C5FD69\">$key</td><td>$val</td><tr>";
+      }
+      echo "</tr>";
+   }
+   echo "</table>";
+}
 //=============================================
-function getStatus($doc)
+function generateForm($inp)
 //=============================================
 {
-  global $g_message;
-  $url = str_replace(".html", ".json", $doc);
-  $json = file_get_contents($url);
-  $json = utf8_encode($json);
-  $res = json_decode($json, TRUE);
-  $period      = $res['gow']['period'];
-  $g_message   = $res['gow']['message'];
-  $timestamp   = $res['gow']['gs_ts'];
-  $now = date_create('now')->format('Y-m-d H:i:s');
-  $diff = strtotime($now) - strtotime($timestamp);
-  if ($diff > $period) $res = $timestamp;
-  else {
-    $res = 0;
-  }
-  return ($res);
+  global $rank;
+
+  $id = 'void';
+  echo "
+     <form action=\"#\" method=\"post\">
+       <input type=\"hidden\" name=\"do\" value=\"abcd\">
+       ";
+
+  $jsonIterator = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode($inp, TRUE)),RecursiveIteratorIterator::SELF_FIRST);
+  echo("<table border=0>");
+  $level = 0;
+  //echo "<tr><td>KEY</td><td>PAR</td><td>level</td><td>count</td><td>next</td><tr>";
+  foreach ($jsonIterator as $key => $val) {
+
+    if ($key == 'id') $id = $val;
+    //$rank[$key]
+    echo "<tr>";
+    for($ii=1;$ii<$rank[$key];$ii++)echo "<td></td>";
+
+    //echo "<td>$key</td><td>$val</td><tr>";
+      if(is_array($val))
+      {
+        echo "<td bgcolor=\"#FD6969\">$key</td>";
+        //echo "<tr bgcolor=\"#FFF000\"><td>$key</td><td></td><td >$level</td><td>$nn[$level]</td><td>$count</td></tr>";
+      }
+      else
+      {
+          echo "<td bgcolor=\"#C5FD69\">$key</td><td><input type=\"text\" name=\"$key\" value=\"$val\"></td><tr>";
+      }
+      echo "</tr>";
+   }
+   echo"<tr><td><input type= \"submit\" value=\"Update\"></td></tr>";
+   echo "</table>";
+
+   return $id;
 }
 
-
-//=============================================
-function sendMessage($url,$topic,$msg,$tag)
-//=============================================
-{
-  echo "Send message $msg tag=$tag to $url/$topic<br>";
-  $call = 'http://'.$url.'/gowServer.php?do=action&topic='.$topic.'&order='.$msg.'&tag='.$tag;
-  $res = file_get_contents($call);
-  //gowServer.php?do=action&topic=<topic>&order=<order>&tag=<tag>
-}
 //=============================================
 // End of library
 //=============================================
 
-
+$rank = array();
 //=============================================
 // Back-End
 //=============================================
-$sel_format = $_SESSION["format"];
-$sel_url    = $_SESSION["url"];
-$sel_path   = $_SESSION["path"];
-
-if (isset($_GET['do'])) {
+if (isset($_GET['do']))
+{
 
   $do = $_GET['do'];
 
-  if($do == 'select')
+  if($do == 'select_twin')
   {
-    if (isset($_GET['sel_url']))
-    {
-      $sel_url = $_GET['sel_url'];
-      $_SESSION["url"] = $sel_url;
-    }
-    if (isset($_GET['sel_path']))
-    {
-      $sel_path = $_GET['sel_path'];
-      $_SESSION["path"]   = $sel_path;
-    }
-    if (isset($_GET['sel_format']))
-    {
-      $sel_format = $_GET['sel_format'];
-      $_SESSION["format"] = $sel_format;
-    }
-  }
-
-  if($do == 'delete')
-  {
-    $domain   = $_GET['domain'];
-    $fn = $domain.'.domain';
-    if (file_exists($fn)) unlink($fn);
-  }
-
-  if($do == 'rest')
-  {
-    $api   = $_GET['api'];
-    $url   = $_GET['url'];
-    $topic = $_GET['topic'];
-    restApi($api,$url,$topic);
-  }
-  if($do == 'form')
-  {
-    $api   = $_GET['api'];
-    $url   = $_GET['url'];
-    $topic = $_GET['topic'];
-    $form_send = 1;
+    $sel_twin = $_GET['id'];
+    $_SESSION["twin"] = $sel_twin;
   }
 }
 
-if (isset($_POST['do'])) {
+
+if (isset($_POST['do']))
+{
   $do = $_POST['do'];
 
-  if ($do == 'add_domain')
+  if ($do == 'generateHtml')
   {
-    $dn = $_POST['domain'];
-    if (strlen($dn) > 2)addDomain($dn);
+      $json = $_POST['json'];
+      //echo("$json");
+      $d = $_POST['d'];
+      //echo("$d");
+      $result = prettyTolk( $json);
+      //generateWebPage($json);
+      //generateHtml($json);
+      $id = generateForm($json);
+      $fname = $id.'.twin';
+      $file = fopen($fname, "w");
+      if ($file)
+      {
+        fwrite($file,$result);
+        fclose($file);
+      }
   }
-
-  if ($do == 'send_message')
+  if ($do == 'abcd')
   {
-    $url   = $_POST['url'];
-    $topic = $_POST['topic'];
-    $msg   = $_POST['message'];
-    $tag   = $_POST['tag'];
-    if (strlen($msg) > 2)sendMessage($url,$topic,$msg,$tag);
+    echo("b1");
+      $a = $_POST['a'];
+      echo("$a");
   }
-
 }
-
 //=============================================
 // Front-End
 //=============================================
-$data = array();
-
 echo "<html>
    <head>
-      <title>GOW Device Manager</title>
+      <title>InfoModel</title>
    </head>
    <body> ";
 
-echo("<h1>GOW Device Manager 2018-12-16</h1>");
-echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
-   //echo ("<a href=#>refresh</a><br>");
+echo("<h1>Web Template</h1>");
+echo ("<br><a href=infomodel.php?do=some&a=x>test_link</a>");
 
-   $doc = 'http://'.$sel_url.'/'.$sel_path.'/doc.'.$sel_format;
-   echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
-   if($sel_url)
-   {
-     echo ("<br><a href=gowDeviceManager.php?do=select&sel_format=html>html</a> ");
-     echo ("<a href=gowDeviceManager.php?do=select&sel_format=json>json</a> ");
-     echo ("<a href=gowDeviceManager.php?do=select&sel_format=txt>txt</a> ");
-   }
-echo " form: $form_send<br>";
-if ($form_send == 1)
-{
-  echo "<br><br>
-  <table border=0>";
-  echo "
-  <form action=\"#\" method=\"post\">
-    <input type=\"hidden\" name=\"do\" value=\"send_message\">
-    <tr><td>Url</td><td> <input type=\"text\" name=\"url\" value=$url></td>
-    <tr><td>Topic</td><td> <input type=\"text\" name=\"topic\" value=$topic></td>
-    <tr><td>Tag</td><td> <input type=\"text\" name=\"tag\" ></td>
-    <tr><td>Message</td><td> <input type=\"text\" name=\"message\"></td>
-    <td><input type= \"submit\" value=\"Send\"></td></tr>
-  </form>
-  </table>";
-}
-
-
-   $do = 'ls *.domain > domain.list';
-   system($do);
-   $file = fopen('domain.list', "r");
-   if ($file)
-   {
-     echo "<br><br>
-     <table border=0>";
-     echo "
-     <form action=\"#\" method=\"post\">
-       <input type=\"hidden\" name=\"do\" value=\"add_domain\">
-       <tr><td>Add Domain</td><td> <input type=\"text\" name=\"domain\"></td>
-       <td><input type= \"submit\" value=\"Add Domain\"></td></tr>
-     </form>
-     ";
-     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td></tr>";
-     echo "<tr bgcolor=\"#FFC300\"><td>Domain</td><td>Status/Topic</td><td>Message</td><td>Edit</td></tr>";
-     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td></tr>";
-
-     while(!feof($file))
-     {
-       $line = fgets($file);
-       //echo "<tr><td>$line</td><td>benny</td></tr>";
-       if (strlen($line) > 2)
-       {
-           $line = trim($line);
-           $url = str_replace(".domain", "", $line);
-           $request = 'http://'.$url."/gowServer.php?do=list";
-           //echo $request;
-           $ctx = stream_context_create(array('http'=>
-            array(
-              'timeout' => 2,  //2 Seconds
-                )
-              ));
-           $res = file_get_contents($request,false,$ctx);
-           //echo "<tr><td>$res</td><td>b1</td></tr>";
-           //echo "<tr><td>$url</td><td>b2</td></tr>";
-           if ($res === false) {
-             echo "<tr><td>$url</td><td bgcolor=\"red\">NO CONNECTION</td>";
-           }
-           else {
-             echo "<tr><td>$url</td><td bgcolor=\"#DAF7A6\">CONNECTED</td>";
-           }
-           echo "<td></td>";
-           echo "<td><a href=gowDeviceManager.php?do=delete&domain=$url>delete</a></td></tr>";
-
-           $data = explode(":",$res);
-           $num = count($data);
-
-           for ($ii = 0; $ii < $num; $ii++)
-           {
-             $id = str_replace(".reg", "", $data[$ii]);
-             if (strlen($id) > 2)
-             {
-               $topic = explode("_",$id);
-               $topic_num = count($topic);
-               //$link = 'http://'.$url;
-               $link = $topic[0];
-               for ($jj=1;$jj<$topic_num;$jj++)
-                  $link = $link."/$topic[$jj]";
-               $doc = 'http://'.$url.'/'.$link.'/doc.html';
-               $status = getStatus($doc);
-               if ($status == 0)
-               {
-                 echo "<tr><td bgcolor=\"#DAF7A6\">ON-LINE</td>";
-               }
-               else {
-                 echo "<tr><td bgcolor=\"yellow\">OFF-LINE</td>";
-               }
-               echo "<td><a href=gowDeviceManager.php?do=select&sel_url=$url&sel_path=$link>$link</a></td>";
-               $rest = 'http://'.$url.'?do=delete&topic='.$link;
-               //echo "<tr><td></td><td><a href=gowDeviceManager.php?do=select&sel_doc=$doc>$link</a></td>";
-               if ($g_message == 2 and $status == 0 ) {
-                  echo "<td><a href=gowDeviceManager.php?do=form&api=action&url=$url&topic=$link>send</a></td>";
-              }
-              else {
-                  echo "<td></td>";
-              }
-               echo "<td><a href=gowDeviceManager.php?do=rest&api=delete&url=$url&topic=$link>remove</a></td></tr>";
-             }
-           }
-       }
-     }
-
-     echo("</table>");
-
-
-
-   }
-
-
-// Add domain - Remove domain -
-// List domains
-/*    echo "<br><br>
-    <table border=1>
-    <form action=\"#\" method=\"post\">
-      <input type=\"hidden\" name=\"do\" value=\"add_domain\">
-      <tr><td>Domain Url</td><td> <input type=\"text\" name=\"domain\" size=40></td></tr>
-      <tr><td><input type= \"submit\" value=\"Add Domain\"></td><td></td></tr>
-    </form></table>
-    ";
+echo "<br><br>
+   <table border=0>";
+/*echo "
+   <form action=\"#\" method=\"post\">
+     <input type=\"hidden\" name=\"do\" value=\"abcd\">
+     <tr><td>A</td><td> <input type=\"text\" name=\"a\"></td>
+     <tr><td>B</td><td> <input type=\"text\" name=\"b\"></td>
+     <tr><td>C</td><td> <input type=\"text\" name=\"c\" ></td>
+     <tr><td>D</td><td> <input type=\"text\" name=\"d\"></td>
+     <td><input type= \"submit\" value=\"Send\"></td></tr>
+   </form>
+   </table>";
 */
+$do = 'ls *.twin > twin.list';
+system($do);
+$file = fopen('twin.list', "r");
+if ($file)
+{
+  while(!feof($file))
+  {
+    $line = fgets($file);
+    //echo "<tr><td>$line</td><td>benny</td></tr>";
+    if (strlen($line) > 2)
+    {
+        $line = trim($line);
+        $twin = str_replace(".twin", "", $line);
+        echo "<a href=infomodel.php?do=select_twin&id=$twin>$twin</a><br>";
+    }
+  }
+}
+echo "<br><br>
+      <table border=1>";
+echo "
+      <form action=\"#\" method=\"post\" name=\"jjss\">
+        <input type=\"hidden\" name=\"do\" value=\"generateHtml\">
+        <tr><td>A</td><td> <textarea name=\"json\" rows=\"60\" cols=\"50\" >$json</textarea></td></tr>
+        <tr><td>D</td><td> <input type=\"text\" name=\"d\"></td>
+        <td><input type= \"submit\" value=\"Send\"></td></tr>
+      </form>
+      </table>";
 
-echo "</body></html>";
+echo ("<iframe src=test.json width=\"800\" height=\"800\"></iframe>");
+//=============================================
 // End of file
+//=============================================
+echo "</body></html>";
+?>
