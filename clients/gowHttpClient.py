@@ -122,15 +122,15 @@ while True:
 	# Send data to topic2
 	payload = '{ "value": "' + str(value) + ', "unit": "celsius"}'
 	print payload
-	publishData(topic1, payload,n,conf_period,conf_hw)
+	publishData(topic1, payload , n, conf_period, conf_hw)
 	
 	payload = '{ "value": "' + str(value) + ', "unit": "celsius"}'
 	print payload
-	publishData(topic2, value,n,conf_period,conf_hw)
+	publishData(topic2, payload , n, conf_period, conf_hw)
 	
 	payload = '{ "value": "' + str(value) + ', "unit": "watt"}'
 	print payload
-	publishData(topic3, value ,n,conf_period,conf_hw)
+	publishData(topic3, payload , n, conf_period, conf_hw)
 	
 	print 'sleep ' + str(conf_period) + ' sec'
 	time.sleep(conf_period)
