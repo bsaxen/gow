@@ -86,12 +86,14 @@ def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 	
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
-	try: response = urllib2.urlopen(req)
+	try: 
+		response = urllib2.urlopen(req)
+		the_page = response.read()
+		print 'Message to ' + itopic + ': ' + the_page
+		evaluateAction(the_page)
 	except urllib2.URLError as e:
 		print e.reason
-	the_page = response.read()
-	print 'Message to ' + itopic + ': ' + the_page
-	evaluateAction(the_page)
+
 #===================================================
 def placeOrder( itopic, iaction, itag ):
 #===================================================
@@ -104,10 +106,11 @@ def placeOrder( itopic, iaction, itag ):
 	data['tag']    = itag
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
-	try: response = urllib2.urlopen(req)
+	try: 
+		response = urllib2.urlopen(req)
 	except urllib2.URLError as e:
 		print e.reason
-	the_action = response.read()
+	
 #===================================================
 readConfiguration()
 n = 0
