@@ -2,7 +2,7 @@
 session_start();
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2018-12-22
+// Date.......: 2018-12-29
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
 //=============================================
@@ -72,10 +72,8 @@ function sendMessage($url,$topic,$msg,$tag)
 //=============================================
 // Back-End
 //=============================================
-$sel_format = $_SESSION["format"];
 $sel_url    = $_SESSION["url"];
 $sel_path   = $_SESSION["path"];
-$sel_ds     = $_SESSION["ds"];
 
 if (isset($_GET['do'])) {
 
@@ -92,16 +90,6 @@ if (isset($_GET['do'])) {
     {
       $sel_path = $_GET['sel_path'];
       $_SESSION["path"]   = $sel_path;
-    }
-    if (isset($_GET['sel_format']))
-    {
-      $sel_format = $_GET['sel_format'];
-      $_SESSION["format"] = $sel_format;
-    }
-    if (isset($_GET['sel_ds']))
-    {
-      $sel_ds = $_GET['sel_ds'];
-      $_SESSION["ds"] = $sel_ds;
     }
   }
 
@@ -159,23 +147,16 @@ echo "<html>
    </head>
    <body> ";
 
-echo("<h1>GOW Device Manager 2018-12-22</h1>");
-echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
+echo("<h1>GOW Device Manager 2018-12-29</h1>");
+//echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
    //echo ("<a href=#>refresh</a><br>");
 
-$doc = 'http://'.$sel_url.'/'.$sel_path.'/device.'.$sel_format;
+$doc = 'http://'.$sel_url.'/'.$sel_path.'/device.json';
 echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
 
 $doc = 'http://'.$sel_url.'/'.$sel_ds;
 echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
 
-if($sel_url)
-{
-     echo ("<br><a href=gowDeviceManager.php?do=select&sel_format=html>html</a> ");
-     echo ("<a href=gowDeviceManager.php?do=select&sel_format=json>json</a> ");
-     echo ("<a href=gowDeviceManager.php?do=select&sel_format=txt>txt</a> ");
-}
-echo " form: $form_send<br>";
 if ($form_send == 1)
 {
   echo "<br><br>
@@ -208,7 +189,7 @@ if ($form_send == 1)
      </form>
      ";
      echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td></tr>";
-     echo "<tr bgcolor=\"#FFC300\"><td>Domain</td><td>Status/Topic</td><td>Message/DataStream</td><td>Edit</td></tr>";
+     echo "<tr bgcolor=\"#FFC300\"><td>Domain</td><td>Status/Topic</td><td>Message</td><td>Edit</td></tr>";
      echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td></tr>";
 
      while(!feof($file))
@@ -271,26 +252,6 @@ if ($form_send == 1)
                   echo "<td></td>";
               }
                echo "<td><a href=gowDeviceManager.php?do=rest&api=delete&url=$url&topic=$link>remove</a></td></tr>";
-
-             // Data Streams
-             $request = 'http://'.$url."/gowServer.php?do=list_datastreams&topic=".$link;
-             //echo $request;
-             $ctx = stream_context_create(array('http'=>
-              array(
-                'timeout' => 2,  //2 Seconds
-                  )
-                ));
-             $res = file_get_contents($request,false,$ctx);
-             $data2 = explode(":",$res);
-             $num2 = count($data2);
-
-             for ($jj = 0; $jj < $num2; $jj++)
-             {
-               if (strlen($data2[$jj]) > 2)
-               {
-                 echo "<tr><td>DATASTREAM</td><td></td><td><a href=gowDeviceManager.php?do=select&sel_url=$url&sel_ds=$data2[$jj]>$data2[$jj]</a></td><td></td></tr>";
-               }
-             }
            }
          }
        }
@@ -298,22 +259,6 @@ if ($form_send == 1)
 
      echo("</table>");
 
-
-
    }
-
-
-// Add domain - Remove domain -
-// List domains
-/*    echo "<br><br>
-    <table border=1>
-    <form action=\"#\" method=\"post\">
-      <input type=\"hidden\" name=\"do\" value=\"add_domain\">
-      <tr><td>Domain Url</td><td> <input type=\"text\" name=\"domain\" size=40></td></tr>
-      <tr><td><input type= \"submit\" value=\"Add Domain\"></td><td></td></tr>
-    </form></table>
-    ";
-*/
-
 echo "</body></html>";
 // End of file
