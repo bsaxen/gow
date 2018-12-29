@@ -340,9 +340,9 @@ if (isset($_GET['do']))
         fwrite($doc, "<br>");
         fwrite($doc, "npar        ".$npar);
         fwrite($doc, "<br>");
-        fwrite($doc, "format      ".$format});
+        fwrite($doc, "format      ".$format);
         fwrite($doc, "<br>");
-        fwrite($doc, "payload     ".$payload});
+        fwrite($doc, "payload     ".$payload);
         fwrite($doc, "<br>");
         fwrite($doc, "</body></html>");
         fclose($doc);
