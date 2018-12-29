@@ -86,6 +86,7 @@ def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 	
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
+	print req
 	try: 
 		response = urllib2.urlopen(req)
 		the_page = response.read()
@@ -106,6 +107,7 @@ def placeOrder( itopic, iaction, itag ):
 	data['tag']    = itag
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
+	print req
 	try: 
 		response = urllib2.urlopen(req)
 	except urllib2.URLError as e:
