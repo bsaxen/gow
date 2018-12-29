@@ -53,13 +53,13 @@ def readConfiguration():
 		fh.close()
 	except:
 		fh = open('configuration.txt', 'w')
-		fh.write('gs_url      http://gow.simuino.com')
-		fh.write('gs_server   gowServer.php')
-		fh.write('gs_period   10')
-		fh.write('gs_hw       python')
-		fh.write('gs_wrap     999999')
-		fh.write('gs_security 1')
-		fh.write('gs_secret   mysecret')
+		fh.write('gs_url      http://gow.simuino.com\n')
+		fh.write('gs_server   gowServer.php\n')
+		fh.write('gs_period   10\n')
+		fh.write('gs_hw       python\n')
+		fh.write('gs_wrap     999999\n')
+		fh.write('gs_security 1\n')
+		fh.write('gs_secret   mysecret\n')
 		fh.close()
 	return
 #===================================================
