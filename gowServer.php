@@ -295,7 +295,7 @@ if (isset($_GET['do']))
         if (isset($_GET['payload'])) {
           $payload = $_GET['payload'];
         }
-      }
+      
 
         //===========================================
         // Registration
