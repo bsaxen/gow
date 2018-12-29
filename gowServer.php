@@ -1,13 +1,13 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-12-22
+// Date.......: 2018-12-29
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
 // Configuration
 //=============================================
-$conf_max_paramaters = 16;
+
 //=============================================
 
 
@@ -28,11 +28,8 @@ $conf_max_paramaters = 16;
 //              &devtyp = 1
 //              &message = 0
 //              &hw     = 'python'
-//              &p1     = 'value'
-//              &v1     = 17.1
-//              &p2     = 'unit'
-//              &v2     = 'celcius'
-//              ... max 10 p,v
+//              &payload= <data according to format, default json>
+//              &format = 'json'   or html, txt
 //=============================================
 // devtyp:   1=sensor, 2=actuator, 3=sensor/actuator 4= none
 // message:  1=no_support, 2=support
@@ -288,23 +285,17 @@ if (isset($_GET['do']))
         {
           $message = 1;
         }
-
-        $npar = 0;
-        for ($ii = 1;$ii < $conf_max_paramaters; $ii++)
-        {
-          $ok = 0;
-          $par = 'p'.$ii;
-          if (isset($_GET[$par])) {
-            ${$par} = $_GET[$par];
-            $ok++;
-          }
-          $val = 'v'.$ii;
-          if (isset($_GET[$val])) {
-            ${$val} = $_GET[$val];
-            $ok++;
-          }
-          if( $ok == 2) $npar++;
+        if (isset($_GET['format'])) {
+          $format = $_GET['format'];
         }
+        else
+        {
+          $format = 'json';
+        }
+        if (isset($_GET['payload'])) {
+          $payload = $_GET['payload'];
+        }
+      }
 
         //===========================================
         // Registration
@@ -320,6 +311,8 @@ if (isset($_GET['do']))
         // HTML
         //===========================================
 
+        if ($format == 'html')
+        {
         $fdoc = $topic.'/device.html';
 
         $doc = fopen($fdoc, "w");
@@ -347,29 +340,18 @@ if (isset($_GET['do']))
         fwrite($doc, "<br>");
         fwrite($doc, "npar        ".$npar);
         fwrite($doc, "<br>");
-        for ($ii = 1;$ii <= $npar; $ii++)
-        {
-          $par = 'p'.$ii;
-          $val = 'v'.$ii;
-
-          $fds = $topic.'/ds-'.$ii.'.html';
-          $ds = fopen($fds, "w");
-          fwrite($ds, "<html>");
-          fwrite($ds, "<body bgcolor=\"red\">");
-          fwrite($ds, "${$par}        ".${$val});
-          fwrite($ds, "<br>");
-          fwrite($ds, "</body></html>");
-          fclose($ds);
-
-          fwrite($doc, "${$par}        ".${$val});
-          fwrite($doc, "<br>");
-        }
+        fwrite($doc, "format      ".$format});
+        fwrite($doc, "<br>");
+        fwrite($doc, "payload     ".$payload});
+        fwrite($doc, "<br>");
         fwrite($doc, "</body></html>");
         fclose($doc);
-
+        }
         //===========================================
         // JSON
         //===========================================
+        else if ($format == 'json')
+        {
         $fdoc = $topic.'/device.json';
         $doc = fopen($fdoc, "w");
         fwrite($doc, "{\"gow\": {\n");
@@ -381,30 +363,18 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"period\": \"$period\",\n");
         fwrite($doc, "   \"gs_ts\":  \"$gs_ts\",\n");
         fwrite($doc, "   \"url\":    \"$url\",\n");
-        fwrite($doc, "   \"npar\":    \"$npar\",\n");
-        for ($ii = 1;$ii <= $npar; $ii++)
-        {
-          $par = 'p'.$ii;
-          $val = 'v'.$ii;
-
-          $fds = $topic.'/ds-'.$ii.'.json';
-          $ds  = fopen($fds, "w");
-          fwrite($ds, "{\"gow\": {\n");
-          fwrite($ds, "   \"${$par}\":   \"${$val}\",\n");
-          fwrite($ds, "   \"end\":      \"file\"\n");
-          fwrite($ds, "}}\n ");
-          fclose($ds);
-
-          fwrite($doc, "   \"${$par}\":   \"${$val}\",\n");
-        }
-        fwrite($doc, "   \"hw\":      \"$hw\",\n");
-        fwrite($doc, "   \"message\": \"$message\"\n");
+        fwrite($doc, "   \"format\": \"$format\",\n");
+        fwrite($doc, "   \"hw\":     \"$hw\",\n");
+        fwrite($doc, "   \"message\":\"$message\"\n");
+        fwrite($doc, "   \"payload\":\"$payload\"\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
-
+        }
         //===========================================
         // TXT
         //===========================================
+        else 
+        {
         $fdoc = $topic.'/device.txt';
         $doc = fopen($fdoc, "w");
         fwrite($doc,   "TOPIC        $topic\n");
@@ -417,31 +387,14 @@ if (isset($_GET['do']))
         fwrite($doc,   "URL          $url\n");
         fwrite($doc,   "MESSSAGE     $message\n");
         fwrite($doc,   "HW           $hw\n");
-        fwrite($doc,   "NPAR         $npar\n");
-        for ($ii = 1;$ii <= $npar; $ii++)
-        {
-          $par = 'p'.$ii;
-          $val = 'v'.$ii;
-
-          $fds = $topic.'/ds-'.$ii.'.txt';
-          $ds = fopen($fds, "w");
-          fwrite($ds,   "${$par}       ${$val}\n");
-          fclose($ds);
-
-          fwrite($doc,   "${$par}       ${$val}\n");
-        }
+        fwrite($doc,   "FORMAT       $format\n");
+        fwrite($doc,   "PAYLOAD      $payload\n");
         fclose($doc);
-
-        //===========================================
-        // Single value
-        //===========================================
-        //$fdoc = $topic.'/doc.single';
-        //$doc = fopen($fdoc, "w");
-        //fwrite($doc, "$value");
-        //fclose($doc);
+        }
 
         // Check if any action is present for this client/topic
         echo readActionFileList($topic);
+     
       } // data
  } // error
 } // do
