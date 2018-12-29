@@ -12,8 +12,7 @@ import datetime
 #===================================================
 # Configuration
 #===================================================
-#conf_gs_url        = 'http://gow.simuino.com/'
-conf_gs_url        = 'http://127.0.0.1/git/gow/'
+conf_gs_url        = 'http://gow.simuino.com'
 conf_server_name   = 'gowServer.php'
 conf_period        = 10
 conf_hw            = 'python'
@@ -65,7 +64,6 @@ def readConfiguration():
 #===================================================
 def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
-	#url = 'http://gow.simuino.com/gowServer.php'
 	url = conf_gs_url
 	server = conf_server_name
 	data = {}
@@ -87,7 +85,7 @@ def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 	data['v2'] = iunit
 	
 	values = urllib.urlencode(data)
-	req = url + server + '?' + values
+	req = 'http://' + url + '/' + server + '?' + values
 	try: response = urllib2.urlopen(req)
 	except urllib2.URLError as e:
 		print e.reason
@@ -105,7 +103,7 @@ def placeOrder( itopic, iaction, itag ):
 	data['order']  = iaction
 	data['tag']    = itag
 	values = urllib.urlencode(data)
-	req = url + server + '?' + values
+	req = 'http://' + url + '/' + server + '?' + values
 	try: response = urllib2.urlopen(req)
 	except urllib2.URLError as e:
 		print e.reason
