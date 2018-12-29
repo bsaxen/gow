@@ -62,7 +62,7 @@ def readConfiguration():
 		fh.close()
 	return
 #===================================================
-def publishData( itopic, itype, ipayload, n, iperiod, ihw, iformat ):
+def publishData( itopic, ipayload, n, iperiod, ihw ):
 #===================================================
 	url = conf_gs_url
 	server = conf_server_name
@@ -72,14 +72,12 @@ def publishData( itopic, itype, ipayload, n, iperiod, ihw, iformat ):
 	data['topic']  = itopic
 	data['no']     = n
 	data['wrap']   = conf_wrap
-	data['type']   = itype
 	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['period'] = iperiod
 	data['url']    = url
 	data['hw']     = ihw
 	data['hash']   = 'nohash'
 	# payload
-	data['format'] =  iformat
 	data['payload'] = ipayload
 	
 	values = urllib.urlencode(data)
@@ -124,15 +122,15 @@ while True:
 	# Send data to topic2
 	payload = '{ "value": "' + str(value) + ', "unit": "celsius"}'
 	print payload
-	publishData(topic1,'TEMPERATURE', payload,n,conf_period,conf_hw,'json')
+	publishData(topic1, payload,n,conf_period,conf_hw)
 	
-        payload = '<br>value ' + str(value) + ' <br>unit celsius<br>'
+	payload = '{ "value": "' + str(value) + ', "unit": "celsius"}'
 	print payload
-	publishData(topic2,'TEMPERATURE', value,n,conf_period,conf_hw, 'html')
+	publishData(topic2, value,n,conf_period,conf_hw)
 	
-        payload = 'value = ' + str(value) + 'unit = watt'
+	payload = '{ "value": "' + str(value) + ', "unit": "watt"}'
 	print payload
-	publishData(topic3,'ELECTRICITY', value ,n,conf_period,conf_hw, 'txt')
+	publishData(topic3, value ,n,conf_period,conf_hw)
 	
 	print 'sleep ' + str(conf_period) + ' sec'
 	time.sleep(conf_period)
