@@ -289,7 +289,7 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"url\":    \"$url\",\n");
         fwrite($doc, "   \"hw\":     \"$hw\",\n");
         fwrite($doc, "   \"message\":\"$message\",\n");
-        fwrite($doc, "   $payload");
+        fwrite($doc, "   \"payload\":\n $payload \n");
         fwrite($doc, "}}\n ");
         fclose($doc);
     
