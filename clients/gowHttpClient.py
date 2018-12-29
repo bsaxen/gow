@@ -31,25 +31,37 @@ def evaluateAction( action):
 	print action	
 #===================================================
 def readConfiguration():
-	fh = open('configuration.txt', 'r') 
-	for line in fh: 
-		print line
-		words = line.split()
-		if word[0] == 'gs_url':
-			conf_gs_url      = word[1]
-		if word[0] == 'gs_server':
-			conf_server_name = word[1]
-		if word[0] == 'gs_period':
-			conf_period      = word[1]
-		if word[0] == 'gs_hw':
-			conf_hw          = word[1]
-		if word[0] == 'gs_wrap':
-			conf_wrap        = word[1]
-		if word[0] == 'gs_security':
-			conf_security    = word[1]
-		if word[0] == 'gs_secret':
-			conf_secret      = word[1]
-	fh.close()
+	try:
+		fh = open('configuration.txt', 'r') 
+		for line in fh: 
+			print line
+			words = line.split()
+			if word[0] == 'gs_url':
+				conf_gs_url      = word[1]
+			if word[0] == 'gs_server':
+				conf_server_name = word[1]
+			if word[0] == 'gs_period':
+				conf_period      = word[1]
+			if word[0] == 'gs_hw':
+				conf_hw          = word[1]
+			if word[0] == 'gs_wrap':
+				conf_wrap        = word[1]
+			if word[0] == 'gs_security':
+				conf_security    = word[1]
+			if word[0] == 'gs_secret':
+				conf_secret      = word[1]
+		fh.close()
+	except:
+		fh = open('configuration.txt', 'w')
+		fh.write('gs_url      http://gow.simuino.com')
+		fh.write('gs_server   gowServer.php')
+		fh.write('gs_period   10')
+		fh.write('gs_hw       python')
+		fh.write('gs_wrap     999999')
+		fh.write('gs_security 1')
+		fh.write('gs_secret   mysecret')
+		fh.close()
+	return
 #===================================================
 def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
