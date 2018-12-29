@@ -12,7 +12,7 @@ import datetime
 #===================================================
 # Configuration
 #===================================================
-conf_gs_url        = 'http://gow.simuino.com'
+conf_gs_url        = 'gow.simuino.com'
 conf_server_name   = 'gowServer.php'
 conf_period        = 10
 conf_hw            = 'python'
@@ -52,7 +52,7 @@ def readConfiguration():
 		fh.close()
 	except:
 		fh = open('configuration.txt', 'w')
-		fh.write('gs_url      http://gow.simuino.com\n')
+		fh.write('gs_url      gow.simuino.com\n')
 		fh.write('gs_server   gowServer.php\n')
 		fh.write('gs_period   10\n')
 		fh.write('gs_hw       python\n')
