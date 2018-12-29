@@ -135,13 +135,13 @@ void loop()
     url += "esp8266";
     url += "&payload="; 
     url += "\"payload\": {"; 
-    for (i=0;i<nsensors,i++)
+    for (i=1;i<=nsensors,i++)
     {
         url += "\"temp";
         url += i;
         url += "\": \"";
         url += temps[i];
-        url += "\",";
+        if(i < nsensors)url += "\",";
     }
     url = "}";
 
