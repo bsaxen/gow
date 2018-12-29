@@ -288,8 +288,8 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"gs_ts\":  \"$gs_ts\",\n");
         fwrite($doc, "   \"url\":    \"$url\",\n");
         fwrite($doc, "   \"hw\":     \"$hw\",\n");
-        fwrite($doc, "   \"message\":\"$message\"\n");
-        fwrite($doc, "   \"payload\":\"$payload\"\n");
+        fwrite($doc, "   \"message\":\"$message\",\n");
+        fwrite($doc, "   $payload");
         fwrite($doc, "}}\n ");
         fclose($doc);
     
