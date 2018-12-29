@@ -120,15 +120,15 @@ while True:
 	# Set an action for topic1
 	#placeOrder(topic1,'please do nothing','mytag')
 	# Send data to topic2
-	payload = '{ "value": "' + str(value) + ', "unit": "celsius"}'
+	payload = '{ "value": "' + str(value) + '", "unit": "celsius"}'
 	print payload
 	publishData(topic1, payload , n, conf_period, conf_hw)
 	
-	payload = '{ "value": "' + str(value) + ', "unit": "celsius"}'
+	payload = '{ "value": "' + str(value) + '", "unit": "celsius"}'
 	print payload
 	publishData(topic2, payload , n, conf_period, conf_hw)
 	
-	payload = '{ "value": "' + str(value) + ', "unit": "watt"}'
+	payload = '{ "value": "' + str(value) + '", "unit": "watt"}'
 	print payload
 	publishData(topic3, payload , n, conf_period, conf_hw)
 	
