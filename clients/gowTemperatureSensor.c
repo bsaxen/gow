@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowTemperatureSensor.c
-// Date.......: 2018-12-22
+// Date.......: 2018-12-29
 // Author.....: Benny Saxen
 // Description: Signal from D1 pin. 
 // 4.7kOhm between signal and Vcc
@@ -123,19 +123,6 @@ void loop()
     url += counter;
     url += "&wrap=";
     url += conf_wrap;
-    url += "&type=";
-    url += "TEMPERATURE";
-    for (i=0;i<nsensors,i++)
-    {
-        url += "&p";
-        url += i;
-        url += "=";
-        url += temps[i];
-        url += "&v";
-        url += i;
-        url += "=";
-        url += "celcius";
-    }
 
     url += "&ts=";
     url += "void;
@@ -146,6 +133,18 @@ void loop()
     url += "gow.simuino.com";
     url += "&hw=";
     url += "esp8266";
+    url += "&payload="; 
+    url += "\"payload\": {"; 
+    for (i=0;i<nsensors,i++)
+    {
+        url += "\"temp";
+        url += i;
+        url += "\": \"";
+        url += temps[i];
+        url += "\",";
+    }
+    url = "}";
+
 
     Serial.print("Requesting URL: ");
     Serial.println(url);
