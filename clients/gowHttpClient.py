@@ -62,7 +62,7 @@ def readConfiguration():
 		fh.close()
 	return
 #===================================================
-def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
+def publishData( itopic, itype, ipayload, n, iperiod, ihw, iformat ):
 #===================================================
 	url = conf_gs_url
 	server = conf_server_name
@@ -79,10 +79,8 @@ def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 	data['hw']     = ihw
 	data['hash']   = 'nohash'
 	# payload
-	data['p1'] = 'value'
-	data['v1'] = ivalue
-	data['p2'] = 'unit'
-	data['v2'] = iunit
+	data['format'] =  iformat
+	data['payload'] = ipayload
 	
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
@@ -124,9 +122,15 @@ while True:
 	# Set an action for topic1
 	#placeOrder(topic1,'please do nothing','mytag')
 	# Send data to topic2
-	publishData(topic1,'TEMPERATURE', value, 'celcius',n,conf_period,conf_hw)
-	publishData(topic2,'TEMPERATURE', value, 'celcius',n,conf_period,conf_hw)
-	publishData(topic3,'ELECTRICITY', value, 'watt',n,conf_period,conf_hw)
+	payload = '{ "value": "' + string(value) + ', "unit": "celsius"}'
+	publishData(topic1,'TEMPERATURE', payload,n,conf_period,conf_hw,'json')
+	
+        payload = '<br>value ' + string(value) + ' <br>unit celsius<br>'
+	publishData(topic2,'TEMPERATURE', value, 'celcius',n,conf_period,conf_hw, 'html')
+	
+        payload = 'value = ' + string(value) + 'unit = celsius'
+	publishData(topic3,'ELECTRICITY', value, 'watt',n,conf_period,conf_hw, 'txt')
+	
 	print 'sleep ' + str(conf_period) + ' sec'
 	time.sleep(conf_period)
 
