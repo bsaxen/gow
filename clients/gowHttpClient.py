@@ -30,6 +30,26 @@ topic3 = 'test/electricity/house/0'
 def evaluateAction( action):
 	print action	
 #===================================================
+def readConfiguration():
+	fh = open('configuration.txt', 'r') 
+	for line in fh: 
+		print line
+		words = line.split()
+		if word[0] == 'gs_url':
+			conf_gs_url      = word[1]
+		if word[0] == 'gs_server':
+			conf_server_name = word[1]
+		if word[0] == 'gs_period':
+			conf_period      = word[1]
+		if word[0] == 'gs_hw':
+			conf_hw          = word[1]
+		if word[0] == 'gs_wrap':
+			conf_wrap        = word[1]
+		if word[0] == 'gs_security':
+			conf_security    = word[1]
+		if word[0] == 'gs_secret':
+			conf_secret      = word[1]
+	fh.close()
 #===================================================
 def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 #===================================================
@@ -79,6 +99,7 @@ def placeOrder( itopic, iaction, itag ):
 		print e.reason
 	the_action = response.read()
 #===================================================
+readConfiguration()
 n = 0
 while True:
 	n += 1
