@@ -147,10 +147,6 @@ function prettyTolk( $json )
         $result .= $char.$post;
         //echo "$level $char<br>";
     }
-    //echo $result;
-    //$obj = json_decode($json);
-    //$key = "id";
-    //$fname = $obj[$key];
 
     return $result;
 }
