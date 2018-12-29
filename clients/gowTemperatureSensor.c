@@ -8,10 +8,10 @@
 // Configuration
 //=============================================
 char* publishTopic = "kvv32/test/temperature/0";
-int conf_period = 10;
+int conf_period = 60;
 int conf_wrap   = 999999;
-const char* ssid       = "my ssid";
-const char* password   = "my pswd";
+const char* ssid       = "x";
+const char* password   = "x";
 const char* host       = "gow.simuino.com";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
@@ -53,7 +53,7 @@ void SetUpTemperatureSensors()
 void setup() 
 //=============================================
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(10);
 
   // We start by connecting to a WiFi network
@@ -134,16 +134,17 @@ void loop()
     url += "&hw=";
     url += "esp8266";
     url += "&payload="; 
-    url += "\"payload\": {"; 
+    url += "{"; 
     for (i=1;i<=nsensors;i++)
     {
         url += "\"temp";
         url += i;
-        url += "\": \"";
-        url += temps[i];
-        if(i < nsensors)url += "\",";
+        url += "\":\"";
+        url += temps[i-1];
+        url += "\"";
+        if(i < nsensors)url += ",";
     }
-    url = "}";
+    url += "}";
 
 
     Serial.print("Requesting URL: ");
