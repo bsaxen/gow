@@ -125,7 +125,7 @@ void loop()
     url += conf_wrap;
 
     url += "&ts=";
-    url += "void;
+    url += "void";
         
     url += "&period=";
     url += conf_period;
@@ -135,7 +135,7 @@ void loop()
     url += "esp8266";
     url += "&payload="; 
     url += "\"payload\": {"; 
-    for (i=1;i<=nsensors,i++)
+    for (i=1;i<=nsensors;i++)
     {
         url += "\"temp";
         url += i;
