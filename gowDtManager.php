@@ -286,7 +286,7 @@ echo "<html>
 echo("<h1>Web Template</h1>");
 echo ("<br><a href=gowDtManager.php?do=some&a=x>test_link</a>");
 
-echo "<br><br>
+echo "<br>$sel_twin<br>
    <table border=0>";
 /*echo "
    <form action=\"#\" method=\"post\">
