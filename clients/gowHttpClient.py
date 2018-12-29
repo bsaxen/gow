@@ -126,7 +126,7 @@ while True:
 	publishData(topic1,'TEMPERATURE', payload,n,conf_period,conf_hw,'json')
 	
         payload = '<br>value ' + str(value) + ' <br>unit celsius<br>'
-	publishData(topic2,'TEMPERATURE', value, ,n,conf_period,conf_hw, 'html')
+	publishData(topic2,'TEMPERATURE', value,n,conf_period,conf_hw, 'html')
 	
         payload = 'value = ' + str(value) + 'unit = watt'
 	publishData(topic3,'ELECTRICITY', value ,n,conf_period,conf_hw, 'txt')
