@@ -154,9 +154,6 @@ echo("<h1>GOW Device Manager 2018-12-29</h1>");
 $doc = 'http://'.$sel_url.'/'.$sel_path.'/device.json';
 echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
 
-$doc = 'http://'.$sel_url.'/'.$sel_ds;
-echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
-
 if ($form_send == 1)
 {
   echo "<br><br>
