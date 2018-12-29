@@ -35,7 +35,7 @@ def readConfiguration():
 		fh = open('configuration.txt', 'r') 
 		for line in fh: 
 			print line
-			words = line.split()
+			word = line.split()
 			if word[0] == 'gs_url':
 				conf_gs_url      = word[1]
 			if word[0] == 'gs_server':
