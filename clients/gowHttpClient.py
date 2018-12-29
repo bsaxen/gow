@@ -123,12 +123,15 @@ while True:
 	#placeOrder(topic1,'please do nothing','mytag')
 	# Send data to topic2
 	payload = '{ "value": "' + str(value) + ', "unit": "celsius"}'
+	print payload
 	publishData(topic1,'TEMPERATURE', payload,n,conf_period,conf_hw,'json')
 	
         payload = '<br>value ' + str(value) + ' <br>unit celsius<br>'
+	print payload
 	publishData(topic2,'TEMPERATURE', value,n,conf_period,conf_hw, 'html')
 	
         payload = 'value = ' + str(value) + 'unit = watt'
+	print payload
 	publishData(topic3,'ELECTRICITY', value ,n,conf_period,conf_hw, 'txt')
 	
 	print 'sleep ' + str(conf_period) + ' sec'
