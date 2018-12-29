@@ -28,8 +28,7 @@
 //              &devtyp = 1
 //              &message = 0
 //              &hw     = 'python'
-//              &payload= <data according to format, default json>
-//              &format = 'json'   or html, txt
+//              + payload (json struct)
 //=============================================
 // devtyp:   1=sensor, 2=actuator, 3=sensor/actuator 4= none
 // message:  1=no_support, 2=support
@@ -146,25 +145,7 @@ function listAllTopics()
     }
   }
 }
-//=============================================
-function listTopicDataStreams($topic)
-//=============================================
-{
-  system("ls $topic/ds-* > $topic/ds.work");
-  $file = fopen("$topic/ds.work", "r");
-  if ($file)
-  {
-    while(!feof($file))
-    {
-      $line = fgets($file);
-      if (strlen($line) > 2)
-      {
-          $line = trim($line);
-          echo $line.':';
-      }
-    }
-  }
-}
+
 //=============================================
 function searchTopics($search)
 //=============================================
@@ -231,11 +212,6 @@ if (isset($_GET['do']))
     // API when topic is available
     if($error == 0)
     {
-      if ($do == 'list_datastreams')
-      {
-        listTopicDataStreams($topic);
-        exit;
-      }
       if ($do == 'action')
       {
         $order = $_GET['order'];
@@ -263,9 +239,6 @@ if (isset($_GET['do']))
         if (isset($_GET['wrap'])) {
           $wrap = $_GET['wrap'];
         }
-        if (isset($_GET['type'])) {
-          $type = $_GET['type'];
-        }
         if (isset($_GET['ts'])) {
           $ts = $_GET['ts'];
         }
@@ -285,13 +258,6 @@ if (isset($_GET['do']))
         {
           $message = 1;
         }
-        if (isset($_GET['format'])) {
-          $format = $_GET['format'];
-        }
-        else
-        {
-          $format = 'json';
-        }
         if (isset($_GET['payload'])) {
           $payload = $_GET['payload'];
         }
@@ -304,49 +270,10 @@ if (isset($_GET['do']))
         $filename = $filename.".reg";
         //print $filename;
         $doc = fopen($filename, "w");
-        fwrite($doc, "$gs_ts $ts $topic $url $type $period $hw");
+        fwrite($doc, "$gs_ts $ts $topic $url $period $hw");
         fclose($doc);
 
-        //===========================================
-        // HTML
-        //===========================================
 
-        if ($format == 'html')
-        {
-        $fdoc = $topic.'/device.html';
-
-        $doc = fopen($fdoc, "w");
-        fwrite($doc, "<html>");
-        fwrite($doc, "<body bgcolor=\"#9EB14A\">");
-        fwrite($doc, "TOPIC       ".$topic);
-        fwrite($doc, "<br>");
-        fwrite($doc, "NO          ".$no);
-        fwrite($doc, "<br>");
-        fwrite($doc, "WRAP        ".$wrap);
-        fwrite($doc, "<br>");
-        fwrite($doc, "TYPE        ".$type);
-        fwrite($doc, "<br>");
-        fwrite($doc, "TS          ".$ts);
-        fwrite($doc, "<br>");
-        fwrite($doc, "PERIOD      ".$period);
-        fwrite($doc, "<br>");
-        fwrite($doc, "GS_TS       ".$gs_ts);
-        fwrite($doc, "<br>");
-        fwrite($doc, "URL         ".$url);
-        fwrite($doc, "<br>");
-        fwrite($doc, "HW          ".$hw);
-        fwrite($doc, "<br>");
-        fwrite($doc, "message     ".$message);
-        fwrite($doc, "<br>");
-        fwrite($doc, "npar        ".$npar);
-        fwrite($doc, "<br>");
-        fwrite($doc, "format      ".$format);
-        fwrite($doc, "<br>");
-        fwrite($doc, "payload     ".$payload);
-        fwrite($doc, "<br>");
-        fwrite($doc, "</body></html>");
-        fclose($doc);
-        }
         //===========================================
         // JSON
         //===========================================
@@ -358,37 +285,14 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"topic\":  \"$topic\",\n");
         fwrite($doc, "   \"no\":     \"$no\",\n");
         fwrite($doc, "   \"wrap\":   \"$wrap\",\n");
-        fwrite($doc, "   \"type\":   \"$type\",\n");
         fwrite($doc, "   \"ts\":     \"$ts\",\n");
         fwrite($doc, "   \"period\": \"$period\",\n");
         fwrite($doc, "   \"gs_ts\":  \"$gs_ts\",\n");
         fwrite($doc, "   \"url\":    \"$url\",\n");
-        fwrite($doc, "   \"format\": \"$format\",\n");
         fwrite($doc, "   \"hw\":     \"$hw\",\n");
         fwrite($doc, "   \"message\":\"$message\"\n");
         fwrite($doc, "   \"payload\":\"$payload\"\n");
         fwrite($doc, "}}\n ");
-        fclose($doc);
-        }
-        //===========================================
-        // TXT
-        //===========================================
-        else 
-        {
-        $fdoc = $topic.'/device.txt';
-        $doc = fopen($fdoc, "w");
-        fwrite($doc,   "TOPIC        $topic\n");
-        fwrite($doc,   "NO           $no\n");
-        fwrite($doc,   "WRAP         $wrap\n");
-        fwrite($doc,   "TYPE         $type\n");
-        fwrite($doc,   "TS           $ts\n");
-        fwrite($doc,   "PERIOD       $period\n");
-        fwrite($doc,   "GS_TS        $gs_ts\n");
-        fwrite($doc,   "URL          $url\n");
-        fwrite($doc,   "MESSSAGE     $message\n");
-        fwrite($doc,   "HW           $hw\n");
-        fwrite($doc,   "FORMAT       $format\n");
-        fwrite($doc,   "PAYLOAD      $payload\n");
         fclose($doc);
         }
 
