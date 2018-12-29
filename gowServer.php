@@ -277,8 +277,6 @@ if (isset($_GET['do']))
         //===========================================
         // JSON
         //===========================================
-        else if ($format == 'json')
-        {
         $fdoc = $topic.'/device.json';
         $doc = fopen($fdoc, "w");
         fwrite($doc, "{\"gow\": {\n");
@@ -294,7 +292,7 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"payload\":\"$payload\"\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
-        }
+    
 
         // Check if any action is present for this client/topic
         echo readActionFileList($topic);
