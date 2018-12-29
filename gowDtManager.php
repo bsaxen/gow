@@ -2,8 +2,8 @@
 session_start();
 $sel_twin = $_SESSION["twin"];
 //=============================================
-// File.......: web_template.php
-// Date.......: 2018-12-25
+// File.......: gowDtManager.php
+// Date.......: 2018-12-29
 // Author.....: Benny Saxen
 // Description:
 //=============================================
@@ -284,7 +284,7 @@ echo "<html>
    <body> ";
 
 echo("<h1>Web Template</h1>");
-echo ("<br><a href=infomodel.php?do=some&a=x>test_link</a>");
+echo ("<br><a href=gowDtManager.php?do=some&a=x>test_link</a>");
 
 echo "<br><br>
    <table border=0>";
@@ -312,7 +312,7 @@ if ($file)
     {
         $line = trim($line);
         $twin = str_replace(".twin", "", $line);
-        echo "<a href=infomodel.php?do=select_twin&id=$twin>$twin</a><br>";
+        echo "<a href=gowDtManager.php?do=select_twin&id=$twin>$twin</a><br>";
     }
   }
 }
