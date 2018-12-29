@@ -1,7 +1,7 @@
 # =============================================
 # File: gowHttpClient.py
 # Author: Benny Saxen
-# Date: 2018-12-09
+# Date: 2018-12-29
 # Description:
 # =============================================
 import urllib
@@ -63,7 +63,7 @@ def publishData( itopic, itype, ivalue, iunit, n, iperiod, ihw ):
 	print 'Message to ' + itopic + ': ' + the_page
 	evaluateAction(the_page)
 #===================================================
-def placeOrder( itopic, iaction ):
+def placeOrder( itopic, iaction, itag ):
 #===================================================
 	url = conf_gs_url
 	server = conf_server_name
@@ -71,6 +71,7 @@ def placeOrder( itopic, iaction ):
 	data['do']     = 'action'
 	data['topic']  = itopic
 	data['order']  = iaction
+	data['tag']    = itag
 	values = urllib.urlencode(data)
 	req = url + server + '?' + values
 	try: response = urllib2.urlopen(req)
@@ -85,7 +86,7 @@ while True:
 		n = 0
 	value = n
 	# Set an action for topic1
-	#placeOrder(topic1,'please do nothing')
+	#placeOrder(topic1,'please do nothing','mytag')
 	# Send data to topic2
 	publishData(topic1,'TEMPERATURE', value, 'celcius',n,conf_period,conf_hw)
 	publishData(topic2,'TEMPERATURE', value, 'celcius',n,conf_period,conf_hw)
