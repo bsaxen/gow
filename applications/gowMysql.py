@@ -32,7 +32,7 @@ def readConfiguration():
 				cDbName = word[1]
 			if word[0] == 'user':
 				cDbUser      = word[1]
-			if word[0] == 'pswd:
+			if word[0] == 'pswd':
 				cDbPassword  = word[1]
 		fh.close()
 	except:
