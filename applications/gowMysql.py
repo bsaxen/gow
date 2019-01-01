@@ -15,6 +15,9 @@ import time
 #=============================================
 # Configuration
 #=============================================
+cUrl        = 'gow.simuino.com'
+cNtop	    = 1
+cTopic1     = 'kvv32/test/temperature/0'
 cDbHost     = '192.168.1.85'
 cDbName     = 'gow'
 cDbUser     = 'folke'
@@ -26,6 +29,14 @@ def readConfiguration():
 		for line in fh: 
 			print line
 			word = line.split()
+			if word[0] == 'url':
+				cUrl    = word[1]
+			if word[0] == 'url':
+				cNtop   = word[1]
+			if word[0] == 'topic1':
+				cTopic1    = word[1]
+			if word[0] == 'topic2':
+				cTopic2    = word[1]
 			if word[0] == 'host':
 				cDbHost      = word[1]
 			if word[0] == 'database':
@@ -37,6 +48,9 @@ def readConfiguration():
 		fh.close()
 	except:
 		fh = open('configuration.txt', 'w')
+		fh.write('url        gow.simuino.com\n')
+		fh.write('ntop       1\n')
+		fh.write('topic1     kvv32/test/temperature/0\n')
 		fh.write('host       192.168.1.85\n')
 		fh.write('database   gow\n')
 		fh.write('user       folke\n')
@@ -78,12 +92,19 @@ readConfiguration()
 # loop
 #=============================================
 while True:
-    url = "http://gow.simuino.com/kvv32/test/temperature/0/device.json"
-    
-    period = float(gowReadJsonMeta(url,'period'))
-    x      = float(gowReadJsonPayload(url,'temp1'))
-    
-    gowMysqlInsert('temperatur1','value',x)
 
+	
+	if cNtop > 0:
+		url = 'http://' + cUrl + '/' + cTopic1 + '/device.json'
+   		period = float(gowReadJsonMeta(url,'period'))
+    		x      = float(gowReadJsonPayload(url,'temp1'))
+    		gowMysqlInsert('temperatur1','value',x)
+
+	if cNtop > 1:
+   		url = 'http://' + cUrl + '/' + cTopic2 + '/device.json'
+   		period = float(gowReadJsonMeta(url,'period'))
+    		x      = float(gowReadJsonPayload(url,'temp2'))
+    		gowMysqlInsert('temperatur2','value',x)
+		
     
-    time.sleep(period)
+    	time.sleep(period)
