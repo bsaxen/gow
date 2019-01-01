@@ -1,9 +1,9 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2018-12-15
+# Date.......: 2019-01-01
 # Author.....: Benny Saxen
-# Description: GOW application template
+# Description: 
 #=============================================
 # Libraries
 #=============================================
@@ -20,11 +20,18 @@ cDbName     = 'gow'
 cDbUser     = 'folke'
 cDbPassword = 'something'
 #=============================================
-def gowReadJsonParameter(url,par):
+def gowReadJsonMeta(url,par):
 #=============================================
     r = urllib2.urlopen(url)
     j = json.load(r)
     x =  j['gow'][par]
+    return x
+#=============================================
+def gowReadJsonPayload(url,par):
+#=============================================
+    r = urllib2.urlopen(url)
+    j = json.load(r)
+    x =  j['gow']['payload'][par]
     return x
 #=============================================
 def gowMysqlInsert(xTable,xPar,xValue):
@@ -43,8 +50,8 @@ while True:
 #=============================================
     url = "http://gow.simuino.com/kvv32/test/temperature/0/device.json"
     
-    period = float(gowReadJsonParameter(url,'period'))
-    x      = float(gowReadJsonParameter(url,'value'))
+    period = float(gowReadJsonMeta(url,'period'))
+    x      = float(gowReadJsonPayload(url,'temp1'))
     
     gowMysqlInsert('temperatur1','value',x)
 
