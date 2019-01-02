@@ -1,0 +1,51 @@
+{
+	"model": {
+		"id": "kvv32",
+		"date": "2019-01-02",
+		"state": "ON/OFF",
+		"error": "error code",
+		"configuration": {
+			"measure_frequency": {
+				"type": "int",
+				"value": "12"
+			},
+			"anything": {
+				"type": "string",
+				"value": "hello"
+			}
+		},
+		"infrastructure": {
+			"gateway": {
+				"protocol": "mqtt",
+				"broker":   "simuino.com",
+                                "port":     "1883"
+			}
+		},
+		"data_streams": {
+			"temperature_indoor": {
+				"type": "temperature",
+				"stream": "a/b/c/d"
+			},
+			"temperature_outdoor": {
+				"type": "temperature",
+				"stream": "a/b/c/d"
+			},
+			"electricity": {
+				"type": "electricity",
+				"stream": "a/b/c/d"
+			}
+		},
+		"actuators": {
+			"heater_control": {
+				"type": "stepper_motor",
+				"stream": "a/b/c/d",
+				"parameters": {
+					"direction": "CW",
+					"steps": "40",
+					"step_size": "FULL",
+					"delay": "5"
+				}
+			}
+		}
+	}
+}
