@@ -3,7 +3,7 @@ session_start();
 $sel_twin = $_SESSION["twin"];
 //=============================================
 // File.......: gowDtManager.php
-// Date.......: 2018-12-29
+// Date.......: 2019-01-01
 // Author.....: Benny Saxen
 // Description:
 //=============================================
@@ -17,6 +17,11 @@ $ts           = date_format($date, 'Y-m-d H:i:s');
 //=============================================
 // library
 //=============================================
+function generateRandomString($length = 15)
+{
+    return substr(sha1(rand()), 0, $length);
+}
+
 function prettyPrint( $json )
 {
     $result = '';
@@ -216,7 +221,7 @@ function generateForm($inp)
    }
    echo"<tr><td><input type= \"submit\" value=\"Update\"></td></tr>";
    echo "</table>";
-
+   if ($id == 'void') $id = generateRandomString(12);
    return $id;
 }
 
@@ -322,8 +327,9 @@ echo "
         <td><input type= \"submit\" value=\"Send\"></td></tr>
       </form>
       </table>";
-
-echo ("<iframe src=test.json width=\"800\" height=\"800\"></iframe>");
+$ff = $sel_twin.'.twin';
+echo $ff;
+echo ("<iframe src=$ff width=\"800\" height=\"800\"></iframe>");
 //=============================================
 // End of file
 //=============================================
