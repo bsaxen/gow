@@ -1,6 +1,10 @@
 <?php
 session_start();
 $sel_twin = $_SESSION["twin"];
+$flag_new_twin = $_SESSION["flag_new_twin"];
+$flag_update_twin = $_SESSION["flag_update_twin"];
+$flag_window_size = $_SESSION["flag_window_size"];
+
 //=============================================
 // File.......: gowDtManager.php
 // Date.......: 2019-01-01
@@ -191,40 +195,75 @@ function generateForm($inp)
   global $rank;
 
   $id = 'void';
-  echo "
-     <form action=\"#\" method=\"post\">
-       <input type=\"hidden\" name=\"do\" value=\"abcd\">
-       ";
+
 
   $jsonIterator = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode($inp, TRUE)),RecursiveIteratorIterator::SELF_FIRST);
   echo("<table border=0>");
-  $level = 0;
-  //echo "<tr><td>KEY</td><td>PAR</td><td>level</td><td>count</td><td>next</td><tr>";
   foreach ($jsonIterator as $key => $val) {
 
     if ($key == 'id') $id = $val;
-    //$rank[$key]
+
     echo "<tr>";
     for($ii=1;$ii<$rank[$key];$ii++)echo "<td></td>";
 
-    //echo "<td>$key</td><td>$val</td><tr>";
       if(is_array($val))
       {
-        echo "<td bgcolor=\"#FD6969\">$key</td>";
-        //echo "<tr bgcolor=\"#FFF000\"><td>$key</td><td></td><td >$level</td><td>$nn[$level]</td><td>$count</td></tr>";
+        echo "<td color=\"#C5FD69\">$key</td>";
       }
       else
       {
-          echo "<td bgcolor=\"#C5FD69\">$key</td><td><input type=\"text\" name=\"$key\" value=\"$val\"></td><tr>";
+          echo "<td>$key</td><td bgcolor=\"#C5FD69\">$val</td><tr>";
       }
       echo "</tr>";
    }
-   echo"<tr><td><input type= \"submit\" value=\"Update\"></td></tr>";
    echo "</table>";
    if ($id == 'void') $id = generateRandomString(12);
+
    return $id;
 }
+//=============================================
+function generateTwinUI($id)
+//=============================================
+{
+  global $rank;
 
+  $filename = $id.'.twin';
+  $json   = file_get_contents($filename);
+
+  $filename = $id.'.html';
+  $file = fopen($filename, "w");
+
+  if ($file)
+  {
+    fwrite($file,"<h1>Digital Twin $val</h1>");
+    $jsonIterator = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode($json, TRUE)),RecursiveIteratorIterator::SELF_FIRST);
+    fwrite($file,"<html>");
+
+    foreach ($jsonIterator as $key => $val)
+    {
+
+      if ($key == 'id')
+      {
+        fwrite($file,"<h1>1Digital Twin $val</h1>");
+      }
+
+      if(is_array($val))
+      {
+          fwrite($file,"<h1>2Digital Twin $val</h1>");
+      }
+      else
+      {
+          fwrite($file,"<h1>3Digital Twin $val</h1>");
+      }
+
+   }
+
+
+  }
+  fclose($file);
+
+  return;
+}
 //=============================================
 // End of library
 //=============================================
@@ -233,103 +272,212 @@ $rank = array();
 //=============================================
 // Back-End
 //=============================================
+
+// GET
 if (isset($_GET['do']))
 {
-
+$_SESSION["flag_window_size"];
   $do = $_GET['do'];
 
+  if($do == 'html_twin')
+  {
+    $sel_twin = $_GET['id'];
+    generateTwinUI($sel_twin);
+  }
   if($do == 'select_twin')
   {
     $sel_twin = $_GET['id'];
     $_SESSION["twin"] = $sel_twin;
   }
+  if($do == 'large_window')
+  {
+    $flag_window_size = 1;
+    $_SESSION["flag_window_size"] = $flag_window_size;
+  }
+  if($do == 'small_window')
+  {
+    $flag_window_size = 0;
+    $_SESSION["flag_window_size"] = $flag_window_size;
+  }
+  if($do == 'new_twin')
+  {
+    $flag_new_twin = 1;
+    $_SESSION["flag_new_twin"] = $flag_new_twin;
+  }
+  if($do == 'update_twin')
+  {
+    $flag_update_twin = 1;
+    $_SESSION["flag_update_twin"] = $flag_update_twin;
+  }
+  if($do == 'delete_twin')
+  {
+    $twin_id = $_GET['id'];
+    $filename = $twin_id.".twin";
+    if (file_exists($filename)) unlink($filename);
+  }
+  if($do == 'cancel_update_twin')
+  {
+    $flag_update_twin = 0;
+    $_SESSION["flag_update_twin"] = $flag_update_twin;
+  }
+  if($do == 'cancel_new_twin')
+  {
+    $flag_new_twin = 0;
+    $_SESSION["flag_new_twin"] = $flag_new_twin;
+  }
 }
 
-
+// POST
 if (isset($_POST['do']))
 {
   $do = $_POST['do'];
 
-  if ($do == 'generateHtml')
+  if ($do == 'create_new_twin')
   {
       $json = $_POST['json'];
-      //echo("$json");
-      $d = $_POST['d'];
-      //echo("$d");
-      $result = prettyTolk( $json);
-      //generateWebPage($json);
-      //generateHtml($json);
-      $id = generateForm($json);
-      $fname = $id.'.twin';
-      $file = fopen($fname, "w");
-      if ($file)
+      $ob = json_decode($json);
+      if($ob === null) {
+        $failure = 1;
+        echo ("<h1>JSON Validation Error</h1>");
+      }
+      if ($failure != 1)
       {
-        fwrite($file,$result);
-        fclose($file);
+        $result = prettyTolk( $json);
+        $id = generateForm($json);
+        $fname = $id.'.twin';
+        $file = fopen($fname, "w");
+        if ($file)
+        {
+          fwrite($file,$result);
+          fclose($file);
+        }
       }
   }
-  if ($do == 'abcd')
+  if ($do == 'update_twin')
   {
-    echo("b1");
-      $a = $_POST['a'];
-      echo("$a");
+      $twin_id = $_POST['twin_id'];
+      $json = $_POST['json'];
+      $ob = json_decode($json);
+      if($ob === null) {
+        $failure = 1;
+        echo ("<h1>JSON Validation Error</h1>");
+      }
+      if ($failure != 1)
+      {
+        //$result = prettyTolk( $json);
+        //$not_used = generateForm($json);
+        $fname = $twin_id.'.twin';
+        $file = fopen($fname, "w");
+        if ($file)
+        {
+          fwrite($file,$json);
+          fclose($file);
+        }
+      }
   }
+  //====================
 }
 //=============================================
 // Front-End
 //=============================================
 echo "<html>
    <head>
-      <title>InfoModel</title>
+   <style>
+   html {
+       min-height: 100%;
+   }
+
+   body {
+       background: -webkit-linear-gradient(left, #93B874, #C9DCB9);
+       background: -o-linear-gradient(right, #93B874, #C9DCB9);
+       background: -moz-linear-gradient(right, #93B874, #C9DCB9);
+       background: linear-gradient(to right, #93B874, #C9DCB9);
+       background-color: #93B874;
+   }
+   </style>
+      <title>GOW DT Manager</title>
    </head>
-   <body> ";
+   <body > ";
+//=============================================
+echo("<h1>GOW Digital Twin Manager</h1>");
+if ($flag_new_twin == 1) {
+  echo ("<a href=gowDtManager.php?do=cancel_new_twin&id=$sel_twin>Cancel New Twin</a>");
+}
+else {
+  echo ("<a href=gowDtManager.php?do=new_twin&id=$sel_twin>New Twin</a>");  // code...
+}
+if ($flag_update_twin == 1) {
+  echo (" <a href=gowDtManager.php?do=cancel_update_twin&id=x>Cancel Edit Twin</a>");
+}
+else {
+  echo (" <a href=gowDtManager.php?do=update_twin&id=$sel_twin>Edit Twin</a>");  // code...
+}
+echo (" <a href=gowDtManager.php?do=html_twin&id=$sel_twin>HTML Twin</a>");
 
-echo("<h1>Web Template</h1>");
-echo ("<br><a href=gowDtManager.php?do=some&a=x>test_link</a>");
-
-echo "<br>$sel_twin<br>
-   <table border=0>";
-/*echo "
-   <form action=\"#\" method=\"post\">
-     <input type=\"hidden\" name=\"do\" value=\"abcd\">
-     <tr><td>A</td><td> <input type=\"text\" name=\"a\"></td>
-     <tr><td>B</td><td> <input type=\"text\" name=\"b\"></td>
-     <tr><td>C</td><td> <input type=\"text\" name=\"c\" ></td>
-     <tr><td>D</td><td> <input type=\"text\" name=\"d\"></td>
-     <td><input type= \"submit\" value=\"Send\"></td></tr>
-   </form>
-   </table>";
-*/
+echo "<h2>$sel_twin</h2>";
+$ff = $sel_twin.'.twin';
+$fcount = count(file($ff));
+$json   = file_get_contents($ff);
+//echo "count=$fcount<br>";
+//=============================================
+echo("Available Twins<br>");
 $do = 'ls *.twin > twin.list';
 system($do);
 $file = fopen('twin.list', "r");
 if ($file)
 {
+  echo("<table border=1>");
   while(!feof($file))
   {
     $line = fgets($file);
-    //echo "<tr><td>$line</td><td>benny</td></tr>";
     if (strlen($line) > 2)
     {
         $line = trim($line);
         $twin = str_replace(".twin", "", $line);
-        echo "<a href=gowDtManager.php?do=select_twin&id=$twin>$twin</a><br>";
+        echo "<tr><td>";
+        echo "<a href=gowDtManager.php?do=select_twin&id=$twin>$twin</a>";
+        echo "</td><td>";
+        echo "<a href=gowDtManager.php?do=delete_twin&id=$twin>delete</a>";
+        echo "</td></tr>";
     }
   }
+  echo("</table>");
 }
-echo "<br><br>
-      <table border=1>";
-echo "
-      <form action=\"#\" method=\"post\" name=\"jjss\">
-        <input type=\"hidden\" name=\"do\" value=\"generateHtml\">
-        <tr><td>A</td><td> <textarea name=\"json\" rows=\"60\" cols=\"50\" >$json</textarea></td></tr>
-        <tr><td>D</td><td> <input type=\"text\" name=\"d\"></td>
-        <td><input type= \"submit\" value=\"Send\"></td></tr>
-      </form>
-      </table>";
-$ff = $sel_twin.'.twin';
-echo $ff;
-echo ("<iframe src=$ff width=\"800\" height=\"800\"></iframe>");
+//=============================================
+if ($flag_update_twin == 1)
+{
+  echo" <br>Edit Twin Model JSON Structure below<br>";
+  if($flag_window_size == 0)echo "<a href=gowDtManager.php?do=large_window>Large Window</a>";
+  if($flag_window_size == 1)echo "<a href=gowDtManager.php?do=small_window>Small Window</a>";
+  echo" <form action=\"#\" method=\"post\"><input type=\"hidden\" name=\"do\" value=\"update_twin\">";
+  echo" <input type=\"hidden\" name=\"twin_id\" value=\"$sel_twin\">";
+  if($flag_window_size == 1)echo" <textarea name=\"json\" rows=\"$fcount\" cols=\"100\" >$json</textarea>";
+  if($flag_window_size == 0)echo" <textarea name=\"json\" rows=\"10\" cols=\"100\" >$json</textarea>";
+  echo" <br><input type= \"submit\" value=\"Update $sel_twin\">";
+  echo "</form>";
+}
+//=============================================
+if ($flag_new_twin == 1)
+{
+  echo "<br>Add New Twin Model JSON Structure below<br>";
+
+  if($flag_window_size == 0)echo "<a href=gowDtManager.php?do=large_window>Large Window</a>";
+  if($flag_window_size == 1)echo "<a href=gowDtManager.php?do=small_window>Small Window</a>";
+  echo " <form action=\"#\" method=\"post\" name=\"jjss\">";
+  echo " <input type=\"hidden\" name=\"do\" value=\"create_new_twin\">";
+  if($flag_window_size == 1)echo" <textarea name=\"json\" rows=\"$fcount\" cols=\"100\" >$json</textarea>";
+  if($flag_window_size == 0)echo" <textarea name=\"json\" rows=\"10\" cols=\"100\" >$json</textarea>";
+  echo "<br><input type= \"submit\" value=\"Add New Twin\">";
+  echo "</form>";
+}
+//=============================================
+
+  $result = prettyTolk( $json);
+  $id = generateForm($json);
+  $hh = $fcount*16;
+  //echo ("<iframe src=$ff width=\"600\" height=\"$hh\"></iframe>");
+
+
 //=============================================
 // End of file
 //=============================================
