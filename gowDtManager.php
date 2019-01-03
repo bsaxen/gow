@@ -5,9 +5,14 @@ $flag_new_twin = $_SESSION["flag_new_twin"];
 $flag_update_twin = $_SESSION["flag_update_twin"];
 $flag_window_size = $_SESSION["flag_window_size"];
 
+$g_nn = 0;
+$work_dir = 'work';
+if ( !file_exists($work_dir) ) {
+     mkdir ($work_dir, 0744);
+}
 //=============================================
 // File.......: gowDtManager.php
-// Date.......: 2019-01-01
+// Date.......: 2019-01-03
 // Author.....: Benny Saxen
 // Description:
 //=============================================
@@ -21,79 +26,22 @@ $ts           = date_format($date, 'Y-m-d H:i:s');
 //=============================================
 // library
 //=============================================
+
+//=============================================
 function generateRandomString($length = 15)
+//=============================================
 {
     return substr(sha1(rand()), 0, $length);
 }
 
-function prettyPrint( $json )
-{
-    $result = '';
-    $level = 0;
-    $in_quotes = false;
-    $in_escape = false;
-    $ends_line_level = NULL;
-    $json_length = strlen( $json );
-
-    for( $i = 0; $i < $json_length; $i++ ) {
-        $char = $json[$i];
-        $new_line_level = NULL;
-        $post = "";
-        if( $ends_line_level !== NULL ) {
-            $new_line_level = $ends_line_level;
-            $ends_line_level = NULL;
-        }
-        if ( $in_escape ) {
-            $in_escape = false;
-        } else if( $char === '"' ) {
-            $in_quotes = !$in_quotes;
-        } else if( ! $in_quotes ) {
-            switch( $char ) {
-                case '}': case ']':
-                    $level--;
-                    $ends_line_level = NULL;
-                    $new_line_level = $level;
-                    break;
-
-                case '{': case '[':
-                    $level++;
-                case ',':
-                    $ends_line_level = $level;
-                    break;
-
-                case ':':
-                    $post = " ";
-                    break;
-
-                case " ": case "\t": case "\n": case "\r":
-                    $char = "";
-                    $ends_line_level = $new_line_level;
-                    $new_line_level = NULL;
-                    break;
-            }
-        } else if ( $char === '\\' ) {
-            $in_escape = true;
-        }
-        if( $new_line_level !== NULL ) {
-            $result .= "\n".str_repeat( "\t", $new_line_level );
-        }
-        $result .= $char.$post;
-    }
-    echo $result;
-    $file = fopen('test.json', "w");
-    if ($file)
-    {
-      fwrite($file,$result);
-      fclose($file);
-    }
-    return $result;
-}
-
+//=============================================
 function prettyTolk( $json )
+//=============================================
 {
-    global $rank;
+    global $rank,$g_nn;
     $result = '';
     $level = 0;
+    $nn = 1;
     $in_quotes = false;
     $in_escape = false;
     $ends_line_level = NULL;
@@ -115,9 +63,14 @@ function prettyTolk( $json )
         }
         else if( ! $in_quotes )
         {
-            //echo "benny $level $word<br>";
-            $rank[$word] = $level;
-            //echo "level=$rank[$word]<br>";
+            if($word)
+            {
+              $tmp = $rank[$nn];
+              echo ("$word nn=$nn level=$level<br>");
+              //if($tmp > 0 && $tmp != $level) echo "JSON Error: $word<br>";
+              $rank[$nn] = $level;
+            }
+
             $word = '';
             switch( $char )
             {
@@ -135,6 +88,8 @@ function prettyTolk( $json )
                     break;
 
                 case ':':
+                    $nn++;
+                    //echo "nn=$nn<br>";
                     $post = " ";
                     break;
 
@@ -156,69 +111,40 @@ function prettyTolk( $json )
         $result .= $char.$post;
         //echo "$level $char<br>";
     }
-
+    $g_nn = $nn-1;
     return $result;
 }
-//=============================================
-function generateHtml($inp)
-//=============================================
-{
-  global $rank;
-  $jsonIterator = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode($inp, TRUE)),RecursiveIteratorIterator::SELF_FIRST);
-  echo("<table border=1>");
-  $level = 0;
-  //echo "<tr><td>KEY</td><td>PAR</td><td>level</td><td>count</td><td>next</td><tr>";
-  foreach ($jsonIterator as $key => $val) {
 
-    //$rank[$key]
-    echo "<tr>";
-    for($ii=1;$ii<$rank[$key];$ii++)echo "<td></td>";
-
-    //echo "<td>$key</td><td>$val</td><tr>";
-      if(is_array($val))
-      {
-        echo "<td bgcolor=\"#FD6969\">$key</td>";
-        //echo "<tr bgcolor=\"#FFF000\"><td>$key</td><td></td><td >$level</td><td>$nn[$level]</td><td>$count</td></tr>";
-      }
-      else
-      {
-          echo "<td bgcolor=\"#C5FD69\">$key</td><td>$val</td><tr>";
-      }
-      echo "</tr>";
-   }
-   echo "</table>";
-}
 //=============================================
 function generateForm($inp)
 //=============================================
 {
-  global $rank;
+  global $rank,$g_nn;
 
   $id = 'void';
 
-
   $jsonIterator = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode($inp, TRUE)),RecursiveIteratorIterator::SELF_FIRST);
   echo("<table border=0>");
+  $nn = 0;
   foreach ($jsonIterator as $key => $val) {
-
+    $nn++;
     if ($key == 'id') $id = $val;
-
     echo "<tr>";
-    for($ii=1;$ii<$rank[$key];$ii++)echo "<td></td>";
+    for($ii=1;$ii<$rank[$nn];$ii++)echo "<td></td>";
 
       if(is_array($val))
       {
-        echo "<td color=\"#C5FD69\">$key</td>";
+        echo "<td color=\"#C5FD69\">$key $nn</td>";
       }
       else
       {
-          echo "<td>$key</td><td bgcolor=\"#C5FD69\">$val</td><tr>";
+          echo "<td>$key $nn</td><td bgcolor=\"#C5FD69\">$val</td><tr>";
       }
       echo "</tr>";
    }
    echo "</table>";
    if ($id == 'void') $id = generateRandomString(12);
-
+   if ($g_nn != $nn)echo("ERROR: Key duplicate in JSON structure: $nn $g_nn<br>");
    return $id;
 }
 //=============================================
@@ -235,26 +161,27 @@ function generateTwinUI($id)
 
   if ($file)
   {
-    fwrite($file,"<h1>Digital Twin $val</h1>");
+    //fwrite($file,"<h1>Digital Twin $val</h1>");
     $jsonIterator = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode($json, TRUE)),RecursiveIteratorIterator::SELF_FIRST);
     fwrite($file,"<html>");
 
     foreach ($jsonIterator as $key => $val)
     {
 
-      if ($key == 'id')
-      {
-        fwrite($file,"<h1>1Digital Twin $val</h1>");
-      }
+      if ($key == 'id')fwrite($file,"<h1>Digital Twin $val</h1>");
+      if ($key == 'date')fwrite($file,"Date: $val<br>");
+      if ($key == 'measure_frequency')fwrite($file,"Frequency: $val<br>");
+      if ($key == 'protocol')fwrite($file,"Protocol: $val<br>");
+      if ($key == 'broker')fwrite($file,"Broker: $val<br>");
 
-      if(is_array($val))
+      /*if(is_array($val))
       {
           fwrite($file,"<h1>2Digital Twin $val</h1>");
       }
       else
       {
           fwrite($file,"<h1>3Digital Twin $val</h1>");
-      }
+      }*/
 
    }
 
@@ -373,6 +300,9 @@ if (isset($_POST['do']))
           fwrite($file,$json);
           fclose($file);
         }
+        else {
+          echo "Unable to write to file: $fname<br>";
+        }
       }
   }
   //====================
@@ -471,7 +401,8 @@ if ($flag_new_twin == 1)
   echo "</form>";
 }
 //=============================================
-
+  $filename = $sel_twin.'.twin';
+  $json   = file_get_contents($filename);
   $result = prettyTolk( $json);
   $id = generateForm($json);
   $hh = $fcount*16;
