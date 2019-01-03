@@ -66,7 +66,7 @@ function prettyTolk( $json )
             if($word)
             {
               $tmp = $rank[$nn];
-              echo ("$word nn=$nn level=$level<br>");
+              //echo ("$word nn=$nn level=$level<br>");
               //if($tmp > 0 && $tmp != $level) echo "JSON Error: $word<br>";
               $rank[$nn] = $level;
             }
@@ -134,11 +134,11 @@ function generateForm($inp)
 
       if(is_array($val))
       {
-        echo "<td color=\"#C5FD69\">$key $nn</td>";
+        echo "<td color=\"#C5FD69\">$key</td>";
       }
       else
       {
-          echo "<td>$key $nn</td><td bgcolor=\"#C5FD69\">$val</td><tr>";
+          echo "<td>$key</td><td bgcolor=\"#C5FD69\">$val</td><tr>";
       }
       echo "</tr>";
    }
@@ -252,6 +252,10 @@ $_SESSION["flag_window_size"];
     $flag_new_twin = 0;
     $_SESSION["flag_new_twin"] = $flag_new_twin;
   }
+  if($do == 'clear_window')
+  {
+    $flag_clear_window = 1;
+  }
 }
 
 // POST
@@ -324,55 +328,169 @@ echo "<html>
        background: linear-gradient(to right, #93B874, #C9DCB9);
        background-color: #93B874;
    }
+   /* Navbar container */
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+  font-family: Arial;
+}
+
+/* Links inside the navbar */
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* The dropdown container */
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+/* Dropdown button */
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit; /* Important for vertical align on mobile phones */
+  margin: 0; /* Important for vertical align on mobile phones */
+}
+
+/* Add a red background color to navbar links on hover */
+.navbar a:hover, .dropdown:hover .dropbtn {
+  background-color: red;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+/* Add a grey background color to dropdown links on hover */
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+  display: block;
+}
    </style>
       <title>GOW DT Manager</title>
    </head>
    <body > ";
 //=============================================
-echo("<h1>GOW Digital Twin Manager</h1>");
-if ($flag_new_twin == 1) {
-  echo ("<a href=gowDtManager.php?do=cancel_new_twin&id=$sel_twin>Cancel New Twin</a>");
-}
-else {
-  echo ("<a href=gowDtManager.php?do=new_twin&id=$sel_twin>New Twin</a>");  // code...
-}
-if ($flag_update_twin == 1) {
-  echo (" <a href=gowDtManager.php?do=cancel_update_twin&id=x>Cancel Edit Twin</a>");
-}
-else {
-  echo (" <a href=gowDtManager.php?do=update_twin&id=$sel_twin>Edit Twin</a>");  // code...
-}
-echo (" <a href=gowDtManager.php?do=html_twin&id=$sel_twin>HTML Twin</a>");
+echo("<h1>GOW Digital Twin Manager 2019-01-03</h1>");
+echo "<div class=\"navbar\">
+  <a href=\"$sel_twin.html\" target=\"_blank\">UI $sel_twin</a> ";
 
-echo "<h2>$sel_twin</h2>";
-$ff = $sel_twin.'.twin';
-$fcount = count(file($ff));
-$json   = file_get_contents($ff);
-//echo "count=$fcount<br>";
-//=============================================
-echo("Available Twins<br>");
-$do = 'ls *.twin > twin.list';
-system($do);
-$file = fopen('twin.list', "r");
-if ($file)
-{
-  echo("<table border=1>");
-  while(!feof($file))
+  if ($flag_new_twin == 1)
   {
-    $line = fgets($file);
-    if (strlen($line) > 2)
-    {
-        $line = trim($line);
-        $twin = str_replace(".twin", "", $line);
-        echo "<tr><td>";
-        echo "<a href=gowDtManager.php?do=select_twin&id=$twin>$twin</a>";
-        echo "</td><td>";
-        echo "<a href=gowDtManager.php?do=delete_twin&id=$twin>delete</a>";
-        echo "</td></tr>";
-    }
+    echo "<a href=\"gowDtManager.php?do=cancel_new_twin&id=$sel_twin\">Cancel New Twin</a>";
   }
-  echo("</table>");
+  else {
+    echo "<a href=\"gowDtManager.php?do=new_twin&id=$sel_twin\">New Twin</a>";
+  }
+  if ($flag_update_twin == 1) {
+    echo "<a href=\"gowDtManager.php?do=cancel_update_twin&id=$sel_twin\">Cancel Edit Twin</a>";
+  }
+  else {
+    echo "<a href=\"gowDtManager.php?do=update_twin&id=$sel_twin\">Edit Twin</a>";
+  }
+
+echo "  <div class=\"dropdown\">
+    <button class=\"dropbtn\">Select Twin
+      <i class=\"fa fa-caret-down\"></i>
+    </button>
+    <div class=\"dropdown-content\">
+    ";
+
+    //echo("Available Twins<br>");
+    $do = 'ls *.twin > twin.list';
+    system($do);
+    $file = fopen('twin.list', "r");
+    if ($file)
+    {
+      while(!feof($file))
+      {
+        $line = fgets($file);
+        if (strlen($line) > 2)
+        {
+            $line = trim($line);
+            $twin = str_replace(".twin", "", $line);
+            echo "<a href=gowDtManager.php?do=select_twin&id=$twin>$twin</a>";
+        }
+      }
+    }
+    echo "</div></div>";
+echo "<div class=\"dropdown\">
+      <button class=\"dropbtn\">Delete Twin
+        <i class=\"fa fa-caret-down\"></i>
+      </button>
+      <div class=\"dropdown-content\">
+      ";
+
+      //echo("Available Twins<br>");
+      //$do = 'ls *.twin > twin.list';
+      //system($do);
+      $file = fopen('twin.list', "r");
+      if ($file)
+      {
+        while(!feof($file))
+        {
+          $line = fgets($file);
+          if (strlen($line) > 2)
+          {
+              $line = trim($line);
+              $twin = str_replace(".twin", "", $line);
+              echo "<a href=gowDtManager.php?do=delete_twin&id=$twin>$twin</a>";
+          }
+        }
+      }
+      echo "</div></div>";
+
+      echo "<div class=\"dropdown\">
+            <button class=\"dropbtn\">Generate
+              <i class=\"fa fa-caret-down\"></i>
+            </button>
+            <div class=\"dropdown-content\">
+            ";
+    echo "<a href=\"gowDtManager.php?do=html_twin&id=$sel_twin\">HTML</a>";
+    echo "</div></div>";
+    echo "<a href=\"gowDtManager.php?do=run_twin&id=$sel_twin\">Run Twin</a>";
+    echo "<a href=\"gowDtManager.php?do=about\">About</a>";
+echo "</div>";
+
+if ($flag_clear_window == 0)
+{
+ $ff = $sel_twin.'.twin';
+ $fcount = count(file($ff));
+ $json   = file_get_contents($ff);
 }
+//echo "count=$fcount<br>";
+
 //=============================================
 if ($flag_update_twin == 1)
 {
@@ -393,6 +511,7 @@ if ($flag_new_twin == 1)
 
   if($flag_window_size == 0)echo "<a href=gowDtManager.php?do=large_window>Large Window</a>";
   if($flag_window_size == 1)echo "<a href=gowDtManager.php?do=small_window>Small Window</a>";
+  echo "<a href=gowDtManager.php?do=clear_window>Clear</a>";
   echo " <form action=\"#\" method=\"post\" name=\"jjss\">";
   echo " <input type=\"hidden\" name=\"do\" value=\"create_new_twin\">";
   if($flag_window_size == 1)echo" <textarea name=\"json\" rows=\"$fcount\" cols=\"100\" >$json</textarea>";
