@@ -256,6 +256,10 @@ $_SESSION["flag_window_size"];
   {
     $flag_clear_window = 1;
   }
+  if($do == 'api')
+  {
+    $flag_api = 1;
+  }
 }
 
 // POST
@@ -480,6 +484,7 @@ echo "<div class=\"dropdown\">
     echo "<a href=\"gowDtManager.php?do=html_twin&id=$sel_twin\">HTML</a>";
     echo "</div></div>";
     echo "<a href=\"gowDtManager.php?do=run_twin&id=$sel_twin\">Run Twin</a>";
+    echo "<a href=\"gowDtManager.php?do=api\">API</a>";
     echo "<a href=\"gowDtManager.php?do=about\">About</a>";
 echo "</div>";
 
