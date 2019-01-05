@@ -22,7 +22,8 @@ cDbHost     = '192.168.1.85'
 cDbName     = 'gow'
 cDbUser     = 'folke'
 cDbPassword = 'something'
-cDbTableName= 'something'
+cDbTableName1 = 'something'
+cDbTableName2 = 'something'
 #===================================================
 def readConfiguration():
 	try:
