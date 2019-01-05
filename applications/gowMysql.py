@@ -50,6 +50,7 @@ def readConfiguration():
 
 			if word[0] == 'tablename1':
 				cDbTableName1  = word[1]
+				print cDbTableName1 + "benny"
 			if word[0] == 'tablename2':
 				cDbTableName2  = word[1]
 		fh.close()
