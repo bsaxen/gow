@@ -103,7 +103,7 @@ readConfiguration()
 #=============================================
 while True:
 
-	print "t1 " + cdTableName1
+	print "t1 " + cDbTableName1
 	if cNtop > 0:
 		url = 'http://' + cUrl + '/' + cTopic1 + '/device.json'
    		period = float(gowReadJsonMeta(url,'period'))
