@@ -47,6 +47,7 @@ def readConfiguration():
 				cDbUser      = word[1]
 			if word[0] == 'pswd':
 				cDbPassword  = word[1]
+
 			if word[0] == 'tablename1':
 				cDbTableName1  = word[1]
 			if word[0] == 'tablename2':
@@ -102,7 +103,7 @@ readConfiguration()
 #=============================================
 while True:
 
-	
+	print "t1 " + cdTbaleName1
 	if cNtop > 0:
 		url = 'http://' + cUrl + '/' + cTopic1 + '/device.json'
    		period = float(gowReadJsonMeta(url,'period'))
@@ -115,5 +116,5 @@ while True:
     		x      = float(gowReadJsonPayload(url,'temp2'))
     		gowMysqlInsert(cDbTableName2,'value',x)
 		
-    
+    	print "sleep " + str(period)
     	time.sleep(period)
