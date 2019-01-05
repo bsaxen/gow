@@ -6,20 +6,22 @@
 //=============================================
 // Configuration
 //=============================================
-char* publishTopic = "test/topic/here/0";
+char* publishTopic = "nytomta/gow/fan1/0";
 int conf_period = 10;
 int conf_wrap   = 999999;
-const char* ssid       = "my_ssid";
-const char* password   = "my passw";
-const char* host       = "192.168.1.242";
+const char* ssid       = "123";
+const char* password   = "123";
+const char* host       = "gow.simuino.com";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
 //=============================================
 #include <ESP8266WiFi.h>
+#define FAN_PIN 5 
+int g_status = 1;
 
 void setup() {
-  Serial.begin(9600;
-  delay(10);
+  Serial.begin(9600);
+  delay(100);
 
   Serial.println();
   Serial.println();
@@ -38,11 +40,24 @@ void setup() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+
+  pinMode(FAN_PIN, OUTPUT);
+  digitalWrite(FAN_PIN,HIGH);
+  delay(2000);
+  digitalWrite(FAN_PIN,LOW);
+  delay(2000);
+  digitalWrite(FAN_PIN,HIGH);
+  g_status = 1;
 }
 
 int value = 0;
 
-void loop() {
+//=============================================
+void loop() 
+//=============================================
+{
+  char order[10];
+  char buf[100];
   delay(conf_period*1000);
   ++value;
 
@@ -67,9 +82,14 @@ void loop() {
   url += conf_wrap;
   url += "&period=";
   url += conf_period;
+  url += "&message=2";
   url += "&hw=";
   url += "esp8266";
-      
+  url += "&payload=";
+  url += "{\"status\":\"";
+  url += g_status;
+  url += "\"}"; 
+
   Serial.print("Requesting URL: ");
   Serial.println(url);
 
@@ -84,12 +104,43 @@ void loop() {
       return;
     }
   }
-
+  delay(2000);
   // Read all the lines of the reply from server and print them to Serial
   while (client.available()) {
     String action = client.readStringUntil('\r');
-    Serial.print(action);
-    // Do something based upon the action string
+      if (action.indexOf(':') == 1) 
+      {
+        int x = action.lastIndexOf(':');
+        Serial.print("Order received");
+        Serial.println(x);
+        x = x+2;
+        action.toCharArray(buf,x);
+        Serial.println(buf);  
+ 
+        if( strstr(buf,"OFF") != NULL)
+        {
+            g_status = 1;
+            digitalWrite(FAN_PIN,HIGH);
+        }
+           
+        if( strstr(buf,"ONN") != NULL)
+        {
+            g_status = 2;
+            digitalWrite(FAN_PIN,LOW);
+        }
+        if(strstr(buf,"period") != NULL)// set new period
+        {
+           for (char* p = buf; p = strchr(p, ','); ++p) 
+           {
+              *p = ' ';
+           }
+           for (char* p = buf; p = strchr(p, ':'); ++p) 
+           {
+              *p = ' ';
+           }
+           //sscanf(buf,"%s %d",order, &conf_period);
+        }
+      }
   }
 
   Serial.println();
