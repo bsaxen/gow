@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-01-01
+# Date.......: 2019-01-05
 # Author.....: Benny Saxen
 # Description: 
 #=============================================
@@ -22,6 +22,7 @@ cDbHost     = '192.168.1.85'
 cDbName     = 'gow'
 cDbUser     = 'folke'
 cDbPassword = 'something'
+cDbTableName= 'something'
 #===================================================
 def readConfiguration():
 	try:
@@ -45,16 +46,23 @@ def readConfiguration():
 				cDbUser      = word[1]
 			if word[0] == 'pswd':
 				cDbPassword  = word[1]
+			if word[0] == 'tablename1':
+				cDbTableName1  = word[1]
+			if word[0] == 'tablename2':
+				cDbTableName2  = word[1]
 		fh.close()
 	except:
 		fh = open('configuration.txt', 'w')
 		fh.write('url        gow.simuino.com\n')
 		fh.write('ntop       1\n')
 		fh.write('topic1     kvv32/test/temperature/0\n')
+		fh.write('topic2     kvv32/test/temperature/1\n')
 		fh.write('host       192.168.1.85\n')
 		fh.write('database   gow\n')
 		fh.write('user       folke\n')
 		fh.write('pswd       hm\n')
+		fh.write('tablename1 hm\n')
+		fh.write('tablename2 hm\n')
 		fh.close()
 	return
 #=============================================
@@ -98,13 +106,13 @@ while True:
 		url = 'http://' + cUrl + '/' + cTopic1 + '/device.json'
    		period = float(gowReadJsonMeta(url,'period'))
     		x      = float(gowReadJsonPayload(url,'temp1'))
-    		gowMysqlInsert('temperatur1','value',x)
+    		gowMysqlInsert(cDbTableName1,'value',x)
 
 	if cNtop > 1:
    		url = 'http://' + cUrl + '/' + cTopic2 + '/device.json'
    		period = float(gowReadJsonMeta(url,'period'))
     		x      = float(gowReadJsonPayload(url,'temp2'))
-    		gowMysqlInsert('temperatur2','value',x)
+    		gowMysqlInsert(cDbTableName2,'value',x)
 		
     
     	time.sleep(period)
