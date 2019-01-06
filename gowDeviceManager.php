@@ -237,7 +237,7 @@ if ($form_send == 1)
                  echo "<tr><td bgcolor=\"#DAF7A6\">TOPIC</td>";
                }
                else {
-                 echo "<tr><td bgcolor=\"yellow\">TOPIC</td>";
+                 echo "<tr><td bgcolor=\"yellow\">$status</td>";
                }
                echo "<td><a href=gowDeviceManager.php?do=select&sel_url=$url&sel_path=$link>$link</a></td>";
                $rest = 'http://'.$url.'?do=delete&topic='.$link;
