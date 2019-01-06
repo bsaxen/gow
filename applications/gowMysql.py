@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-01-05
+# Date.......: 2019-01-06
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -19,43 +19,37 @@ if len (sys.argv) != 2 :
     sys.exit (1)
 
 config_file = sys.argv[1]
-print "Configuration used: " + config_file
+print "Configuration used: " + "x"+config_file+"x"
 
 #=============================================
 # Configuration
 #=============================================
-cUrl        = 'gow.simuino.com'
-cTopic      = 'kvv32/test/temperature/0'
-cParam      = 'temp1'
 cDbHost     = '192.168.1.85'
 cDbName     = 'gow'
 cDbUser     = 'folke'
 cDbPassword = 'something'
-cDbTableName = 'something'
+c_url   = []
+c_topic = []
+c_table = []
+c_param = []
 #===================================================
 def readConfiguration():
-    global cUrl
-    global cTopic
-    global cParam
     global cDbHost
     global cDbName
     global cDbUser
     global cDbPassword
-    global cDbTableName
+    global c_url
+    global c_topic
+    global c_table
+    global c_param
+
+    n = 0
     try:
+        print config_file
         fh = open(config_file, 'r')
         for line in fh:
             #print line
             word = line.split()
-            if word[0] == 'url':
-                cUrl    = word[1]
-                print cUrl
-            if word[0] == 'topic':
-                cTopic  = word[1]
-                print cTopic
-            if word[0] == 'param':
-                cParam  = word[1]
-                print cParam
             if word[0] == 'host':
                 cDbHost = word[1]
                 print cDbHost
@@ -68,21 +62,22 @@ def readConfiguration():
             if word[0] == 'pswd':
                 cDbPassword  = word[1]
                 print cDbPassword
-            if word[0] == 'tablename':
-                cDbTableName  = word[1]
-                print cDbTableName
+            if word[0] == 'stream':
+                c_url.append(word[1])
+                c_topic.append(word[2])
+                c_table.append(word[3])
+                c_param.append(word[4])
+                print str(n) + " " + c_topic[n]
+                n += 1
         fh.close()
-    except:
-        print "Configuration file not found - configuration.txt template created"
+    except IOError:
+        print "Configuration file not found " + config_file + " - configuration.txt template created"
         fh = open('configuration.txt', 'w')
-        fh.write('url        gow.simuino.com\n')
-        fh.write('topic      kvv32/test/temperature/0\n')
-        fh.write('param      temp1\n')
         fh.write('host       192.168.1.85\n')
         fh.write('database   gow\n')
         fh.write('user       folke\n')
         fh.write('pswd       hm\n')
-        fh.write('tablename  mytable\n')
+        fh.write('stream     url topic table parameter\n')
         fh.close()
         sys.exit (1)
     return
@@ -130,13 +125,12 @@ readConfiguration()
 # loop
 #=============================================
 while True:
-    print cTopic
-    url = 'http://' + cUrl + '/' + cTopic + '/device.json'
+    url = 'http://' + c_url[0] + '/' + c_topic[0] + '/device.json'
     print url
     period = float(gowReadJsonMeta(url,'period'))
     print period
     x      = float(gowReadJsonPayload(url,cParam))
     print x
-    gowMysqlInsert(cDbTableName,'value',x)
+    #gowMysqlInsert(cDbTableName,'value',x)
     print "sleep " + str(period)
     time.sleep(period)
