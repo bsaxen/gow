@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-01-06
+# Date.......: 2019-01-07
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -12,6 +12,7 @@ import requests
 import json
 import urllib2
 import time
+import datetime
 import sys
 
 if len (sys.argv) != 2 :
@@ -19,7 +20,7 @@ if len (sys.argv) != 2 :
     sys.exit (1)
 
 config_file = sys.argv[1]
-print "Configuration used: " + "x"+config_file+"x"
+print "Configuration used: " + config_file
 
 #=============================================
 # Configuration
@@ -28,10 +29,13 @@ cDbHost     = '192.168.1.85'
 cDbName     = 'gow'
 cDbUser     = 'folke'
 cDbPassword = 'something'
-c_url   = []
-c_topic = []
-c_table = []
-c_param = []
+c_url    = []
+c_topic  = []
+c_table  = []
+c_param  = []
+schedule = []
+work     = []
+running  = []
 #===================================================
 def readConfiguration():
     global cDbHost
@@ -80,7 +84,7 @@ def readConfiguration():
         fh.write('stream     url topic table parameter\n')
         fh.close()
         sys.exit (1)
-    return
+    return(n)
 #=============================================
 def gowReadJsonMeta(url,par):
 #=============================================
@@ -104,33 +108,69 @@ def gowMysqlInsert(xTable,xPar,xValue):
     global cDbPassword
     print xTable + xPar + str(xValue)
     db = MySQLdb.connect(host=cDbHost,user=cDbUser,db=cDbName)
-    print "a1"
     cursor = db.cursor()
-    print "a2"
     sql = "CREATE TABLE IF NOT EXISTS " + xTable + " (id int(11) NOT NULL AUTO_INCREMENT,value float,ts timestamp, PRIMARY KEY (id))"
     cursor.execute(sql)
-    print "a3"
     sql = "INSERT INTO "+ xTable + " (`id`, " + xPar + ", `ts`) VALUES (NULL," + str(xValue) + ", CURRENT_TIMESTAMP)"
     cursor.execute(sql)
-    print "a4"
     db.commit()
-    print "a5"
     db.close()
 
 #=============================================
 # setup
 #=============================================
-readConfiguration()
-#=============================================
-# loop
-#=============================================
-while True:
-    url = 'http://' + c_url[0] + '/' + c_topic[0] + '/device.json'
+nds = readConfiguration()
+print "Number of datastreams: " + str(nds)
+max_period = 0
+for num in range(0,nds):
+    url = 'http://' + c_url[num] + '/' + c_topic[num] + '/device.json'
     print url
     period = float(gowReadJsonMeta(url,'period'))
     print period
-    x      = float(gowReadJsonPayload(url,cParam))
+    if period > max_period:
+        max_period = period
+    schedule.append(period)
+    work.append(period)
+    no = float(gowReadJsonMeta(url,'no'))
+    running.append(no)
+    print no
+    x      = float(gowReadJsonPayload(url,c_param[num]))
     print x
-    #gowMysqlInsert(cDbTableName,'value',x)
-    print "sleep " + str(period)
-    time.sleep(period)
+    gowMysqlInsert(cDbTableName,'value',x)
+#=============================================
+# loop
+#=============================================
+print "max period:" + str(max_period)
+now = datetime.datetime.now()#.strftime("%Y-%m-%d %H:%M:%S")
+time.sleep(3)
+total_duration = 0
+while True:
+    then = now
+    now = datetime.datetime.now()#.strftime("%Y-%m-%d %H:%M:%S")
+    #print now
+    duration = now - then                         # For build-in functions
+    duration_in_s = duration.total_seconds()
+    print duration_in_s
+    total_duration += duration_in_s
+    print total_duration
+    print "sleep " + str(1)
+    time.sleep(1)
+
+    for num in range(0,nds):
+        work[num] -= 1
+        print str(num) + " " + str(work[num])
+        if work[num] == 0:
+            work[num] = schedule[num]
+            url = 'http://' + c_url[num] + '/' + c_topic[num] + '/device.json'
+            print url
+            period = float(gowReadJsonMeta(url,'period'))
+            print period
+            if period > max_period:
+                max_period = period
+            schedule[num] = period
+            no = float(gowReadJsonMeta(url,'no'))
+            print no
+            if no != running[num]:
+                x  = float(gowReadJsonPayload(url,c_param[num]))
+                print x
+                gowMysqlInsert(cDbTableName,'value',x)
