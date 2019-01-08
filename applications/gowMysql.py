@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-01-07
+# Date.......: 2019-01-08
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -15,11 +15,12 @@ import time
 import datetime
 import sys
 
-if len (sys.argv) != 2 :
-    print "Usage: python gowMysql.py your-configuration.txt"
-    sys.exit (1)
+#if len (sys.argv) != 2 :
+#    print "Usage: python gowMysql.py your-configuration.txt"
+#    sys.exit (1)
 
-config_file = sys.argv[1]
+#config_file = sys.argv[1]
+config_file = 'configuration.txt'
 print "Configuration used: " + config_file
 
 #=============================================
@@ -136,7 +137,7 @@ for num in range(0,nds):
     print no
     x      = float(gowReadJsonPayload(url,c_param[num]))
     print x
-    gowMysqlInsert(cDbTableName,'value',x)
+    #gowMysqlInsert(cDbTableName,'value',x)
 #=============================================
 # loop
 #=============================================
@@ -173,4 +174,4 @@ while True:
             if no != running[num]:
                 x  = float(gowReadJsonPayload(url,c_param[num]))
                 print x
-                gowMysqlInsert(cDbTableName,'value',x)
+                #gowMysqlInsert(cDbTableName,'value',x)
