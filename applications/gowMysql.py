@@ -128,8 +128,8 @@ for num in range(0,nds):
     print url
     period = float(gowReadJsonMeta(url,'period'))
     print period
-    if period > max_period:
-        max_period = period
+    #if period > max_period:
+    #    max_period = period
     schedule.append(period)
     work.append(period)
     no = float(gowReadJsonMeta(url,'no'))
@@ -151,27 +151,31 @@ while True:
     #print now
     duration = now - then                         # For build-in functions
     duration_in_s = duration.total_seconds()
-    print duration_in_s
+    #print duration_in_s
     total_duration += duration_in_s
-    print total_duration
-    print "sleep " + str(1)
+    #print total_duration
+    #print "sleep " + str(1)
     time.sleep(1)
 
     for num in range(0,nds):
         work[num] -= 1
-        print str(num) + " " + str(work[num])
+        #print str(num) + " " + str(work[num])
         if work[num] == 0:
             work[num] = schedule[num]
             url = 'http://' + c_url[num] + '/' + c_topic[num] + '/device.json'
             print url
             period = float(gowReadJsonMeta(url,'period'))
             print period
-            if period > max_period:
-                max_period = period
+            #if period > max_period:
+            #    max_period = period
             schedule[num] = period
             no = float(gowReadJsonMeta(url,'no'))
             print no
+            delta_no = no - running[num]
+            if delta_no != 1:
+                print "Missing data: " + str(delta_no)
             if no != running[num]:
+                running[num] = no
                 x  = float(gowReadJsonPayload(url,c_param[num]))
                 print x
                 gowMysqlInsert(c_table[num],'value',x)
