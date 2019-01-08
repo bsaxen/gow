@@ -137,7 +137,7 @@ for num in range(0,nds):
     print no
     x      = float(gowReadJsonPayload(url,c_param[num]))
     print x
-    #gowMysqlInsert(cDbTableName,'value',x)
+    gowMysqlInsert(c_table[num],'value',x)
 #=============================================
 # loop
 #=============================================
@@ -174,4 +174,4 @@ while True:
             if no != running[num]:
                 x  = float(gowReadJsonPayload(url,c_param[num]))
                 print x
-                #gowMysqlInsert(cDbTableName,'value',x)
+                gowMysqlInsert(c_table[num],'value',x)
