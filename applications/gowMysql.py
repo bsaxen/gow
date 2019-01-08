@@ -101,17 +101,17 @@ def gowReadJsonPayload(url,par):
     x =  j['gow']['payload'][par]
     return x
 #=============================================
-def gowMysqlInsert(xTable,xPar,xValue):
+def gowMysqlInsert(cr,xTable,xPar,xValue):
 #=============================================
     global cDbHost
     global cDbName
     global cDbUser
     global cDbPassword
-    print xTable + xPar + str(xValue)
     db = MySQLdb.connect(host=cDbHost,user=cDbUser,db=cDbName)
     cursor = db.cursor()
-    sql = "CREATE TABLE IF NOT EXISTS " + xTable + " (id int(11) NOT NULL AUTO_INCREMENT,value float,ts timestamp, PRIMARY KEY (id))"
-    cursor.execute(sql)
+    if cr == 1:
+        sql = "CREATE TABLE IF NOT EXISTS " + xTable + " (id int(11) NOT NULL AUTO_INCREMENT,value float,ts timestamp, PRIMARY KEY (id))"
+        cursor.execute(sql)
     sql = "INSERT INTO "+ xTable + " (`id`, " + xPar + ", `ts`) VALUES (NULL," + str(xValue) + ", CURRENT_TIMESTAMP)"
     cursor.execute(sql)
     db.commit()
@@ -137,11 +137,10 @@ for num in range(0,nds):
     print no
     x      = float(gowReadJsonPayload(url,c_param[num]))
     print x
-    gowMysqlInsert(c_table[num],'value',x)
+    gowMysqlInsert(1,c_table[num],'value',x)
 #=============================================
 # loop
 #=============================================
-print "max period:" + str(max_period)
 now = datetime.datetime.now()#.strftime("%Y-%m-%d %H:%M:%S")
 time.sleep(3)
 total_duration = 0
@@ -172,10 +171,20 @@ while True:
             no = float(gowReadJsonMeta(url,'no'))
             print no
             delta_no = no - running[num]
-            if delta_no != 1:
+            ok = 0
+            if delta_no == 1:
+                print "Correct data: " + str(delta_no)
+                ok = 1
+            if delta_no > 1:
                 print "Missing data: " + str(delta_no)
-            if no != running[num]:
+                ok = 1
+            if delta_no == 0:
+                print "No update of data: " + str(delta_no)
+            if delta_no < 0:
+                print "Wrap around of data: " + str(delta_no)
+                ok = 1
+            if ok == 1:
                 running[num] = no
                 x  = float(gowReadJsonPayload(url,c_param[num]))
                 print x
-                gowMysqlInsert(c_table[num],'value',x)
+                gowMysqlInsert(0,c_table[num],'value',x)
