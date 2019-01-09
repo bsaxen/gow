@@ -485,7 +485,7 @@ echo "<div class=\"dropdown\">
     echo "</div></div>";
     echo "<a href=\"gowDtManager.php?do=run_twin&id=$sel_twin\">Run Twin</a>";
     echo "<a href=\"gowDtManager.php?do=api\">API</a>";
-    echo "<a href=\"http://gow.simuino.com/gowDeviceManager.php\ target=\"_blank\"">Device Manager</a>";
+    echo "<a href=\"http://gow.simuino.com/gowDeviceManager.php\" target=\"_blank\">Device Manager</a>";
 echo "</div>";
 
 if ($flag_clear_window == 0)
