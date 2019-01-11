@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2018-12-29
+// Date.......: 2019-01-11
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -21,7 +21,6 @@
 // gowServer.php?do=data&topic=<topic>
 //              &no     = 3
 //              &wrap   = 999999
-//              &type   = 'temperature'
 //              &ts     = '2018-12-01 23:12:31'
 //              &period = 10
 //              &url    = http://gow.zimuino.com
