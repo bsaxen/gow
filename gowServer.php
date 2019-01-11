@@ -73,6 +73,7 @@ function readActionFileList($topic)
   //echo $do;
   system($do);
   $list_file = $topic.'/action.work';
+  $no_of_lines = count(file($list_file)); 
   $file = fopen($list_file, "r");
   if ($file)
   {
@@ -85,6 +86,7 @@ function readActionFileList($topic)
           $result = readActionFile($line);
       }
   }
+  $result = "[$no_of_line]".$result;
   return $result;
 }
 //=============================================
