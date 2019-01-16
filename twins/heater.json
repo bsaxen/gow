@@ -1,0 +1,73 @@
+{
+	"model": {
+		"id": "heater",
+		"date": "2019-01-16",
+		"state": "OFF",
+		"error": "error code",
+		"sub-models": {
+			"model-id": "pellet_heater"
+		},
+		"configuration": {
+			"measure_frequency": {
+				"type": "int",
+				"value": "12"
+			},
+			"anything": {
+				"type": "string",
+				"value": "hello"
+			}
+		},
+		"data_channels": {
+			"ioant_mqtt": {
+				"protocol": "mqtt",
+				"broker": "simuino.com",
+				"port": "1883"
+			},
+			"api_smhi": {
+				"protocol": "http",
+				"broker": "smhi.se",
+				"port": "80"
+			},
+			"gow_simuino": {
+				"protocol": "gow",
+				"broker": "gow.simuino.com",
+				"port": "80"
+			}
+		},
+		"data_sources": {
+			"temperature_indoor": {
+				"channel": "ioant_mqtt",
+				"type": "temperature",
+				"source": "kvv32/test/temperature/0"
+			},
+			"temperature_next_day": {
+				"channel": "api_smhi",
+				"type": "temperature",
+				"source": "city=kil&temperature"
+			},
+			"temperature_outdoor": {
+				"channel": "gow_simuino",
+				"type": "temperature",
+				"source": "nytomta/gow/temperature/1"
+			},
+			"electricity": {
+				"channel": "ioant_mqtt",
+				"type": "electricity",
+				"source": "kil/kvv32/esp3/0"
+			}
+		},
+		"actuators": {
+			"heater_control": {
+				"channel": "ioant_mqtt",
+				"type": "stepper_motor",
+				"source": "kil/kvv32/D1/0",
+				"parameters": {
+					"direction": "CW",
+					"steps": "40",
+					"step_size": "FULL",
+					"delay": "5"
+				}
+			}
+		}
+	}
+}
