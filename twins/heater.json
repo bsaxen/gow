@@ -1,20 +1,69 @@
 {
 	"model": {
-		"id": "heater",
+		"name": "heater",
+		"id": "heater_001",
 		"date": "2019-01-16",
 		"state": "OFF",
 		"error": "error code",
 		"sub-models": {
-			"model-id": "pellet_heater"
+			"storage": "pellet_storage"
 		},
 		"configuration": {
 			"measure_frequency": {
-				"type": "int",
-				"value": "12"
+				"type": "seconds",
+				"value": "5"
 			},
-			"anything": {
+			"mintemp": {
+				"type": "temperature",
+				"value": "-7"
+			},
+			"maxtemp": {
+				"type": "temperature",
+				"value": "15"
+			},
+			"minheat": {
+				"type": "temperature",
+				"value": "25"
+			},
+			"maxheat": {
+				"type": "temperature",
+				"value": "40"
+			},
+			"minsteps": {
 				"type": "string",
-				"value": "hello"
+				"value": "5"
+			},
+			"maxsteps": {
+				"type": "string",
+				"value": "40"
+			},
+			"defsteps": {
+				"type": "string",
+				"value": "30"
+			},
+			"onofftime": {
+				"type": "seconds",
+				"value": "3600"
+			},
+			"minsmoke": {
+				"type": "temperature",
+				"value": "28"
+			},
+			"relax": {
+				"type": "float",
+				"value": "4.0"
+			},
+			"inertia": {
+				"type": "seconds",
+				"value": "120"
+			},
+			"x_0": {
+				"type": "int",
+				"value": "0"
+			},
+			"y_0": {
+				"type": "int",
+				"value": "36"
 			}
 		},
 		"data_channels": {
