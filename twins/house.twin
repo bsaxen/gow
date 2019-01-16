@@ -1,7 +1,7 @@
 {
 	"model": {
-		"id": "kvv32",
-		"date": "2019-01-11",
+		"id": "house",
+		"date": "2019-01-13",
 		"state": "OFF",
 		"error": "error code",
 		"configuration": {
