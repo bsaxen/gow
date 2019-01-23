@@ -9,22 +9,15 @@ import urllib
 import urllib2
 import time
 import datetime
-#===================================================
-# Configuration
-#===================================================
-conf_gs_url        = 'http://127.0.0.1/git/gow/'
-conf_server_name   = 'gowServer.php'
-conf_period        = 10
-conf_hw            = 'python'
-conf_wrap          = 999999
+from lib import *
 
-topic1  = 'test/temperature/outdoor/1'
-action1 = 'do something'
 #===================================================
 # Library
 #===================================================
+
 def job():
-    placeOrder(topic1,action1)
+    global c1
+    lib_placeOrder(c1, c1.c_topic1, c1.c_action1, c1.c_tag1 )
 #===================================================
 def placeOrder(top,act):
 #===================================================
@@ -43,14 +36,17 @@ def placeOrder(top,act):
 #===================================================
 # Main
 #===================================================
-#schedule.every(1).minutes.do(job)
+schedule.every(1).minutes.do(job)
 #schedule.every().hour.do(job)
 #schedule.every().day.at("10:30").do(job)
 #schedule.every().monday.do(job)
 #schedule.every().wednesday.at("13:15").do(job)
-
+c1 = configuration()
+confile = "gowtrigger.conf"
+lib_readConfiguration(confile,c1)
 while True:
     schedule.run_pending()
+    hello(c1)
     time.sleep(1)
 #===================================================
 # End of file

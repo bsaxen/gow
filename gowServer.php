@@ -73,7 +73,7 @@ function readActionFileList($topic)
   //echo $do;
   system($do);
   $list_file = $topic.'/action.work';
-  $no_of_lines = count(file($list_file)); 
+  $no_of_lines = count(file($list_file));
   $file = fopen($list_file, "r");
   if ($file)
   {
@@ -203,6 +203,15 @@ if (isset($_GET['do']))
       {
          mkdir($topic, 0777, true);
       }
+      //===========================================
+      // Registration
+      //===========================================
+      $filename = str_replace("/","_",$topic);
+      $filename = $filename.".reg";
+      //print $filename;
+      $doc = fopen($filename, "w");
+      fwrite($doc, "$gs_ts $ts $topic $url $period $hw");
+      fclose($doc);
     }
     else
     {
@@ -262,17 +271,9 @@ if (isset($_GET['do']))
         if (isset($_GET['payload'])) {
           $payload = $_GET['payload'];
         }
-      
 
-        //===========================================
-        // Registration
-        //===========================================
-        $filename = str_replace("/","_",$topic);
-        $filename = $filename.".reg";
-        //print $filename;
-        $doc = fopen($filename, "w");
-        fwrite($doc, "$gs_ts $ts $topic $url $period $hw");
-        fclose($doc);
+
+
 
 
         //===========================================
@@ -293,11 +294,11 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"payload\":\n $payload \n");
         fwrite($doc, "}}\n ");
         fclose($doc);
-    
+
 
         // Check if any action is present for this client/topic
         echo readActionFileList($topic);
-     
+
       } // data
  } // error
 } // do
