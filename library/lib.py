@@ -64,12 +64,10 @@ def lib_publish(c1, itopic, ipayload, n ):
 	data['do']     = 'data'
 	data['topic']  = itopic
 	data['no']     = n
-	data['wrap']   = conf_wrap
+	data['wrap']   = c1.c_wrap
 	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['period'] = iperiod
-	data['url']    = url
-	data['hw']     = ihw
-	data['hash']   = 'nohash'
+	data['period'] = c1.c_period
+	data['hw']     = c1.c_hw
 	# payload
 	data['payload'] = ipayload
 	
@@ -85,10 +83,10 @@ def lib_publish(c1, itopic, ipayload, n ):
 		print e.reason
 
 #===================================================
-def lib_placeOrder( itopic, iaction, itag ):
+def lib_placeOrder(c1, itopic, iaction, itag ):
 #===================================================
-	url = conf_gs_url
-	server = conf_server_name
+	url = c1.c_gs_url
+	server = c1.c_server_app
 	data = {}
 	data['do']     = 'action'
 	data['topic']  = itopic
