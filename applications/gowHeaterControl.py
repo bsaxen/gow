@@ -12,7 +12,11 @@ import urllib
 import urllib2
 import time
 import datetime
+from lib import *
 
+c1 = configuration()
+confile = "gowheatercontrol.conf"
+lib_readConfiguration(confile,c1)
 
 #===================================================
 def spacecollapse_op1 ( label, typ, value ):
@@ -152,7 +156,7 @@ def publishStepperMsg(steps, direction):
 def publishEnergyMsg(value):
     msg = "Publish energy message: "+str(value)
     print msg
-    
+
     configuration = ioant.get_configuration()
     out_msg = ioant.create_message("Temperature")
     out_msg.value = value
@@ -167,7 +171,7 @@ def publishEnergyMsg(value):
 def publishExtreme(value):
     msg = "Publish extreme message: "+str(value)
     print msg
-    
+
     configuration = ioant.get_configuration()
     out_msg = ioant.create_message("Temperature")
     out_msg.value = value
@@ -182,7 +186,7 @@ def publishExtreme(value):
 def publishFrequence(value):
     msg = "Publish frequency message: "+str(value)
     print msg
-    
+
     configuration = ioant.get_configuration()
     out_msg = ioant.create_message("Temperature")
     out_msg.value = value
@@ -417,9 +421,9 @@ def heater_model():
 
 			if steps > g_maxsteps:
 				steps = g_maxsteps
-				
+
 			show_action_bit_info(action)
-			
+
 			if action == 0:
 				publishStepperMsg(int(steps), direction)
 				print ">>>>>> Move Stepper " + str(steps) + " " + str(direction)
@@ -432,24 +436,7 @@ def heater_model():
 	show_state_mode(g_state,g_mode)
    	if energy < 999:
 		publishEnergyMsg(energy)
-	status = "Uptime=" + str(r_uptime) + " target=" + str(y) + "("+str(temperature_water_out)+")" + " inertia " + str(r_inertia) + " steps " + str(steps)
-	status = status + " Pos=" + str(g_current_position) + " indoor " + str(timeout_temperature_indoor) + " outdoor " + str(timeout_temperature_outdoor)
-	print status
-	#write_log(status)
-	spacecollapse_op1('kil_kvv32_heatercontrol_status','status', g_state)
-	spacecollapse_op1('kil_kvv32_heatercontrol_mode','mode', g_mode)
-	spacecollapse_op1('kil_kvv32_heatercontrol_position','position', g_current_position)
-	spacecollapse_op1('kil_kvv32_heatercontrol_inertia','inertia', r_inertia)
-	spacecollapse_op1('kil_kvv32_heatercontrol_uptime','uptime', r_uptime)
-	spacecollapse_op1('kil_kvv32_heatercontrol_target','target', y)
-	spacecollapse_op1('kil_kvv32_heatercontrol_steps','steps', steps)
-	spacecollapse_op1('kil_kvv32_heatercontrol_energy','energy', energy)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_indoor','timeout_indoor', timeout_temperature_indoor)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_outdoor','timeout_outdoor', timeout_temperature_outdoor)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_water_in','timeout_water_in', timeout_temperature_water_in)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_water_out','timeout_water_out', timeout_temperature_water_out)
-	spacecollapse_op1('kil_kvv32_heatercontrol_timeout_smoke','timeout_smoke', timeout_temperature_smoke)
-	return
+
 #=====================================================
 def getTopicHash(topic):
     res = topic['top'] + topic['global'] + topic['local'] + topic['client_id'] + str(topic['message_type']) + str(topic['stream_index'])
@@ -474,7 +461,7 @@ def subscribe_to_topic(par,msgt):
 #=====================================================
 def find_extreme(x1,x2,x3):
 	global tmax,tmin
-	t = datetime.datetime.now() 
+	t = datetime.datetime.now()
 	print "min-max: " + str(x1) + " " + str(x2) + " " + str(x3)
 	if x1 > x2 and x2 > x3:
 		print "values falling"
@@ -491,7 +478,7 @@ def find_extreme(x1,x2,x3):
 		f = d.seconds
 		tmax = t
 		publishFrequence(f)
-		publishExtreme(2)	
+		publishExtreme(2)
 #=====================================================
 def setup(configuration):
 	global v1,v2,v3
@@ -499,8 +486,8 @@ def setup(configuration):
 	v2 = 0.0
 	v3 = 0.0
 	global tmin,tmax
-	tmin = datetime.datetime.now() 
-	tmax = datetime.datetime.now() 
+	tmin = datetime.datetime.now()
+	tmax = datetime.datetime.now()
     # Configuration
 	global g_minsteps,g_maxsteps,g_defsteps
 	global g_minsmoke
