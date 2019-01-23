@@ -1,7 +1,7 @@
 # =============================================
 # File: lib.py
 # Author: Benny Saxen
-# Date: 2019-01-22
+# Date: 2019-01-23
 # Description: GOW python library 
 # =============================================
 import urllib
@@ -9,47 +9,56 @@ import urllib2
 import time
 import datetime
 
+class configuration:
+	c_url     = 'gow.simuino.com'
+	c_server_app = 'gowServer.php'
+	c_hw         = 'python'
+	c_period     = 10
+	c_wrap       = 999999
+	c_gs
+
+c1 = configuration() 
 #===================================================
-def evaluateAction( action):
+def lib_evaluateAction( action):
 	print action	
 #===================================================
-def readConfiguration():
+def lib_readConfiguration(confile,c1):
 	try:
-		fh = open('configuration.txt', 'r') 
+		fh = open(confile, 'r') 
 		for line in fh: 
 			print line
 			word = line.split()
 			if word[0] == 'gs_url':
-				conf_gs_url      = word[1]
-			if word[0] == 'gs_server':
-				conf_server_name = word[1]
+				c1.c_gs_url         = word[1]
+			if word[0] == 'gs_app':
+				c1.c_server_app     = word[1]
 			if word[0] == 'gs_period':
-				conf_period      = word[1]
+				c1.c_period         = word[1]
 			if word[0] == 'gs_hw':
-				conf_hw          = word[1]
+				c1.c_hw             = word[1]
 			if word[0] == 'gs_wrap':
-				conf_wrap        = word[1]
-			if word[0] == 'gs_security':
-				conf_security    = word[1]
-			if word[0] == 'gs_secret':
-				conf_secret      = word[1]
+				c1.c_wrap           = word[1]
+			if word[0] == 'gs_topic1':
+				c1.c_topic1         = word[1]
+			if word[0] == 'gs_topic2':
+				c1.c_topic2         = word[1]
+			if word[0] == 'gs_topic3':
+				c1.c_topic3         = word[1]
 		fh.close()
 	except:
-		fh = open('configuration.txt', 'w')
+		fh = open(confile, 'w')
 		fh.write('gs_url      gow.simuino.com\n')
 		fh.write('gs_server   gowServer.php\n')
 		fh.write('gs_period   10\n')
 		fh.write('gs_hw       python\n')
 		fh.write('gs_wrap     999999\n')
-		fh.write('gs_security 1\n')
-		fh.write('gs_secret   mysecret\n')
 		fh.close()
 	return
 #===================================================
-def publishData( itopic, ipayload, n, iperiod, ihw ):
+def lib_publish(c1, itopic, ipayload, n ):
 #===================================================
-	url = conf_gs_url
-	server = conf_server_name
+	url = c1.c_gs_url
+	server = c1.c_server_app
 	data = {}
 	# meta data
 	data['do']     = 'data'
@@ -76,7 +85,7 @@ def publishData( itopic, ipayload, n, iperiod, ihw ):
 		print e.reason
 
 #===================================================
-def placeOrder( itopic, iaction, itag ):
+def lib_placeOrder( itopic, iaction, itag ):
 #===================================================
 	url = conf_gs_url
 	server = conf_server_name
