@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-01-11
+// Date.......: 2019-01-23
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -202,16 +202,15 @@ if (isset($_GET['do']))
       if (!is_dir($topic))
       {
          mkdir($topic, 0777, true);
+        //===========================================
+        // Registration
+        //===========================================
+        $filename = str_replace("/","_",$topic);
+        $filename = $filename.".reg";
+        $doc = fopen($filename, "w");
+        fwrite($doc, "$gs_ts $ts $topic $url $period $hw");
+        fclose($doc);
       }
-      //===========================================
-      // Registration
-      //===========================================
-      $filename = str_replace("/","_",$topic);
-      $filename = $filename.".reg";
-      //print $filename;
-      $doc = fopen($filename, "w");
-      fwrite($doc, "$gs_ts $ts $topic $url $period $hw");
-      fclose($doc);
     }
     else
     {
