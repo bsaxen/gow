@@ -148,7 +148,7 @@ def lib_readConfiguration(confile,c1):
 				c1.c_dbpassword      = word[1]
 				
 			if word[0] == 'c_stream':
-                		c1.c_ds_url.append(word[1])
+                		c1.c_ds_uri.append(word[1])
                 		c1.c_ds_topic.append(word[2])
                 		c1.c_ds_table.append(word[3])
                 		c1.c_ds_param.append(word[4])
@@ -188,7 +188,7 @@ def lib_readConfiguration(confile,c1):
 		fh.write('c_dbname       gow\n')
 		fh.write('c_dbuser       folke\n')
 		fh.write('c_dbpassword   something\n')
-		
+		fh.write('c_stream       uri topic table param\n')		
 		fh.close()
 	return
 #=============================================
