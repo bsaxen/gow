@@ -4,6 +4,7 @@
 # Date: 2019-01-24
 # Description: GOW python library
 # =============================================
+import MySQLdb
 import urllib
 import urllib2
 import time
@@ -36,6 +37,11 @@ class configuration:
    	c_defsteps  = 0  
    	c_maxenergy = 0 
 	
+	# database access
+    	c_dbhost     = '192.168.1.85'
+    	c_dbname     = 'gow'
+    	c_dbuser     = 'myuser'
+    	c_dbpassword = 'mypswd'	
 #=====================================================
 def lib_init_history(fname):
     try:
@@ -122,6 +128,16 @@ def lib_readConfiguration(confile,c1):
 				c1.c_defsteps         = word[1]
 			if word[0] == 'c_maxenergy':
 				c1.c_maxenergy        = word[1]
+			
+			# Database access
+			if word[0] == 'c_dbhost':
+				c1.c_dbhost         = word[1]
+			if word[0] == 'c_dbname':
+				c1.c_dbname         = word[1]
+			if word[0] == 'c_dbuser':
+				c1.c_dbuser         = word[1]
+			if word[0] == 'c_dbpassword':
+				c1.c_dbpassword      = word[1]
 				
 		fh.close()
 	except:
@@ -151,8 +167,27 @@ def lib_readConfiguration(confile,c1):
 		fh.write('c_defsteps     30\n')
 		fh.write('c_maxenergy    4.0\n')
 		
+		fh.write('c_dbhost       192.168.1.85\n')
+		fh.write('c_dbname       gow\n')
+		fh.write('c_dbuser       folke\n')
+		fh.write('c_dbpassword   something\n')
+		
 		fh.close()
 	return
+#=============================================
+def lib_readJsonMeta(url,par):
+#=============================================
+    r = urllib2.urlopen(url)
+    j = json.load(r)
+    x =  j['gow'][par]
+    return x
+#=============================================
+def lib_readJsonPayload(url,par):
+#=============================================
+    r = urllib2.urlopen(url)
+    j = json.load(r)
+    x =  j['gow']['payload'][par]
+    return x
 #===================================================
 def lib_publish(c1, itopic, ipayload, n ):
 #===================================================
@@ -198,6 +233,17 @@ def lib_placeOrder(c1, itopic, iaction, itag ):
 		response = urllib2.urlopen(req)
 	except urllib2.URLError as e:
 		print e.reason
+#=============================================
+def gowMysqlInsert(c1,cr,xTable,xPar,xValue):
+    db = MySQLdb.connect(host=c1.c_dbhost,user=c1.c_dbuser,db=c1.c_dbname)
+    cursor = db.cursor()
+    if cr == 1:
+        sql = "CREATE TABLE IF NOT EXISTS " + xTable + " (id int(11) NOT NULL AUTO_INCREMENT,value float,ts timestamp, PRIMARY KEY (id))"
+        cursor.execute(sql)
+    sql = "INSERT INTO "+ xTable + " (`id`, " + xPar + ", `ts`) VALUES (NULL," + str(xValue) + ", CURRENT_TIMESTAMP)"
+    cursor.execute(sql)
+    db.commit()
+    db.close()
 
 #===================================================
 # End of file
