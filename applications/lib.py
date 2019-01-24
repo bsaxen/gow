@@ -1,7 +1,7 @@
 # =============================================
 # File: lib.py
 # Author: Benny Saxen
-# Date: 2019-01-23
+# Date: 2019-01-24
 # Description: GOW python library
 # =============================================
 import urllib
@@ -21,10 +21,43 @@ class configuration:
 	c_action1    = "action1"
 	c_action2    = "action2"
 	c_action3    = "action3"
-#===================================================
-def hello(p1):
-	print "hello"
-	print p1.c_wrap
+
+	# Heater algorithm
+	c_mintemp = 0.0
+   	c_maxtemp = 0.0
+   	c_minheat = 0.0
+   	c_maxheat = 0.0
+   	c_x_0     = 0.0
+   	c_y_0     = 0.0
+   	c_relax   = 4.0
+	c_minsmoke = 0.0
+   	c_minsteps  = 0
+   	c_maxsteps  = 0
+   	c_defsteps  = 0  
+   	c_maxenergy = 0 
+	
+#=====================================================
+def lib_init_history(fname):
+    try:
+        f = open(fname,'w')
+        f.write(fname)
+        f.write('\n')
+        f.close()
+    except:
+        print "ERROR init file " + fname
+    return
+#=====================================================
+def lib_writeFile(fname,message,ts):
+    try:
+        f = open(fname,'a')
+	if ts == 1:
+		f.write(datetime.datetime.now().strftime("%y-%m-%d %H:%M:%S")+" ")
+        f.write(message)
+        f.write('\n')
+        f.close()
+    except:
+        print "ERROR write to file " + fname
+    return
 #===================================================
 def lib_evaluateAction( action):
 	print action
@@ -35,48 +68,89 @@ def lib_readConfiguration(confile,c1):
 		for line in fh:
 			print line
 			word = line.split()
-			if word[0] == 'gs_url':
-				c1.c_gs_url         = word[1]
-			if word[0] == 'gs_app':
+			if word[0] == 'c_url':
+				c1.c_url         = word[1]
+			if word[0] == 'c_app':
 				c1.c_server_app     = word[1]
-			if word[0] == 'gs_period':
+			if word[0] == 'c_period':
 				c1.c_period         = word[1]
-			if word[0] == 'gs_hw':
+			if word[0] == 'c_hw':
 				c1.c_hw             = word[1]
-			if word[0] == 'gs_wrap':
+			if word[0] == 'c_wrap':
 				c1.c_wrap           = word[1]
-			if word[0] == 'gs_topic1':
+			if word[0] == 'c_topic1':
 				c1.c_topic1         = word[1]
-			if word[0] == 'gs_topic2':
+			if word[0] == 'c_topic2':
 				c1.c_topic2         = word[1]
-			if word[0] == 'gs_topic3':
+			if word[0] == 'c_topic3':
 				c1.c_topic3         = word[1]
-			if word[0] == 'gs_action1':
+			if word[0] == 'c_action1':
 				c1.c_action1         = word[1]
-			if word[0] == 'gs_action2':
+			if word[0] == 'c_action2':
 				c1.c_action2         = word[1]
-			if word[0] == 'gs_action3':
+			if word[0] == 'c_action3':
 				c1.c_action3         = word[1]
-			if word[0] == 'gs_tag1':
+			if word[0] == 'c_tag1':
 				c1.c_tag1         = word[1]
-			if word[0] == 'gs_tag2':
+			if word[0] == 'c_tag2':
 				c1.c_tag2         = word[1]
-			if word[0] == 'gs_tag3':
+			if word[0] == 'c_tag3':
 				c1.c_tag3         = word[1]
+				
+			# Heater algorithm
+			if word[0] == 'c_mintemp':
+				c1.c_mintemp          = word[1]
+			if word[0] == 'c_maxtemp':
+				c1.c_maxtemp          = word[1]
+			if word[0] == 'c_minheat':
+				c1.c_minheat          = word[1]
+			if word[0] == 'c_maxheat':
+				c1.c_maxheat          = word[1]
+			if word[0] == 'c_x_0':
+				c1.c_x_0              = word[1]
+			if word[0] == 'c_y_0':
+				c1.c_y_0              = word[1]
+			if word[0] == 'c_relax':
+				c1.c_relax            = word[1]
+			if word[0] == 'c_minsmoke':
+				c1.c_minsmoke         = word[1]
+			if word[0] == 'c_minsteps':
+				c1.c_minsteps         = word[1]
+			if word[0] == 'c_maxsteps':
+				c1.c_maxsteps         = word[1]
+			if word[0] == 'c_defsteps':
+				c1.c_defsteps         = word[1]
+			if word[0] == 'c_maxenergy':
+				c1.c_maxenergy        = word[1]
+				
 		fh.close()
 	except:
 		fh = open(confile, 'w')
-		fh.write('gs_url      gow.simuino.com\n')
-		fh.write('gs_server   gowServer.php\n')
-		fh.write('gs_period   10\n')
-		fh.write('gs_hw       python\n')
-		fh.write('gs_wrap     999999\n')
-		fh.write('gs_topic1   topic1\n')
-		fh.write('gs_topic2   topic2\n')
-		fh.write('gs_topic3   topic3\n')
-		fh.write('gs_tag1   tag1\n')
-		fh.write('gs_tag2   tag2\n')
-		fh.write('gs_tag3   tag3\n')
+		fh.write('c_url      gow.simuino.com\n')
+		fh.write('c_server   gowServer.php\n')
+		fh.write('c_period   10\n')
+		fh.write('c_hw       python\n')
+		fh.write('c_wrap     999999\n')
+		fh.write('c_topic1   topic1\n')
+		fh.write('c_topic2   topic2\n')
+		fh.write('c_topic3   topic3\n')
+		fh.write('c_tag1     tag1\n')
+		fh.write('c_tag2     tag2\n')
+		fh.write('c_tag3     tag3\n')
+		
+		fh.write('c_mintemp      -7\n')
+		fh.write('c_maxtemp      15\n')
+		fh.write('c_minheat      25\n')
+		fh.write('c_maxheat      40\n')
+		fh.write('c_x_0          0\n')
+		fh.write('c_y_0          36\n')
+		fh.write('c_relax        4.0\n')
+		fh.write('c_minsmoke     27\n')
+		fh.write('c_minsteps     5\n')
+		fh.write('c_maxsteps     40\n')
+		fh.write('c_defsteps     30\n')
+		fh.write('c_maxenergy    4.0\n')
+		
 		fh.close()
 	return
 #===================================================
