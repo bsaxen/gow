@@ -11,7 +11,7 @@ import time
 import datetime
 
 class configuration:
-	c_url     = 'gow.simuino.com'
+	c_url        = 'gow.simuino.com'
 	c_server_app = 'gowServer.php'
 	c_hw         = 'python'
 	c_period     = 10
@@ -42,6 +42,13 @@ class configuration:
     	c_dbname     = 'gow'
     	c_dbuser     = 'myuser'
     	c_dbpassword = 'mypswd'	
+	
+	# datastreams gow -> db
+	c_ds_uri = []
+	c_ds_topic = []
+	c_ds_table = []
+	c_ds_param = []
+	c_nds = 0
 #=====================================================
 def lib_init_history(fname):
     try:
@@ -70,6 +77,7 @@ def lib_evaluateAction( action):
 #===================================================
 def lib_readConfiguration(confile,c1):
 	try:
+		c1.c_nds = 0
 		fh = open(confile, 'r')
 		for line in fh:
 			print line
@@ -138,6 +146,15 @@ def lib_readConfiguration(confile,c1):
 				c1.c_dbuser         = word[1]
 			if word[0] == 'c_dbpassword':
 				c1.c_dbpassword      = word[1]
+				
+			if word[0] == 'c_stream':
+                		c1.c_ds_url.append(word[1])
+                		c1.c_ds_topic.append(word[2])
+                		c1.c_ds_table.append(word[3])
+                		c1.c_ds_param.append(word[4])
+				c1.c_nds += 1
+				
+	
 				
 		fh.close()
 	except:
@@ -234,7 +251,7 @@ def lib_placeOrder(c1, itopic, iaction, itag ):
 	except urllib2.URLError as e:
 		print e.reason
 #=============================================
-def gowMysqlInsert(c1,cr,xTable,xPar,xValue):
+def lib_mysqlInsert(c1,cr,xTable,xPar,xValue):
     db = MySQLdb.connect(host=c1.c_dbhost,user=c1.c_dbuser,db=c1.c_dbname)
     cursor = db.cursor()
     if cr == 1:
