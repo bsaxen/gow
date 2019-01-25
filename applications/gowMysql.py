@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-01-08
+# Date.......: 2019-01-25
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -14,130 +14,37 @@ import urllib2
 import time
 import datetime
 import sys
-
-#if len (sys.argv) != 2 :
-#    print "Usage: python gowMysql.py your-configuration.txt"
-#    sys.exit (1)
-
-#config_file = sys.argv[1]
-config_file = 'configuration.txt'
-print "Configuration used: " + config_file
-
+from lib import *
 #=============================================
 # Configuration
 #=============================================
-cDbHost     = '192.168.1.85'
-cDbName     = 'gow'
-cDbUser     = 'folke'
-cDbPassword = 'something'
-c_url    = []
-c_topic  = []
-c_table  = []
-c_param  = []
 schedule = []
 work     = []
 running  = []
-#===================================================
-def readConfiguration():
-    global cDbHost
-    global cDbName
-    global cDbUser
-    global cDbPassword
-    global c_url
-    global c_topic
-    global c_table
-    global c_param
-
-    n = 0
-    try:
-        print config_file
-        fh = open(config_file, 'r')
-        for line in fh:
-            #print line
-            word = line.split()
-            if word[0] == 'host':
-                cDbHost = word[1]
-                print cDbHost
-            if word[0] == 'database':
-                cDbName = word[1]
-                print cDbName
-            if word[0] == 'user':
-                cDbUser = word[1]
-                print cDbUser
-            if word[0] == 'pswd':
-                cDbPassword  = word[1]
-                print cDbPassword
-            if word[0] == 'stream':
-                c_url.append(word[1])
-                c_topic.append(word[2])
-                c_table.append(word[3])
-                c_param.append(word[4])
-                print str(n) + " " + c_topic[n]
-                n += 1
-        fh.close()
-    except IOError:
-        print "Configuration file not found " + config_file + " - configuration.txt template created"
-        fh = open('configuration.txt', 'w')
-        fh.write('host       192.168.1.85\n')
-        fh.write('database   gow\n')
-        fh.write('user       folke\n')
-        fh.write('pswd       hm\n')
-        fh.write('stream     url topic table parameter\n')
-        fh.close()
-        sys.exit (1)
-    return(n)
-#=============================================
-def gowReadJsonMeta(url,par):
-#=============================================
-    r = urllib2.urlopen(url)
-    j = json.load(r)
-    x =  j['gow'][par]
-    return x
-#=============================================
-def gowReadJsonPayload(url,par):
-#=============================================
-    r = urllib2.urlopen(url)
-    j = json.load(r)
-    x =  j['gow']['payload'][par]
-    return x
-#=============================================
-def gowMysqlInsert(cr,xTable,xPar,xValue):
-#=============================================
-    global cDbHost
-    global cDbName
-    global cDbUser
-    global cDbPassword
-    db = MySQLdb.connect(host=cDbHost,user=cDbUser,db=cDbName)
-    cursor = db.cursor()
-    if cr == 1:
-        sql = "CREATE TABLE IF NOT EXISTS " + xTable + " (id int(11) NOT NULL AUTO_INCREMENT,value float,ts timestamp, PRIMARY KEY (id))"
-        cursor.execute(sql)
-    sql = "INSERT INTO "+ xTable + " (`id`, " + xPar + ", `ts`) VALUES (NULL," + str(xValue) + ", CURRENT_TIMESTAMP)"
-    cursor.execute(sql)
-    db.commit()
-    db.close()
-
 #=============================================
 # setup
 #=============================================
-nds = readConfiguration()
-print "Number of datastreams: " + str(nds)
+r1 = configuration()
+confile = 'gowmysql.conf'
+lib_readConfiguration(confile,r1)
+print "Number of datastreams: " + str(r1.c_nds)
+
 max_period = 0
-for num in range(0,nds):
-    url = 'http://' + c_url[num] + '/' + c_topic[num] + '/device.json'
+for num in range(0,r1.c_nds):
+    url = 'http://' + r1.c_ds_uri[num] + '/' + r1.c_ds_topic[num] + '/device.json'
     print url
-    period = float(gowReadJsonMeta(url,'period'))
+    period = float(lib_readJsonMeta(url,'period'))
     print period
     #if period > max_period:
     #    max_period = period
     schedule.append(period)
     work.append(period)
-    no = float(gowReadJsonMeta(url,'no'))
+    no = float(lib_readJsonMeta(url,'no'))
     running.append(no)
     print no
-    x      = float(gowReadJsonPayload(url,c_param[num]))
+    x      = float(lib_readJsonPayload(url,r1.c_ds_param[num]))
     print x
-    gowMysqlInsert(1,c_table[num],'value',x)
+    lib_mysqlInsert(r1,1,r1.c_ds_table[num],'value',x)
 #=============================================
 # loop
 #=============================================
@@ -161,14 +68,14 @@ while True:
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
             work[num] = schedule[num]
-            url = 'http://' + c_url[num] + '/' + c_topic[num] + '/device.json'
+            url = 'http://' + c_ds_url[num] + '/' + c_ds_topic[num] + '/device.json'
             print url
-            period = float(gowReadJsonMeta(url,'period'))
+            period = float(lib_readJsonMeta(url,'period'))
             print period
             #if period > max_period:
             #    max_period = period
             schedule[num] = period
-            no = float(gowReadJsonMeta(url,'no'))
+            no = float(lib_readJsonMeta(url,'no'))
             print no
             delta_no = no - running[num]
             ok = 0
@@ -185,6 +92,6 @@ while True:
                 ok = 1
             if ok == 1:
                 running[num] = no
-                x  = float(gowReadJsonPayload(url,c_param[num]))
+                x  = float(lib_readJsonPayload(url,r1.c_ds_param[num]))
                 print x
-                gowMysqlInsert(0,c_table[num],'value',x)
+                lib_mysqlInsert(r1,0,r1.c_ds_table[num],'value',x)
