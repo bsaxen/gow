@@ -1,7 +1,7 @@
 # =============================================
 # File: lib.py
 # Author: Benny Saxen
-# Date: 2019-01-24
+# Date: 2019-01-25
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -9,12 +9,16 @@ import urllib
 import urllib2
 import time
 import datetime
+import random
+import string
+import json
 
 class configuration:
+	c_title      = 'Configuration Title'
 	c_url        = 'gow.simuino.com'
 	c_server_app = 'gowServer.php'
 	c_hw         = 'python'
-	c_period     = 10
+	c_period     = 10.0
 	c_wrap       = 999999
 	c_topic1     = "topic1"
 	c_topic2     = "topic2"
@@ -22,6 +26,9 @@ class configuration:
 	c_action1    = "action1"
 	c_action2    = "action2"
 	c_action3    = "action3"
+	c_payload1   = "{}"
+	c_payload2   = "{}"
+	c_payload3   = "{}"
 
 	# Heater algorithm
 	c_mintemp = 0.0
@@ -34,18 +41,19 @@ class configuration:
 	c_minsmoke = 0.0
    	c_minsteps  = 0
    	c_maxsteps  = 0
-   	c_defsteps  = 0  
-   	c_maxenergy = 0 
-	
+   	c_defsteps  = 0
+   	c_maxenergy = 0
+
 	# database access
-    	c_dbhost     = '192.168.1.85'
-    	c_dbname     = 'gow'
-    	c_dbuser     = 'myuser'
-    	c_dbpassword = 'mypswd'	
-	
-	# datastreams gow -> db
+	c_dbhost     = '192.168.1.85'
+	c_dbname     = 'gow'
+	c_dbuser     = 'myuser'
+	c_dbpassword = 'mypswd'
+
+	# datastreams subscriptions
 	c_ds_uri = []
 	c_ds_topic = []
+	# Database tabela and parameters
 	c_ds_table = []
 	c_ds_param = []
 	c_nds = 0
@@ -80,8 +88,10 @@ def lib_readConfiguration(confile,c1):
 		c1.c_nds = 0
 		fh = open(confile, 'r')
 		for line in fh:
-			print line
+			#print line
 			word = line.split()
+			if word[0] == 'c_title':
+				c1.c_title         = word[1]
 			if word[0] == 'c_url':
 				c1.c_url         = word[1]
 			if word[0] == 'c_app':
@@ -104,13 +114,13 @@ def lib_readConfiguration(confile,c1):
 				c1.c_action2         = word[1]
 			if word[0] == 'c_action3':
 				c1.c_action3         = word[1]
-			if word[0] == 'c_tag1':
-				c1.c_tag1         = word[1]
-			if word[0] == 'c_tag2':
-				c1.c_tag2         = word[1]
-			if word[0] == 'c_tag3':
-				c1.c_tag3         = word[1]
-				
+			if word[0] == 'c_payload1':
+				c1.c_payload1         = word[1]
+			if word[0] == 'c_payload2':
+				c1.c_payload2         = word[1]
+			if word[0] == 'c_payload3':
+				c1.c_payload3         = word[1]
+
 			# Heater algorithm
 			if word[0] == 'c_mintemp':
 				c1.c_mintemp          = word[1]
@@ -136,7 +146,7 @@ def lib_readConfiguration(confile,c1):
 				c1.c_defsteps         = word[1]
 			if word[0] == 'c_maxenergy':
 				c1.c_maxenergy        = word[1]
-			
+
 			# Database access
 			if word[0] == 'c_dbhost':
 				c1.c_dbhost         = word[1]
@@ -146,31 +156,30 @@ def lib_readConfiguration(confile,c1):
 				c1.c_dbuser         = word[1]
 			if word[0] == 'c_dbpassword':
 				c1.c_dbpassword      = word[1]
-				
+
 			if word[0] == 'c_stream':
-                		c1.c_ds_uri.append(word[1])
-                		c1.c_ds_topic.append(word[2])
-                		c1.c_ds_table.append(word[3])
-                		c1.c_ds_param.append(word[4])
+				c1.c_ds_uri.append(word[1])
+				c1.c_ds_topic.append(word[2])
+				c1.c_ds_table.append(word[3])
+				c1.c_ds_param.append(word[4])
 				c1.c_nds += 1
-				
-	
-				
+
 		fh.close()
 	except:
 		fh = open(confile, 'w')
+		fh.write('c_title    Configuration Title\n')
 		fh.write('c_url      gow.simuino.com\n')
 		fh.write('c_server   gowServer.php\n')
-		fh.write('c_period   10\n')
+		fh.write('c_period   10.0\n')
 		fh.write('c_hw       python\n')
 		fh.write('c_wrap     999999\n')
 		fh.write('c_topic1   topic1\n')
 		fh.write('c_topic2   topic2\n')
 		fh.write('c_topic3   topic3\n')
-		fh.write('c_tag1     tag1\n')
-		fh.write('c_tag2     tag2\n')
-		fh.write('c_tag3     tag3\n')
-		
+		fh.write('c_payload1  {}\n')
+		fh.write('c_payload2  {}\n')
+		fh.write('c_payload3  {}\n')
+
 		fh.write('c_mintemp      -7\n')
 		fh.write('c_maxtemp      15\n')
 		fh.write('c_minheat      25\n')
@@ -183,13 +192,16 @@ def lib_readConfiguration(confile,c1):
 		fh.write('c_maxsteps     40\n')
 		fh.write('c_defsteps     30\n')
 		fh.write('c_maxenergy    4.0\n')
-		
+
 		fh.write('c_dbhost       192.168.1.85\n')
 		fh.write('c_dbname       gow\n')
 		fh.write('c_dbuser       folke\n')
 		fh.write('c_dbpassword   something\n')
-		fh.write('c_stream       uri topic table param\n')		
+		fh.write('c_stream       uri topic table param\n')
 		fh.close()
+		print "Configuration file created: " + confile
+		print "Edit your configuration and restart the application"
+		exit()
 	return
 #=============================================
 def lib_readJsonMeta(url,par):
@@ -208,7 +220,7 @@ def lib_readJsonPayload(url,par):
 #===================================================
 def lib_publish(c1, itopic, ipayload, n ):
 #===================================================
-	url = c1.c_gs_url
+	url = c1.c_url
 	server = c1.c_server_app
 	data = {}
 	# meta data
@@ -229,20 +241,20 @@ def lib_publish(c1, itopic, ipayload, n ):
 		response = urllib2.urlopen(req)
 		the_page = response.read()
 		print 'Message to ' + itopic + ': ' + the_page
-		evaluateAction(the_page)
+		lib_evaluateAction(the_page)
 	except urllib2.URLError as e:
 		print e.reason
 
 #===================================================
-def lib_placeOrder(c1, itopic, iaction, itag ):
+def lib_placeOrder(c1, itopic, iaction):
 #===================================================
-	url = c1.c_gs_url
+	url = c1.c_url
 	server = c1.c_server_app
 	data = {}
 	data['do']     = 'action'
 	data['topic']  = itopic
 	data['order']  = iaction
-	data['tag']    = itag
+	data['tag']    = lib_generateRandomString()
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
 	print req
@@ -262,6 +274,11 @@ def lib_mysqlInsert(c1,cr,xTable,xPar,xValue):
     db.commit()
     db.close()
 
+#=============================================
+def lib_generateRandomString():
+#=============================================
+   char_set = string.ascii_uppercase + string.digits
+   return ''.join(random.sample(char_set*6, 6))
 #===================================================
 # End of file
 #===================================================
