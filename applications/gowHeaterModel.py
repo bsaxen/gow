@@ -142,17 +142,21 @@ while True:
 
 	counter += 1
 	payload = '{"mode":"' + str(t1.r_mode) + '"}'
-	lib_publish(c1, c1.c_topic1,payload,counter )
+	resp = lib_publish(c1, c1.c_topic1,payload,counter,2 )
+	print resp
 
 	payload = '{"state":"' + str(t1.r_state) + '"}'
-	lib_publish(c1, c1.c_topic2,payload,counter )
+	resp = lib_publish(c1, c1.c_topic2,payload,counter,2 )
+	print resp
 
 	payload = '{"inertia":"' + str(t1.r_inertia) + '"}'
-	lib_publish(c1, c1.c_topic3,payload,counter )
+	resp = lib_publish(c1, c1.c_topic3,payload,counter,2 )
+	print resp
 
 	payload = '{"coolwarm":"' + str(t1.r_coolwarm) + '"}'
-	lib_publish(c1, c1.c_topic4,payload,counter )
-
+	resp = lib_publish(c1, c1.c_topic4,payload,counter,2 )
+	print resp
+	
 	print "---> sleep " + str(c1.c_period)
 	time.sleep(float(c1.c_period))
 

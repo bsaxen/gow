@@ -303,11 +303,12 @@ def lib_readJsonPayload(url,par):
 		x = 123456789
 	return x
 #===================================================
-def lib_publish(c1, itopic, ipayload, n ):
+def lib_publish(c1, itopic, ipayload, n, actions ):
 #===================================================
 	url = c1.c_url
 	server = c1.c_server_app
 	data = {}
+	res = '-'
 	# meta data
 	data['do']     = 'data'
 	data['topic']  = itopic
@@ -316,6 +317,7 @@ def lib_publish(c1, itopic, ipayload, n ):
 	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['period'] = c1.c_period
 	data['hw']     = c1.c_hw
+	data['message'] = actions
 	# payload
 	data['payload'] = ipayload
 
@@ -325,10 +327,14 @@ def lib_publish(c1, itopic, ipayload, n ):
 	try:
 		response = urllib2.urlopen(req)
 		the_page = response.read()
-		print 'Message to ' + itopic + ': ' + the_page
-		lib_evaluateAction(the_page)
+		#if actions == 2:
+		#	print 'Message to ' + itopic + ': ' + the_page
+		#lib_evaluateAction(the_page)
 	except urllib2.URLError as e:
 		print e.reason
+	if actions == 2:
+		res = the_page
+	return res
 
 #===================================================
 def lib_placeOrder(c1, itopic, iaction):
