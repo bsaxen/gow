@@ -24,6 +24,7 @@ running  = []
 #=============================================
 # setup
 #=============================================
+print "======== gowMysql version 2019-01-25 =========="
 r1 = configuration()
 confile = 'gowmysql.conf'
 lib_readConfiguration(confile,r1)
@@ -31,7 +32,7 @@ print "Number of datastreams: " + str(r1.c_nds)
 
 max_period = 0
 for num in range(0,r1.c_nds):
-    url = 'http://' + r1.c_ds_uri[num] + '/' + r1.c_ds_topic[num] + '/device.json'
+    url = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num])
     print url
     period = float(lib_readJsonMeta(url,'period'))
     print period
@@ -63,12 +64,12 @@ while True:
     #print "sleep " + str(1)
     time.sleep(1)
 
-    for num in range(0,nds):
+    for num in range(0,r1.c_nds):
         work[num] -= 1
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
             work[num] = schedule[num]
-            url = 'http://' + c_ds_url[num] + '/' + c_ds_topic[num] + '/device.json'
+            url = lib_buildUrl(r1.c_ds_url[num],r1.c_ds_topic[num])
             print url
             period = float(lib_readJsonMeta(url,'period'))
             print period
@@ -95,3 +96,6 @@ while True:
                 x  = float(lib_readJsonPayload(url,r1.c_ds_param[num]))
                 print x
                 lib_mysqlInsert(r1,0,r1.c_ds_table[num],'value',x)
+#===================================================
+# End of file
+#===================================================

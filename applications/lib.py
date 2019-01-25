@@ -12,6 +12,18 @@ import datetime
 import random
 import string
 import json
+import time
+
+class datastream:
+	d_topic = ''
+	d_no = 0
+	d_wrap = 999999
+	d_ts = ""
+	d_gs_ts = ""
+	d_hw = ""
+	d_message = 1
+	d_value = 0.0
+
 
 class configuration:
 	c_title      = 'Configuration Title'
@@ -23,12 +35,15 @@ class configuration:
 	c_topic1     = "topic1"
 	c_topic2     = "topic2"
 	c_topic3     = "topic3"
+	c_topic4     = "topic4"
 	c_action1    = "action1"
 	c_action2    = "action2"
 	c_action3    = "action3"
+	c_action4    = "action4"
 	c_payload1   = "{}"
 	c_payload2   = "{}"
 	c_payload3   = "{}"
+	c_payload4   = "{}"
 
 	# Heater algorithm
 	c_mintemp = 0.0
@@ -58,6 +73,10 @@ class configuration:
 	c_ds_param = []
 	c_nds = 0
 #=====================================================
+def lib_buildUrl(uri,topic):
+	url =  'http://' + uri + '/' + topic + '/device.json'
+	return url
+#=====================================================
 def lib_init_history(fname):
     try:
         f = open(fname,'w')
@@ -79,6 +98,11 @@ def lib_writeFile(fname,message,ts):
     except:
         print "ERROR write to file " + fname
     return
+#=====================================================
+def log(application,message):
+	msg = application + " " + message
+	lib_writeFile('gow.log',msg,1)
+	return
 #===================================================
 def lib_evaluateAction( action):
 	print action
@@ -89,81 +113,89 @@ def lib_readConfiguration(confile,c1):
 		fh = open(confile, 'r')
 		for line in fh:
 			#print line
-			word = line.split()
-			if word[0] == 'c_title':
-				c1.c_title         = word[1]
-			if word[0] == 'c_url':
-				c1.c_url         = word[1]
-			if word[0] == 'c_app':
-				c1.c_server_app     = word[1]
-			if word[0] == 'c_period':
-				c1.c_period         = word[1]
-			if word[0] == 'c_hw':
-				c1.c_hw             = word[1]
-			if word[0] == 'c_wrap':
-				c1.c_wrap           = word[1]
-			if word[0] == 'c_topic1':
-				c1.c_topic1         = word[1]
-			if word[0] == 'c_topic2':
-				c1.c_topic2         = word[1]
-			if word[0] == 'c_topic3':
-				c1.c_topic3         = word[1]
-			if word[0] == 'c_action1':
-				c1.c_action1         = word[1]
-			if word[0] == 'c_action2':
-				c1.c_action2         = word[1]
-			if word[0] == 'c_action3':
-				c1.c_action3         = word[1]
-			if word[0] == 'c_payload1':
-				c1.c_payload1         = word[1]
-			if word[0] == 'c_payload2':
-				c1.c_payload2         = word[1]
-			if word[0] == 'c_payload3':
-				c1.c_payload3         = word[1]
+			if line[0] != '#':
+				word = line.split()
+				if word[0] == 'c_title':
+					c1.c_title         = word[1]
+				if word[0] == 'c_url':
+					c1.c_url         = word[1]
+				if word[0] == 'c_app':
+					c1.c_server_app     = word[1]
+				if word[0] == 'c_period':
+					c1.c_period         = word[1]
+				if word[0] == 'c_hw':
+					c1.c_hw             = word[1]
+				if word[0] == 'c_wrap':
+					c1.c_wrap           = word[1]
+				if word[0] == 'c_topic1':
+					c1.c_topic1         = word[1]
+				if word[0] == 'c_topic2':
+					c1.c_topic2         = word[1]
+				if word[0] == 'c_topic3':
+					c1.c_topic3         = word[1]
+				if word[0] == 'c_topic4':
+					c1.c_topic4         = word[1]
+				if word[0] == 'c_action1':
+					c1.c_action1         = word[1]
+				if word[0] == 'c_action2':
+					c1.c_action2         = word[1]
+				if word[0] == 'c_action3':
+					c1.c_action3         = word[1]
+				if word[0] == 'c_action4':
+					c1.c_action4         = word[1]
+				if word[0] == 'c_payload1':
+					c1.c_payload1         = word[1]
+				if word[0] == 'c_payload2':
+					c1.c_payload2         = word[1]
+				if word[0] == 'c_payload3':
+					c1.c_payload3         = word[1]
+				if word[0] == 'c_payload4':
+					c1.c_payload4         = word[1]
 
-			# Heater algorithm
-			if word[0] == 'c_mintemp':
-				c1.c_mintemp          = word[1]
-			if word[0] == 'c_maxtemp':
-				c1.c_maxtemp          = word[1]
-			if word[0] == 'c_minheat':
-				c1.c_minheat          = word[1]
-			if word[0] == 'c_maxheat':
-				c1.c_maxheat          = word[1]
-			if word[0] == 'c_x_0':
-				c1.c_x_0              = word[1]
-			if word[0] == 'c_y_0':
-				c1.c_y_0              = word[1]
-			if word[0] == 'c_relax':
-				c1.c_relax            = word[1]
-			if word[0] == 'c_minsmoke':
-				c1.c_minsmoke         = word[1]
-			if word[0] == 'c_minsteps':
-				c1.c_minsteps         = word[1]
-			if word[0] == 'c_maxsteps':
-				c1.c_maxsteps         = word[1]
-			if word[0] == 'c_defsteps':
-				c1.c_defsteps         = word[1]
-			if word[0] == 'c_maxenergy':
-				c1.c_maxenergy        = word[1]
+				# Heater algorithm
+				if word[0] == 'c_mintemp':
+					c1.c_mintemp          = word[1]
+				if word[0] == 'c_maxtemp':
+					c1.c_maxtemp          = word[1]
+				if word[0] == 'c_minheat':
+					c1.c_minheat          = word[1]
+				if word[0] == 'c_maxheat':
+					c1.c_maxheat          = word[1]
+				if word[0] == 'c_x_0':
+					c1.c_x_0              = word[1]
+				if word[0] == 'c_y_0':
+					c1.c_y_0              = word[1]
+				if word[0] == 'c_relax':
+					c1.c_relax            = word[1]
+				if word[0] == 'c_minsmoke':
+					c1.c_minsmoke         = word[1]
+				if word[0] == 'c_minsteps':
+					c1.c_minsteps         = word[1]
+				if word[0] == 'c_maxsteps':
+					c1.c_maxsteps         = word[1]
+				if word[0] == 'c_defsteps':
+					c1.c_defsteps         = word[1]
+				if word[0] == 'c_maxenergy':
+					c1.c_maxenergy        = word[1]
 
-			# Database access
-			if word[0] == 'c_dbhost':
-				c1.c_dbhost         = word[1]
-			if word[0] == 'c_dbname':
-				c1.c_dbname         = word[1]
-			if word[0] == 'c_dbuser':
-				c1.c_dbuser         = word[1]
-			if word[0] == 'c_dbpassword':
-				c1.c_dbpassword      = word[1]
+				# Database access
+				if word[0] == 'c_dbhost':
+					c1.c_dbhost         = word[1]
+				if word[0] == 'c_dbname':
+					c1.c_dbname         = word[1]
+				if word[0] == 'c_dbuser':
+					c1.c_dbuser         = word[1]
+				if word[0] == 'c_dbpassword':
+					c1.c_dbpassword      = word[1]
 
-			if word[0] == 'c_stream':
-				c1.c_ds_uri.append(word[1])
-				c1.c_ds_topic.append(word[2])
-				c1.c_ds_table.append(word[3])
-				c1.c_ds_param.append(word[4])
-				c1.c_nds += 1
-
+				if word[0] == 'c_stream':
+					c1.c_ds_uri.append(word[1])
+					c1.c_ds_topic.append(word[2])
+					c1.c_ds_table.append(word[3])
+					c1.c_ds_param.append(word[4])
+					c1.c_nds += 1
+			else:
+				print line
 		fh.close()
 	except:
 		fh = open(confile, 'w')
@@ -173,12 +205,21 @@ def lib_readConfiguration(confile,c1):
 		fh.write('c_period   10.0\n')
 		fh.write('c_hw       python\n')
 		fh.write('c_wrap     999999\n')
+
 		fh.write('c_topic1   topic1\n')
 		fh.write('c_topic2   topic2\n')
 		fh.write('c_topic3   topic3\n')
+		fh.write('c_topic4   topic4\n')
+
 		fh.write('c_payload1  {}\n')
 		fh.write('c_payload2  {}\n')
 		fh.write('c_payload3  {}\n')
+		fh.write('c_payload4  {}\n')
+
+		fh.write('c_action1  {}\n')
+		fh.write('c_action2  {}\n')
+		fh.write('c_action3  {}\n')
+		fh.write('c_action4  {}\n')
 
 		fh.write('c_mintemp      -7\n')
 		fh.write('c_maxtemp      15\n')
@@ -203,6 +244,37 @@ def lib_readConfiguration(confile,c1):
 		print "Edit your configuration and restart the application"
 		exit()
 	return
+
+#=============================================
+def lib_consumeDatastream(d,url,par):
+#=============================================
+	j = lib_readDatastream(url)
+	n = lib_decodeDatastream(j,'no',1)
+	d.d_ts = lib_decodeDatastream(j,'ts',1)
+	if n < d.d_no:
+		msg = "Datastream sequence number out of order " + str(d.d_topic)
+		log('lib',msg)
+	if n > d.d_no or n == 1:
+		x = lib_decodeDatastream(j,par,0)
+		d.d_value = x
+		d.d_no = n
+	else:
+		x = d.d_value
+	return x
+#=============================================
+def lib_decodeDatastream(j,par,meta):
+#=============================================
+	if meta == 1:
+		x =  j['gow'][par]
+	else:
+		x =  j['gow']['payload'][par]
+	return x
+#=============================================
+def lib_readDatastream(url):
+#=============================================
+    r = urllib2.urlopen(url)
+    j = json.load(r)
+    return j
 #=============================================
 def lib_readJsonMeta(url,par):
 #=============================================
@@ -213,10 +285,23 @@ def lib_readJsonMeta(url,par):
 #=============================================
 def lib_readJsonPayload(url,par):
 #=============================================
-    r = urllib2.urlopen(url)
-    j = json.load(r)
-    x =  j['gow']['payload'][par]
-    return x
+	now = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+	r = urllib2.urlopen(url)
+	j = json.load(r)
+	ts=j['gow']['gs_ts']
+	period=j['gow']['period']
+	xts1 = time.mktime(datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").timetuple())
+	xts2 = time.mktime(datetime.datetime.strptime(now, "%Y-%m-%d %H:%M:%S").timetuple())
+	diff = xts2 - xts1
+	#print str(period) + " " + str(diff)
+	old = 0
+	if diff > period:
+		old = 1
+		print "old data"
+	x =  j['gow']['payload'][par]
+	if old == 1:
+		x = 123456789
+	return x
 #===================================================
 def lib_publish(c1, itopic, ipayload, n ):
 #===================================================
@@ -236,7 +321,7 @@ def lib_publish(c1, itopic, ipayload, n ):
 
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
-	print req
+	#print req
 	try:
 		response = urllib2.urlopen(req)
 		the_page = response.read()
