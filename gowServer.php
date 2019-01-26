@@ -260,6 +260,9 @@ if (isset($_GET['do']))
         if (isset($_GET['hw'])) {
           $hw = $_GET['hw'];
         }
+        if (isset($_GET['ssid'])) {
+          $hw = $_GET['ssid'];
+        }
         if (isset($_GET['message'])) {
           $message = $_GET['message'];
         }
@@ -289,6 +292,7 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"gs_ts\":  \"$gs_ts\",\n");
         fwrite($doc, "   \"url\":    \"$url\",\n");
         fwrite($doc, "   \"hw\":     \"$hw\",\n");
+        fwrite($doc, "   \"ssid\":   \"$ssid\",\n");
         fwrite($doc, "   \"message\":\"$message\",\n");
         fwrite($doc, "   \"payload\":\n $payload \n");
         fwrite($doc, "}}\n ");
