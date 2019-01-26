@@ -1,22 +1,22 @@
 //=============================================
 // File.......: gowSwitch.c
-// Date.......: 2019-01-05
+// Date.......: 2019-01-26
 // Author.....: Benny Saxen
 // Description: 
 //=============================================
 // Configuration
 //=============================================
 char* publishTopic = "nytomta/gow/fan1/0";
-int conf_period = 10;
+int conf_period = 20;
 int conf_wrap   = 999999;
-const char* ssid       = "123";
-const char* password   = "123";
+const char* ssid       = "ASUS-hus";
+const char* password   = "some";
 const char* host       = "gow.simuino.com";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
 //=============================================
 #include <ESP8266WiFi.h>
-#define FAN_PIN 5 
+#define FAN_PIN 5  // D1 pin on NodeMCU 1.0
 int g_status = 1;
 
 void setup() {
@@ -85,6 +85,8 @@ void loop()
   url += "&message=2";
   url += "&hw=";
   url += "esp8266";
+  url += "&ssid=";
+  url += ssid;
   url += "&payload=";
   url += "{\"status\":\"";
   url += g_status;
@@ -104,18 +106,23 @@ void loop()
       return;
     }
   }
-  delay(2000);
+  delay(500);
   // Read all the lines of the reply from server and print them to Serial
   while (client.available()) {
     String action = client.readStringUntil('\r');
-      if (action.indexOf(':') == 1) 
+      //Serial.println(action);
+      Serial.println(action.indexOf(':'));
+      if (action.indexOf('[') == 1) 
       {
+        int b = action.indexOf(':')+1;
         int x = action.lastIndexOf(':');
-        Serial.print("Order received");
-        Serial.println(x);
+        String sub = action.substring(b,x);
+        //Serial.print("Order received <");
+        //Serial.print(sub);
+        //Serial.println(">");
         x = x+2;
         action.toCharArray(buf,x);
-        Serial.println(buf);  
+        //Serial.println(buf);  
  
         if( strstr(buf,"OFF") != NULL)
         {
@@ -143,6 +150,5 @@ void loop()
       }
   }
 
-  Serial.println();
   Serial.println("closing connection");
 }
