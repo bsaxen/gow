@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-01-23
+// Date.......: 2019-01-26
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -86,7 +86,7 @@ function readActionFileList($topic)
           $result = readActionFile($line);
       }
   }
-  $result = "[$no_of_line]".$result;
+  $result = "[$no_of_lines]".$result;
   return $result;
 }
 //=============================================
