@@ -50,7 +50,7 @@ function getStatus($doc)
   $now = date_create('now')->format('Y-m-d H:i:s');
   
   $diff = strtotime($now) - strtotime($timestamp);
-  echo "now=$now ts=$timestamp diff= $diff";
+  //echo "now=$now ts=$timestamp diff= $diff";
   
   if ($diff > $period) 
   {
