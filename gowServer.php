@@ -261,7 +261,7 @@ if (isset($_GET['do']))
           $hw = $_GET['hw'];
         }
         if (isset($_GET['ssid'])) {
-          $hw = $_GET['ssid'];
+          $ssid = $_GET['ssid'];
         }
         if (isset($_GET['message'])) {
           $message = $_GET['message'];
