@@ -2,7 +2,7 @@
 session_start();
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-01-09
+// Date.......: 2019-01-26
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
 //=============================================
@@ -48,7 +48,10 @@ function getStatus($doc)
   $g_message   = $res['gow']['message'];
   $timestamp   = $res['gow']['gs_ts'];
   $now = date_create('now')->format('Y-m-d H:i:s');
+  
   $diff = strtotime($now) - strtotime($timestamp);
+  echo "now=$now ts=$timestamp diff= $diff";
+  
   if ($diff > $period) 
   {
     $res = $diff;
