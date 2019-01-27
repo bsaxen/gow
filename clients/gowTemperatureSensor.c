@@ -1,17 +1,18 @@
 //=============================================
 // File.......: gowTemperatureSensor.c
-// Date.......: 2018-12-29
+// Date.......: 2019-01-27
 // Author.....: Benny Saxen
 // Description: Signal from D1 pin. 
 // 4.7kOhm between signal and Vcc
+// Problem access port: sudo chmod 666 /dev/ttyUSB0
 //=============================================
 // Configuration
 //=============================================
 char* publishTopic = "kvv32/test/temperature/0";
-int conf_period = 60;
+int conf_period = 30;
 int conf_wrap   = 999999;
-const char* ssid       = "x";
-const char* password   = "x";
+const char* ssid       = "NABTON";
+const char* password   = "some";
 const char* host       = "gow.simuino.com";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
@@ -91,9 +92,9 @@ void loop()
   char order[10];
   char buf[100];
     
-  delay(conf_period*1000);
+ 
     
-  ++counter;
+    ++counter;
     //Retrieve one or more temperature values
     sensor.requestTemperatures();
     //Loop through results and publish
@@ -133,6 +134,8 @@ void loop()
     url += "gow.simuino.com";
     url += "&hw=";
     url += "esp8266";
+    url += "&ssid=";
+    url += ssid;
     url += "&payload="; 
     url += "{"; 
     for (i=1;i<=nsensors;i++)
@@ -169,12 +172,21 @@ void loop()
       String action = client.readStringUntil('\r');
       if (action.indexOf(':') == 1) 
       {
+        int b = action.indexOf(':')+1;
         int x = action.lastIndexOf(':');
-        Serial.print("Order received");
-        Serial.println(x);
+        String sub = action.substring(b,x);
+        //Serial.print("Order received <");
+        //Serial.print(sub);
+        //Serial.println(">");
         x = x+2;
         action.toCharArray(buf,x);
-        Serial.println(buf);  
+        //Serial.println(buf);  
+ 
+        if( strstr(buf,"OFF") != NULL)
+        {
+
+        }
+
         if(strstr(buf,"period") != NULL)// set new period
         {
            for (char* p = buf; p = strchr(p, ','); ++p) 
@@ -185,12 +197,11 @@ void loop()
            {
               *p = ' ';
            }
-           Serial.println(buf);
-           sscanf(buf,"%s %d",order, &conf_period);
+           //sscanf(buf,"%s %d",order, &conf_period);
         }
       }
     }
 
-    Serial.println();
     Serial.println("closing connection");
+    delay(conf_period*1000);
 }
