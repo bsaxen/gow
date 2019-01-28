@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-01-26
+// Date.......: 2019-01-28
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -9,7 +9,7 @@
 //=============================================
 
 //=============================================
-
+// 
 
 //=============================================
 // API
@@ -33,11 +33,47 @@
 // message:  1=no_support, 2=support
 //=============================================
 // Library
+class gowDoc {
+    public $buf_ts;
+    public $act;
+    public $topic;
+    public $wrap;
+    public $period;
+    public $url;
+    public $hw;
+    public $ssid;
+}
+
+$obj = new gowDoc();
 //=============================================
 $conf_action_file_name = 'action.gow';
 //=============================================
 $date         = date_create();
 $gs_ts        = date_format($date, 'Y-m-d H:i:s');
+//=============================================
+function saveStaticPart($obj)
+//=============================================
+{
+  $static_file = $topic.'/static.buffer';
+  $doc = fopen($static_file, "w");
+  if ($doc)
+  {
+        fwrite($doc, "   \"buf_ts\": \"$obj->buf_ts\",\n");
+        fwrite($doc, "   \"act\":    \"$obj->act\",\n");
+        fwrite($doc, "   \"topic\":  \"$obj->topic\",\n");
+        fwrite($doc, "   \"wrap\":   \"$obj->wrap\",\n");
+        fwrite($doc, "   \"period\": \"$obj->period\",\n");
+        fwrite($doc, "   \"url\":    \"$obj->url\",\n");
+        fwrite($doc, "   \"hw\":     \"$obj->hw\",\n");
+        fwrite($doc, "   \"ssid\":   \"$obj->ssid\",\n");
+        fclose($doc);
+  }
+  else
+  {
+      $result = " ";
+  }
+  return;
+}
 
 //=============================================
 function readActionFile($action_file)
@@ -197,18 +233,18 @@ if (isset($_GET['do']))
     $error = 1;
     if (isset($_GET['topic']))
     {
-      $topic = $_GET['topic'];
+      $obj->topic = $_GET['topic'];
       $error = 0;
-      if (!is_dir($topic))
+      if (!is_dir($obj->topic))
       {
-         mkdir($topic, 0777, true);
+         mkdir($obj->topic, 0777, true);
         //===========================================
         // Registration
         //===========================================
-        $filename = str_replace("/","_",$topic);
+        $filename = str_replace("/","_",$obj->topic);
         $filename = $filename.".reg";
         $doc = fopen($filename, "w");
-        fwrite($doc, "$gs_ts $ts $topic $url $period $hw");
+        fwrite($doc, "$gs_ts $ts $obj->topic");
         fclose($doc);
       }
     }
@@ -225,50 +261,56 @@ if (isset($_GET['do']))
       {
         $order = $_GET['order'];
         $tag   = $_GET['tag'];
-        writeActionFile($topic, $order, $tag);
+        writeActionFile($obj->topic, $order, $tag);
       }
       if ($do == 'delete')
       {
-        deleteTopic($topic);
+        deleteTopic($obj->topic);
+      }
+      
+      // Dynamic data only
+      if ($do == 'dyn')
+      {
+  
+        if (isset($_GET['no'])) {
+          $obj->no = $_GET['no'];
+        }
       }
 
+      // Static and Dynamic data
       if ($do == 'data')
       {
-        // Default values
-        $no = 999;
-        $wrap = 999;
-        $ts = 'no_device_timestamp';
-        $period = 999;
-        $url = 'no_url';
-        $hw = 'no_hw';
-
+  
         if (isset($_GET['no'])) {
-          $no = $_GET['no'];
+          $obj->no = $_GET['no'];
         }
         if (isset($_GET['wrap'])) {
-          $wrap = $_GET['wrap'];
+          $obj->wrap = $_GET['wrap'];
         }
         if (isset($_GET['ts'])) {
-          $ts = $_GET['ts'];
+          $obj->ts = $_GET['ts'];
         }
         if (isset($_GET['period'])) {
-          $period = $_GET['period'];
+          $obj->period = $_GET['period'];
         }
         if (isset($_GET['url'])) {
-          $url = $_GET['url'];
+          $obj->url = $_GET['url'];
         }
         if (isset($_GET['hw'])) {
-          $hw = $_GET['hw'];
+          $obj->hw = $_GET['hw'];
         }
         if (isset($_GET['ssid'])) {
-          $ssid = $_GET['ssid'];
+          $obj->ssid = $_GET['ssid'];
         }
-        if (isset($_GET['message'])) {
-          $message = $_GET['message'];
+        if (isset($_GET['ss'])) {
+          $obj->ss = $_GET['ss'];
+        }
+        if (isset($_GET['act'])) {
+          $obj->act = $_GET['act'];
         }
         else
         {
-          $message = 1;
+          $obj->act = 1;
         }
         if (isset($_GET['payload'])) {
           $payload = $_GET['payload'];
@@ -284,20 +326,24 @@ if (isset($_GET['do']))
         $fdoc = $topic.'/device.json';
         $doc = fopen($fdoc, "w");
         fwrite($doc, "{\"gow\": {\n");
-        fwrite($doc, "   \"topic\":  \"$topic\",\n");
-        fwrite($doc, "   \"no\":     \"$no\",\n");
-        fwrite($doc, "   \"wrap\":   \"$wrap\",\n");
-        fwrite($doc, "   \"ts\":     \"$ts\",\n");
-        fwrite($doc, "   \"period\": \"$period\",\n");
-        fwrite($doc, "   \"gs_ts\":  \"$gs_ts\",\n");
-        fwrite($doc, "   \"url\":    \"$url\",\n");
-        fwrite($doc, "   \"hw\":     \"$hw\",\n");
-        fwrite($doc, "   \"ssid\":   \"$ssid\",\n");
-        fwrite($doc, "   \"message\":\"$message\",\n");
+        // Static Part
+        fwrite($doc, "   \"topic\":  \"$obj->topic\",\n");
+        fwrite($doc, "   \"wrap\":   \"$obj->wrap\",\n");
+        fwrite($doc, "   \"period\": \"$obj->period\",\n");
+        fwrite($doc, "   \"url\":    \"$obj->url\",\n");
+        fwrite($doc, "   \"hw\":     \"$obj->hw\",\n");
+        fwrite($doc, "   \"ssid\":   \"$obj->ssid\",\n");
+        fwrite($doc, "   \"act\":    \"$obj->act\",\n");
+        // Dynamic Part
+        fwrite($doc, "   \"gs_ts\":  \"$obj->gs_ts\",\n");
+        fwrite($doc, "   \"ts\":     \"$obj->ts\",\n");
+        fwrite($doc, "   \"no\":     \"$obj->no\",\n");
+        fwrite($doc, "   \"ss\":     \"$obj->ss\",\n");
         fwrite($doc, "   \"payload\":\n $payload \n");
         fwrite($doc, "}}\n ");
         fclose($doc);
 
+        
 
         // Check if any action is present for this client/topic
         echo readActionFileList($topic);
