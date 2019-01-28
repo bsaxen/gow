@@ -45,16 +45,25 @@ class gowDoc {
 }
 
 $obj = new gowDoc();
+
 //=============================================
 $conf_action_file_name = 'action.gow';
 //=============================================
 $date         = date_create();
 $gs_ts        = date_format($date, 'Y-m-d H:i:s');
+
+//=============================================
+function contains($needle, $haystack)
+// returns true if $needle is a substring of $haystack
+//=============================================
+{
+    return strpos($haystack, $needle) !== false;
+}
 //=============================================
 function saveStaticPart($obj)
 //=============================================
 {
-  $static_file = $topic.'/static.buffer';
+  $static_file = $obj->topic.'/static.buffer';
   $doc = fopen($static_file, "w");
   if ($doc)
   {
@@ -74,7 +83,30 @@ function saveStaticPart($obj)
   }
   return;
 }
-
+//=============================================
+function readStaticPart($obj)
+//=============================================
+{
+  $static_file = $obj->topic.'/static.buffer';
+  $file = fopen($static_file, "r");
+  if ($file)
+  {
+      while(! feof($file))
+      {
+        $line = fgets($file);
+        $work = explode(":",$line);
+        if (contains("buf_ts", $work[0]) $obj->buf_ts = $work[1];
+        if (contains("act", $work[0])    $obj->act = $work[1];
+        if (contains("topic", $work[0])  $obj->topic = $work[1];
+        if (contains("wrap", $work[0])   $obj->wrap = $work[1];
+        if (contains("period", $work[0]) $obj->period = $work[1];
+        if (contains("url", $work[0])    $obj->url = $work[1];
+        if (contains("hw", $work[0])     $obj->hw = $work[1];
+        if (contains("ssid", $work[0])   $obj->ssid = $work[1];
+      }
+      fclose($file);
+  return;
+}
 //=============================================
 function readActionFile($action_file)
 //=============================================
@@ -275,6 +307,41 @@ if (isset($_GET['do']))
         if (isset($_GET['no'])) {
           $obj->no = $_GET['no'];
         }
+        if (isset($_GET['ts'])) {
+          $obj->ts = $_GET['ts'];
+        }
+        if (isset($_GET['ss'])) {
+          $obj->ss = $_GET['ss'];
+        }
+        if (isset($_GET['payload'])) {
+          $payload = $_GET['payload'];
+        }
+        
+        readStaticPart($obj);
+          
+        //===========================================
+        //  JSON
+        //===========================================
+        $fdoc = $topic.'/device.json';
+        $doc = fopen($fdoc, "w");
+        fwrite($doc, "{\"gow\": {\n");
+        // Static Part
+        fwrite($doc, "   \"topic\":  \"$obj->topic\",\n");
+        fwrite($doc, "   \"wrap\":   \"$obj->wrap\",\n");
+        fwrite($doc, "   \"period\": \"$obj->period\",\n");
+        fwrite($doc, "   \"url\":    \"$obj->url\",\n");
+        fwrite($doc, "   \"hw\":     \"$obj->hw\",\n");
+        fwrite($doc, "   \"ssid\":   \"$obj->ssid\",\n");
+        fwrite($doc, "   \"act\":    \"$obj->act\",\n");
+        // Dynamic Part
+        fwrite($doc, "   \"gs_ts\":  \"$obj->gs_ts\",\n");
+        fwrite($doc, "   \"ts\":     \"$obj->ts\",\n");
+        fwrite($doc, "   \"no\":     \"$obj->no\",\n");
+        fwrite($doc, "   \"ss\":     \"$obj->ss\",\n");
+        fwrite($doc, "   \"payload\":\n $payload \n");
+        fwrite($doc, "}}\n ");
+        fclose($doc);
+          
       }
 
       // Static and Dynamic data
@@ -343,7 +410,7 @@ if (isset($_GET['do']))
         fwrite($doc, "}}\n ");
         fclose($doc);
 
-        
+        saveStaticPart($obj);
 
         // Check if any action is present for this client/topic
         echo readActionFileList($topic);
