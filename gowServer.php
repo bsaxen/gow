@@ -1,36 +1,11 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-01-28
+// Date.......: 2019-01-29
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
-// Configuration
-//=============================================
 
-//=============================================
-// 
-
-//=============================================
-// API
-// gowServer.php?do=list_topics               list topics
-// gowServer.php?do=list_datastreams&topic    list data streams
-// gowServer.php?do=search&search=<string>
-// gowServer.php?do=action&topic=<topic>&order=<order>&tag=<tag>
-// gowServer.php?do=delete&topic=<topic>
-// gowServer.php?do=data&topic=<topic>
-//              &no     = 3
-//              &wrap   = 999999
-//              &ts     = '2018-12-01 23:12:31'
-//              &period = 10
-//              &url    = http://gow.zimuino.com
-//              &devtyp = 1
-//              &message = 0
-//              &hw     = 'python'
-//              + payload (json struct)
-//=============================================
-// devtyp:   1=sensor, 2=actuator, 3=sensor/actuator 4= none
-// message:  1=no_support, 2=support
 //=============================================
 // Library
 class gowDoc {
@@ -247,9 +222,6 @@ function searchTopics($search)
 if (isset($_GET['do']))
 {
     $do = $_GET['do'];
-    $devtyp = 0;
-    if (isset($_GET['devtyp'])) $devtyp = $_GET['devtyp'];
-
     if ($do == 'list_topics')
     {
       listAllTopics();
@@ -292,11 +264,11 @@ if (isset($_GET['do']))
     // API when topic is available
     if($error == 0)
     {
-      if ($do == 'action')
+      if ($do == 'order')
       {
-        $order = $_GET['order'];
+        $msg   = $_GET['msg'];
         $tag   = $_GET['tag'];
-        writeActionFile($obj->topic, $order, $tag);
+        writeActionFile($obj->topic, $msg, $tag);
       }
       if ($do == 'delete')
       {
