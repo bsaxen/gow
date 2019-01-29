@@ -307,47 +307,39 @@ if (isset($_GET['do']))
       if ($do == 'stat')
       {
   
-        if (isset($_GET['no'])) {
-          $obj->no = $_GET['no'];
+        if (isset($_GET['wrap'])) {
+          $obj->wrap = $_GET['wrap'];
         }
-        if (isset($_GET['ts'])) {
-          $obj->ts = $_GET['ts'];
+        if (isset($_GET['platform'])) {
+          $obj->platform = $_GET['platform'];
         }
-        if (isset($_GET['ss'])) {
-          $obj->ss = $_GET['ss'];
+        if (isset($_GET['action'])) {
+          $obj->action = $_GET['action'];
         }
-        if (isset($_GET['payload'])) {
-          $obj->payload = $_GET['payload'];
+        else
+        {
+          $obj->action = 1;
+        }
+        if (isset($_GET['ssid'])) {
+          $obj->ssid = $_GET['ssid'];
+        }
+        if (isset($_GET['url'])) {
+          $obj->url = $_GET['url'];
+        }
+        if (isset($_GET['tags'])) {
+          $obj->tags = $_GET['tags'];
+        }
+        if (isset($_GET['desc'])) {
+          $obj->desc = $_GET['desc'];
+        }
+        if (isset($_GET['period'])) {
+          $obj->period = $_GET['period'];
         }
         
         saveStaticData($obj);
-          
-        //===========================================
-        //  JSON
-        //===========================================
-        $fdoc = $topic.'/device.json';
-        $doc = fopen($fdoc, "w");
-        fwrite($doc, "{\"gow\": {\n");
-        // Static Part
-        fwrite($doc, "   \"topic\":  \"$obj->topic\",\n");
-        fwrite($doc, "   \"wrap\":   \"$obj->wrap\",\n");
-        fwrite($doc, "   \"period\": \"$obj->period\",\n");
-        fwrite($doc, "   \"url\":    \"$obj->url\",\n");
-        fwrite($doc, "   \"hw\":     \"$obj->hw\",\n");
-        fwrite($doc, "   \"ssid\":   \"$obj->ssid\",\n");
-        fwrite($doc, "   \"act\":    \"$obj->act\",\n");
-        // Dynamic Part
-        fwrite($doc, "   \"gs_ts\":  \"$obj->gs_ts\",\n");
-        fwrite($doc, "   \"ts\":     \"$obj->ts\",\n");
-        fwrite($doc, "   \"no\":     \"$obj->no\",\n");
-        fwrite($doc, "   \"ss\":     \"$obj->ss\",\n");
-        fwrite($doc, "   \"payload\":\n $payload \n");
-        fwrite($doc, "}}\n ");
-        fclose($doc);
-
         echo readActionFileList($obj->topic);
 
-      }
+      } // stat
 
       // Dynamic data
       if ($do == 'dyn')
@@ -356,71 +348,20 @@ if (isset($_GET['do']))
         if (isset($_GET['no'])) {
           $obj->no = $_GET['no'];
         }
-        if (isset($_GET['wrap'])) {
-          $obj->wrap = $_GET['wrap'];
+        if (isset($_GET['dev_ts'])) {
+          $obj->dev_ts = $_GET['dev_ts'];
         }
-        if (isset($_GET['ts'])) {
-          $obj->ts = $_GET['ts'];
-        }
-        if (isset($_GET['period'])) {
-          $obj->period = $_GET['period'];
-        }
-        if (isset($_GET['url'])) {
-          $obj->url = $_GET['url'];
-        }
-        if (isset($_GET['hw'])) {
-          $obj->hw = $_GET['hw'];
-        }
-        if (isset($_GET['ssid'])) {
-          $obj->ssid = $_GET['ssid'];
-        }
-        if (isset($_GET['ss'])) {
-          $obj->ss = $_GET['ss'];
-        }
-        if (isset($_GET['act'])) {
-          $obj->act = $_GET['act'];
-        }
-        else
-        {
-          $obj->act = 1;
+        if (isset($_GET['wifi_ss'])) {
+          $obj->wifi_ss = $_GET['wifi_ss'];
         }
         if (isset($_GET['payload'])) {
           $payload = $_GET['payload'];
         }
 
-
-
-
-
-        //===========================================
-        // JSON
-        //===========================================
-        $fdoc = $topic.'/device.json';
-        $doc = fopen($fdoc, "w");
-        fwrite($doc, "{\"gow\": {\n");
-        // Static Part
-        fwrite($doc, "   \"topic\":  \"$obj->topic\",\n");
-        fwrite($doc, "   \"wrap\":   \"$obj->wrap\",\n");
-        fwrite($doc, "   \"period\": \"$obj->period\",\n");
-        fwrite($doc, "   \"url\":    \"$obj->url\",\n");
-        fwrite($doc, "   \"hw\":     \"$obj->hw\",\n");
-        fwrite($doc, "   \"ssid\":   \"$obj->ssid\",\n");
-        fwrite($doc, "   \"act\":    \"$obj->act\",\n");
-        // Dynamic Part
-        fwrite($doc, "   \"gs_ts\":  \"$obj->gs_ts\",\n");
-        fwrite($doc, "   \"ts\":     \"$obj->ts\",\n");
-        fwrite($doc, "   \"no\":     \"$obj->no\",\n");
-        fwrite($doc, "   \"ss\":     \"$obj->ss\",\n");
-        fwrite($doc, "   \"payload\":\n $payload \n");
-        fwrite($doc, "}}\n ");
-        fclose($doc);
-
         saveStaticData($obj);
-
-        // Check if any action is present for this client/topic
         echo readActionFileList($obj->topic);
 
-      } // data
+      } // dyn
  } // error
 } // do
 else
