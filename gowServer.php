@@ -34,14 +34,22 @@
 //=============================================
 // Library
 class gowDoc {
-    public $buf_ts;
-    public $act;
+    public $sys_ts;
+    
+    public $action;
     public $topic;
     public $wrap;
     public $period;
     public $url;
-    public $hw;
+    public $platform;
     public $ssid;
+    public $tags;
+    public $desc;
+    
+    public $no;
+    public $dev_ts;
+    public $wifi_ss;
+    public $payload;   
 }
 
 $obj = new gowDoc();
@@ -60,51 +68,46 @@ function contains($needle, $haystack)
     return strpos($haystack, $needle) !== false;
 }
 //=============================================
-function saveStaticPart($obj)
+function saveStaticData($obj)
 //=============================================
 {
-  $static_file = $obj->topic.'/static.buffer';
+  $static_file = $obj->topic.'/static.json';
   $doc = fopen($static_file, "w");
   if ($doc)
   {
-        fwrite($doc, "   \"buf_ts\": \"$obj->buf_ts\",\n");
-        fwrite($doc, "   \"act\":    \"$obj->act\",\n");
-        fwrite($doc, "   \"topic\":  \"$obj->topic\",\n");
-        fwrite($doc, "   \"wrap\":   \"$obj->wrap\",\n");
-        fwrite($doc, "   \"period\": \"$obj->period\",\n");
-        fwrite($doc, "   \"url\":    \"$obj->url\",\n");
-        fwrite($doc, "   \"hw\":     \"$obj->hw\",\n");
-        fwrite($doc, "   \"ssid\":   \"$obj->ssid\",\n");
+        fwrite($doc, "{\"gow\": {\n");
+        fwrite($doc, "   \"sys_ts\":   \"$obj->sys_ts\",\n");
+        fwrite($doc, "   \"desc\":     \"$obj->desc\",\n");
+        fwrite($doc, "   \"tags\":     \"$obj->tags\",\n");
+        fwrite($doc, "   \"action\":   \"$obj->action\",\n");
+        fwrite($doc, "   \"topic\":    \"$obj->topic\",\n");
+        fwrite($doc, "   \"wrap\":     \"$obj->wrap\",\n");
+        fwrite($doc, "   \"period\":   \"$obj->period\",\n");
+        fwrite($doc, "   \"url\":      \"$obj->url\",\n");
+        fwrite($doc, "   \"platform\": \"$obj->platform\",\n");
+        fwrite($doc, "   \"ssid\":     \"$obj->ssid\",\n");
+        fwrite($doc, "}}\n ");
         fclose($doc);
-  }
-  else
-  {
-      $result = " ";
   }
   return;
 }
 //=============================================
-function readStaticPart($obj)
+function saveDynamicData($obj)
 //=============================================
 {
-  $static_file = $obj->topic.'/static.buffer';
-  $file = fopen($static_file, "r");
-  if ($file)
+  $static_file = $obj->topic.'/dynamic.json';
+  $doc = fopen($static_file, "w");
+  if ($doc)
   {
-      while(! feof($file))
-      {
-        $line = fgets($file);
-        $work = explode(":",$line);
-        if (contains("buf_ts", $work[0]) $obj->buf_ts = $work[1];
-        if (contains("act", $work[0])    $obj->act = $work[1];
-        if (contains("topic", $work[0])  $obj->topic = $work[1];
-        if (contains("wrap", $work[0])   $obj->wrap = $work[1];
-        if (contains("period", $work[0]) $obj->period = $work[1];
-        if (contains("url", $work[0])    $obj->url = $work[1];
-        if (contains("hw", $work[0])     $obj->hw = $work[1];
-        if (contains("ssid", $work[0])   $obj->ssid = $work[1];
-      }
-      fclose($file);
+        fwrite($doc, "{\"gow\": {\n");
+        fwrite($doc, "   \"sys_ts\":    \"$obj->sys_ts\",\n");
+        fwrite($doc, "   \"dev_ts\":    \"$obj->dev_ts\",\n");
+        fwrite($doc, "   \"no\":        \"$obj->no\",\n");
+        fwrite($doc, "   \"wifi_ss\":   \"$obj->wifi_ss\",\n");
+        fwrite($doc, "   \"payload\":   \"$obj->payload\",\n");
+        fwrite($doc, "}}\n ");
+        fclose($doc);
+  }
   return;
 }
 //=============================================
@@ -301,7 +304,7 @@ if (isset($_GET['do']))
       }
       
       // Dynamic data only
-      if ($do == 'dyn')
+      if ($do == 'stat')
       {
   
         if (isset($_GET['no'])) {
@@ -314,10 +317,10 @@ if (isset($_GET['do']))
           $obj->ss = $_GET['ss'];
         }
         if (isset($_GET['payload'])) {
-          $payload = $_GET['payload'];
+          $obj->payload = $_GET['payload'];
         }
         
-        readStaticPart($obj);
+        saveStaticData($obj);
           
         //===========================================
         //  JSON
@@ -341,11 +344,13 @@ if (isset($_GET['do']))
         fwrite($doc, "   \"payload\":\n $payload \n");
         fwrite($doc, "}}\n ");
         fclose($doc);
-          
+
+        echo readActionFileList($obj->topic);
+
       }
 
-      // Static and Dynamic data
-      if ($do == 'data')
+      // Dynamic data
+      if ($do == 'dyn')
       {
   
         if (isset($_GET['no'])) {
@@ -410,10 +415,10 @@ if (isset($_GET['do']))
         fwrite($doc, "}}\n ");
         fclose($doc);
 
-        saveStaticPart($obj);
+        saveStaticData($obj);
 
         // Check if any action is present for this client/topic
-        echo readActionFileList($topic);
+        echo readActionFileList($obj->topic);
 
       } // data
  } // error
