@@ -5,6 +5,7 @@ session_start();
 // Date.......: 2019-01-26
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
+$version = '2019-01-29'
 //=============================================
 // Configuration
 //=============================================
@@ -12,7 +13,7 @@ session_start();
 //=============================================
 $date         = date_create();
 $ts           = date_format($date, 'Y-m-d H:i:s');
-$now = date_create('now')->format('Y-m-d H:i:s');
+$now          = date_create('now')->format('Y-m-d H:i:s');
 echo "<br>$ts $now<br>";
 //=============================================
 // library
@@ -46,7 +47,7 @@ function getStatus($doc)
   $res = json_decode($json, TRUE);
   $period      = $res['gow']['period'];
   $g_message   = $res['gow']['message'];
-  $timestamp   = $res['gow']['gs_ts'];
+  $timestamp   = $res['gow']['sys_ts'];
   $now = date_create('now')->format('Y-m-d H:i:s');
   
   $diff = strtotime($now) - strtotime($timestamp);
@@ -68,7 +69,7 @@ function sendMessage($url,$topic,$msg,$tag)
 //=============================================
 {
   echo "Send message $msg tag=$tag to $url/$topic<br>";
-  $call = 'http://'.$url.'/gowServer.php?do=action&topic='.$topic.'&order='.$msg.'&tag='.$tag;
+  $call = 'http://'.$url.'/gowServer.php?do=order&topic='.$topic.'&msg='.$msg.'&tag='.$tag;
   $res = file_get_contents($call);
   //gowServer.php?do=action&topic=<topic>&order=<order>&tag=<tag>
 }
@@ -155,7 +156,7 @@ echo "<html>
    </head>
    <body> ";
 
-echo("<h1>GOW Device Manager 2018-12-29</h1>");
+echo("<h1>GOW Device Manager $version</h1>");
 //echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
    //echo ("<a href=#>refresh</a><br>");
 echo "<a href=\"http://gow.simuino.com/gowDtManager.php\" target=\"_blank\">Model Manager</a>";
