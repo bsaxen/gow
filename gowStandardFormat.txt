@@ -1,4 +1,27 @@
 =================================
+Rest API
+=================================
+Publish static data
+  gow.server.com/gowServer.php?topic=<>&do=stat&wrap=<>...
+  
+Publish dynamic data
+  gow.server.com/gowServer.php?topic=<>&do=dyn&no=<>...
+
+Downlink message:
+  gow.server.com/gowServer.php?topic=<>&do=order&tag=<>&msg=<>
+
+List topics:
+  gow.server.com/gowServer.php?topic=<>&do=list_topics
+  
+Search:
+  gow.server.com/gowServer.php?do=search&search=<string>
+  
+Delete topic:
+  gow.server.com/gowServer.php?topic=<>&do=delete
+  
+List topics:
+  gow.server.com/gowServer.php?topic=<>&do=list_topics
+=================================
 Static Part: 
 filename: <topic>/static.json
 =================================
