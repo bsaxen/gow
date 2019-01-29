@@ -1,0 +1,18 @@
+Static Part:
+
+topic
+wrap
+platform
+action
+wifi-ssid
+url
+tags
+description
+period
+
+Dynamic Part:
+
+no
+wifi-ss
+payload
+
