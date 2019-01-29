@@ -1,6 +1,6 @@
 //=============================================
 // File.......: httpClient.c
-// Date.......: 2018-11-20
+// Date.......: 2019-01-29
 // Author.....: Benny Saxen
 // Description: Basic http client
 //=============================================
@@ -9,6 +9,11 @@
 char* publishTopic = "test/topic/here/0";
 int conf_period = 10;
 int conf_wrap   = 999999;
+int action = 1;
+int wifi_ss = 0;
+char* payload = "{};
+char* tags = "tag1,tag2,tag3";
+char* desc = "your description";
 const char* ssid       = "my_ssid";
 const char* password   = "my passw";
 const char* host       = "192.168.1.242";
@@ -48,11 +53,11 @@ void setup() {
   Serial.println(WiFi.localIP());
 }
 
-int value = 0;
+int counter = 0;
 
 void loop() {
   delay(conf_period*1000);
-  ++value;
+  ++counter;
 
   Serial.print("connecting to ");
   Serial.println(host);
@@ -62,38 +67,72 @@ void loop() {
   const int httpPort = 80;
   if (!client.connect(host, httpPort)) {
     Serial.println("connection failed");
-    return;
+    //return;
   }
+  
+  //===================================
+  String stat_url = "/gowServer.php";
+  //===================================
+  stat_url += "?do=stat";
+  
+  stat_url += "&topic=";
+  stat_url += publishTopic;
+  
+  stat_url += "&ssid=";
+  stat_url += ssid;
+  
+  stat_url += "&wrap=";
+  stat_url += conf_wrap;
+  
+  stat_url += "&period=";
+  stat_url += conf_period;
+  
+  stat_url += "&url=";
+  stat_url += "gow.asd.com";
+  
+  stat_url += "&platform=";
+  stat_url += "esp8266";
 
-  // We now create a URI for the request
-  String url = "/gowServer.php";
-  url += "?do=data";
-  url += "&topic=";
-  url += publishTopic;
-  url += "&no=";
-  url += value;
-  url += "&wrap=";
-  url += conf_wrap;
-  url += "&type=";
-  url += "TEMPERATURE";
-  url += "&value=";
-  url += value;
-  url += "&ts=";
-  url += "2018-01-01%2012:12:31";
-  url += "&unit=";
-  url += "celcius";
-  url += "&period=";
-  url += conf_period;
-  url += "&url=";
-  url += "http://192.168.1.242/git/gow/";
-  url += "&hw=";
-  url += "esp8266";
-      
+  stat_url += "&tags=";
+  stat_url += tags;
+
+  stat_url += "&desc=";
+  stat_url += desc;
+
+  stat_url += "&action=";
+  stat_url += action;
+  
+  //===================================
+  String dyn_url = "/gowServer.php";
+  //=================================== 
+  dyn_url += "?do=dyn";
+  
+  dyn_url += "&topic=";
+  dyn_url += publishTopic;
+  
+  dyn_url += "&no=";
+  dyn_url += counter;
+  
+  dyn_url += "&wifi_ss=";
+  dyn_url += wifi_ss;
+    
+  dyn_url += "&payload=";
+  dyn_url += payload;
+  
+  if (counter%100 == 0)
+  {
+    cur_url = stat_url;
+  }
+  else
+  {
+    cur_url = dyn_url; 
+  }
+  
   Serial.print("Requesting URL: ");
-  Serial.println(url);
+  Serial.println(cur_url);
 
   // This will send the request to the server
-  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+  client.print(String("GET ") + cur_url + " HTTP/1.1\r\n" +
                "Host: " + host + "\r\n" +
                "Connection: close\r\n\r\n");
   unsigned long timeout = millis();
@@ -101,7 +140,7 @@ void loop() {
     if (millis() - timeout > 5000) {
       Serial.println(">>> Client Timeout !");
       client.stop();
-      return;
+      //return;
     }
   }
 
