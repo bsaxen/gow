@@ -1,18 +1,33 @@
-Static Part:
+=================================
+Static Part: 
+filename: <topic>/static.json
+=================================
+
+sys_ts
 
 topic
 wrap
 platform
 action
-wifi-ssid
+ssid
 url
 tags
-description
+desc
 period
 
+=================================
 Dynamic Part:
+filename: <topic>/dynamic.json
+=================================
 
+sys_ts
+
+dev_ts
 no
-wifi-ss
+wifi_ss
 payload
 
+=================================
+Action:
+=================================
+filename: <topic>/<tag>_gow.action
