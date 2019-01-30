@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowTemperatureSensor.c
-// Date.......: 2019-01-27
+// Date.......: 2019-01-30
 // Author.....: Benny Saxen
 // Description: Signal from D1 pin. 
 // 4.7kOhm between signal and Vcc
@@ -8,12 +8,17 @@
 //=============================================
 // Configuration
 //=============================================
-char* publishTopic = "kvv32/test/temperature/0";
-int conf_period = 30;
-int conf_wrap   = 999999;
-const char* ssid       = "NABTON";
-const char* password   = "some";
-const char* host       = "gow.simuino.com";
+char* conf_topic = "test/topic/here/0";
+int conf_period  = 10;
+int conf_wrap    = 999999;
+int conf_action  = 1;
+int wifi_ss      = 0;
+char* conf_tags        = "tag1,tag2,tag3";
+char* conf_desc        = "your_description";
+char* conf_platform    = "esp8266";
+const char* ssid       = "my_ssid";
+const char* password   = "my passw";
+const char* host       = "192.168.1.242";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
 //=============================================
@@ -82,7 +87,7 @@ void setup()
 }
 
 
-
+int counter = 0;
 //=============================================
 void loop()
 //=============================================
@@ -92,9 +97,9 @@ void loop()
   char order[10];
   char buf[100];
     
- 
+  ++counter;
+  if (counter > conf_wrap) counter = 1;
     
-    ++counter;
     //Retrieve one or more temperature values
     sensor.requestTemperatures();
     //Loop through results and publish
@@ -117,25 +122,51 @@ void loop()
 
     // We now create a URI for the request
     String url = "/gowServer.php";
-    url += "?do=data";
+    
+if (counter%10 == 0)
+  {  
+    url += "?do=stat";
+    
     url += "&topic=";
-    url += publishTopic;
-    url += "&no=";
-    url += counter;
+    url += conf_topic;
+    
     url += "&wrap=";
     url += conf_wrap;
-
-    url += "&ts=";
-    url += "void";
-        
-    url += "&period=";
-    url += conf_period;
-    url += "&url=";
-    url += "gow.simuino.com";
-    url += "&hw=";
-    url += "esp8266";
+    
+    url += "&platfrom=";
+    url += conf_platfrom;
+    
+    url += "&action=";
+    url += conf_action;
+      
     url += "&ssid=";
     url += ssid;
+    
+    url += "&tags=";
+    url += conf_tags;
+    
+    url += "&desc=";
+    url += conf_desc;
+    
+    url += "&period=";
+    url += conf_period;
+    
+    url += "&url=";
+    url += host;
+  }
+  else
+  {
+    url += "?do=dyn";
+    
+    url += "&topic=";
+    url += conf_topic;
+    
+    url += "&no=";
+    url += counter;
+    
+    url += "&wifi_ss=";
+    url += wifi_ss;
+    
     url += "&payload="; 
     url += "{"; 
     for (i=1;i<=nsensors;i++)
@@ -148,6 +179,8 @@ void loop()
         if(i < nsensors)url += ",";
     }
     url += "}";
+  }    
+    
 
 
     Serial.print("Requesting URL: ");
