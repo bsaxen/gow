@@ -1,7 +1,7 @@
 # =============================================
 # File: lib.py
 # Author: Benny Saxen
-# Date: 2019-01-25
+# Date: 2019-01-30
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -18,10 +18,17 @@ class datastream:
 	d_topic = ''
 	d_no = 0
 	d_wrap = 999999
-	d_ts = ""
-	d_gs_ts = ""
-	d_hw = ""
-	d_message = 1
+	d_dev_ts = ""
+	d_sys_ts = ""
+	d_platform = ""
+	d_action = 1
+	d_ssid   = 0
+	d_url = ""
+	d_tags = "tag1,tag2"
+	d_desc = "some"
+	d_period = 10
+	d_wifi_ss = 0
+	
 	d_value = 0.0
 
 
@@ -68,13 +75,13 @@ class configuration:
 	# datastreams subscriptions
 	c_ds_uri = []
 	c_ds_topic = []
-	# Database tabela and parameters
+	# Database tables and parameters
 	c_ds_table = []
 	c_ds_param = []
 	c_nds = 0
 #=====================================================
-def lib_buildUrl(uri,topic):
-	url =  'http://' + uri + '/' + topic + '/device.json'
+def lib_buildUrl(uri,topic,dynstat):
+	url =  'http://' + uri + '/' + topic + '/' + dynstat +'.json'
 	return url
 #=====================================================
 def lib_init_history(fname):
@@ -250,7 +257,7 @@ def lib_consumeDatastream(d,url,par):
 #=============================================
 	j = lib_readDatastream(url)
 	n = lib_decodeDatastream(j,'no',1)
-	d.d_ts = lib_decodeDatastream(j,'ts',1)
+	d.d_sys_ts = lib_decodeDatastream(j,'sys_ts',1)
 	if n < d.d_no:
 		msg = "Datastream sequence number out of order " + str(d.d_topic)
 		log('lib',msg)
@@ -288,7 +295,7 @@ def lib_readJsonPayload(url,par):
 	now = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 	r = urllib2.urlopen(url)
 	j = json.load(r)
-	ts=j['gow']['gs_ts']
+	ts=j['gow']['sys_ts']
 	period=j['gow']['period']
 	xts1 = time.mktime(datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").timetuple())
 	xts2 = time.mktime(datetime.datetime.strptime(now, "%Y-%m-%d %H:%M:%S").timetuple())
@@ -303,21 +310,52 @@ def lib_readJsonPayload(url,par):
 		x = 123456789
 	return x
 #===================================================
-def lib_publish(c1, itopic, ipayload, n, actions ):
+def lib_publish_static(c1, itopic, actions ):
 #===================================================
 	url = c1.c_url
 	server = c1.c_server_app
 	data = {}
 	res = '-'
 	# meta data
-	data['do']     = 'data'
-	data['topic']  = itopic
-	data['no']     = n
-	data['wrap']   = c1.c_wrap
-	data['ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['period'] = c1.c_period
-	data['hw']     = c1.c_hw
-	data['message'] = actions
+	data['do']        = 'stat'
+	data['topic']     = itopic
+	data['wrap']      = c1.c_wrap
+	data['dev_ts']    = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	data['period']    = c1.c_period
+	data['platform']  = c1.c_platform
+	data['action']    = actions
+	data['ssid']      = 0
+	data['url']       = c1.c_url
+	data['tags']      = c1.c_tags
+	data['desc']      = c1.c_desc
+	
+	values = urllib.urlencode(data)
+	req = 'http://' + url + '/' + server + '?' + values
+	#print req
+	try:
+		response = urllib2.urlopen(req)
+		the_page = response.read()
+		#if actions == 2:
+		#	print 'Message to ' + itopic + ': ' + the_page
+		#lib_evaluateAction(the_page)
+	except urllib2.URLError as e:
+		print e.reason
+	if actions == 2:
+		res = the_page
+	return res
+#===================================================
+def lib_publish_dynamic(c1, itopic, ipayload, n, actions ):
+#===================================================
+	url = c1.c_url
+	server = c1.c_server_app
+	data = {}
+	res = '-'
+	
+	data['do']         = 'dyn'
+	data['topic']      = itopic
+	data['no']         = n
+	data['wifi_ss']    = 0
+	data['dev_ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	# payload
 	data['payload'] = ipayload
 
@@ -335,7 +373,6 @@ def lib_publish(c1, itopic, ipayload, n, actions ):
 	if actions == 2:
 		res = the_page
 	return res
-
 #===================================================
 def lib_placeOrder(c1, itopic, iaction):
 #===================================================
