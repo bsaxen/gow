@@ -1,7 +1,7 @@
 # =============================================
 # File: gowHttpClient.py
 # Author: Benny Saxen
-# Date: 2018-12-29
+# Date: 2019-01-30
 # Description:
 # =============================================
 import urllib
