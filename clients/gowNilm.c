@@ -6,12 +6,14 @@
 //=============================================
 // Configuration
 //=============================================
-char* publishTopic = "kvv32/nilm/0";
-int conf_period = 5;
-int conf_wrap   = 999999;
-const char* conf_tags       = "tag1,tag2,tag3";
-const char* conf_desc       = "some_description";
-const char* conf_platform   = "esp8266";
+char* conf_topic = "test/topic/here/0";
+int conf_period  = 10;
+int conf_wrap    = 999999;
+int conf_action  = 1;
+int wifi_ss      = 0;
+char* conf_tags        = "tag1,tag2,tag3";
+char* conf_desc        = "your_description";
+char* conf_platform    = "esp8266";
 const char* ssid       = "my_ssid";
 const char* password   = "my passw";
 const char* host       = "192.168.1.242";
@@ -64,8 +66,10 @@ int counter = 0;
 void loop(void){
 //===============================================================
   delay(conf_period*1000);
+    
   ++counter;
-
+  if (counter > conf_wrap) counter = 1;
+    
   Serial.print("connecting to ");
   Serial.println(host);
 
@@ -94,7 +98,7 @@ void loop(void){
     url += conf_platfrom;
     
     url += "&action=";
-    url += 1;
+    url += conf_action;
       
     url += "&ssid=";
     url += ssid;
@@ -116,7 +120,7 @@ void loop(void){
     url += "?do=dyn";
     
     url += "&topic=";
-    url += publishTopic;
+    url += conf_topic;
     
     url += "&no=";
     url += counter;
@@ -124,8 +128,14 @@ void loop(void){
     url += "&wifi_ss=";
     url += wifi_ss;
     
-    url += "&payload=";
-    url += payload;  
+    url += "&payload="; 
+    url += "{"; 
+        url += "\"temp";
+        url += "\":\"";
+        url += 123;
+        url += "\"";
+    }
+    url += "}";
   }
     
   Serial.print("Requesting URL: ");
