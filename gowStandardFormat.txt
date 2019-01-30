@@ -26,9 +26,10 @@ Static Part:
 filename: <topic>/static.json
 =================================
 
-sys_ts
-
 topic
+sys_ts
+dev_ts
+
 wrap
 platform
 action
@@ -42,8 +43,9 @@ period
 Dynamic Part:
 filename: <topic>/dynamic.json
 =================================
-
+topic
 sys_ts
+dev_ts
 
 dev_ts
 no
