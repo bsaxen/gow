@@ -1,17 +1,22 @@
 //=============================================
 // File.......: gowSwitch.c
-// Date.......: 2019-01-26
+// Date.......: 2019-01-30
 // Author.....: Benny Saxen
 // Description: 
 //=============================================
 // Configuration
 //=============================================
-char* publishTopic = "nytomta/gow/fan1/0";
-int conf_period = 20;
-int conf_wrap   = 999999;
-const char* ssid       = "ASUS-hus";
-const char* password   = "some";
-const char* host       = "gow.simuino.com";
+char* conf_topic = "test/topic/here/0";
+int conf_period  = 10;
+int conf_wrap    = 999999;
+int conf_action  = 1;
+int wifi_ss      = 0;
+char* conf_tags        = "tag1,tag2,tag3";
+char* conf_desc        = "your_description";
+char* conf_platform    = "esp8266";
+const char* ssid       = "my_ssid";
+const char* password   = "my passw";
+const char* host       = "192.168.1.242";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
 //=============================================
@@ -50,7 +55,7 @@ void setup() {
   g_status = 1;
 }
 
-int value = 0;
+int counter = 0;
 
 //=============================================
 void loop() 
@@ -59,8 +64,10 @@ void loop()
   char order[10];
   char buf[100];
   delay(conf_period*1000);
-  ++value;
-
+  
+  ++counter;
+  if (counter > conf_wrap) counter = 1;
+  
   Serial.print("connecting to ");
   Serial.println(host);
 
@@ -73,24 +80,59 @@ void loop()
   }
 
   String url = "/gowServer.php";
-  url += "?do=data";
-  url += "&topic=";
-  url += publishTopic;
-  url += "&no=";
-  url += value;
-  url += "&wrap=";
-  url += conf_wrap;
-  url += "&period=";
-  url += conf_period;
-  url += "&message=2";
-  url += "&hw=";
-  url += "esp8266";
-  url += "&ssid=";
-  url += ssid;
-  url += "&payload=";
-  url += "{\"status\":\"";
-  url += g_status;
-  url += "\"}"; 
+if (counter%10 == 0)
+  {  
+    url += "?do=stat";
+    
+    url += "&topic=";
+    url += conf_topic;
+    
+    url += "&wrap=";
+    url += conf_wrap;
+    
+    url += "&platfrom=";
+    url += conf_platfrom;
+    
+    url += "&action=";
+    url += conf_action;
+      
+    url += "&ssid=";
+    url += ssid;
+    
+    url += "&tags=";
+    url += conf_tags;
+    
+    url += "&desc=";
+    url += conf_desc;
+    
+    url += "&period=";
+    url += conf_period;
+    
+    url += "&url=";
+    url += host;
+  }
+  else
+  {
+    url += "?do=dyn";
+    
+    url += "&topic=";
+    url += conf_topic;
+    
+    url += "&no=";
+    url += counter;
+    
+    url += "&wifi_ss=";
+    url += wifi_ss;
+    
+    url += "&payload="; 
+    url += "{"; 
+        url += "\"status";
+        url += "\":\"";
+        url += g_status;
+        url += "\"";
+    }
+    url += "}";
+  }
 
   Serial.print("Requesting URL: ");
   Serial.println(url);
