@@ -11,7 +11,6 @@ int conf_period  = 10;
 int conf_wrap    = 999999;
 int conf_action  = 1;
 int wifi_ss = 0;
-char* payload = "{};
 char* conf_tags = "tag1,tag2,tag3";
 char* conf_desc = "your_description";
 char* conf_platform = "esp8266";
@@ -115,10 +114,15 @@ void loop() {
   
   dyn_url += "&wifi_ss=";
   dyn_url += wifi_ss;
-    
-  dyn_url += "&payload=";
-  dyn_url += payload;
   
+  dyn_url += "&payload="; 
+  dyn_url += "{"; 
+  dyn_url += "\"temp";
+  dyn_url += "\":\"";
+  dyn_url += 123;
+  dyn_url += "\"";
+  dyn_url += "}";
+   
   String cur_url = " ";
   if (counter%100 == 0)
   {
