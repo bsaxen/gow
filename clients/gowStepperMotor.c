@@ -12,20 +12,24 @@
 // Configuration
 //=============================================
 #include <ESP8266WiFi.h>
-char* publishTopic = "huskvarna/carl/stepper/0";
-int conf_period = 10;
-int conf_wrap   = 999999;
-const char* ssid       = "bridge";
-const char* password   = "pswd";
-const char* host       = "x.com";
+char* conf_topic = "test/topic/here/0";
+int conf_period  = 10;
+int conf_wrap    = 999999;
+int conf_action  = 1;
+int wifi_ss      = 0;
+char* conf_tags        = "tag1,tag2,tag3";
+char* conf_desc        = "your_description";
+char* conf_platform    = "esp8266";
+const char* ssid       = "my_ssid";
+const char* password   = "my passw";
+const char* host       = "192.168.1.242";
 const char* streamId   = "....................";
 const char* privateKey = "....................";
-
 //================================================
 // Globals
 //================================================
 int current_pos = 0;
-int loop_counter = 0;
+int counter = 0;
 int FULL_STEP = 1;
 int HALF_STEP = 2;
 int QUARTER_STEP = 3;
@@ -197,28 +201,59 @@ void gow_publish()
   }
   
   String url = "/gowServer.php";
-  url += "?do=data";
-  url += "&topic=";
-  url += publishTopic;
-  url += "&no=";
-  url += loop_counter;
-  url += "&wrap=";
-  url += conf_wrap;
-  url += "&type=";
-  url += "STEPPER";
-  url += "&v1=";
-  url += "position";
-  url += "&p1=";
-  url += current_pos;
-  url += "&period=";
-  url += conf_period;
-  url += "&message=";
-  url += '2';
-  url += "&hw=";
-  url += "esp8266";
+
+  if (counter%10 == 0)
+  {  
+    url += "?do=stat";
+    
+    url += "&topic=";
+    url += conf_topic;
+    
+    url += "&wrap=";
+    url += conf_wrap;
+    
+    url += "&platfrom=";
+    url += conf_platfrom;
+    
+    url += "&action=";
+    url += conf_action;
       
-  //Serial.print("Requesting URL: ");
-  //Serial.println(url);
+    url += "&ssid=";
+    url += ssid;
+    
+    url += "&tags=";
+    url += conf_tags;
+    
+    url += "&desc=";
+    url += conf_desc;
+    
+    url += "&period=";
+    url += conf_period;
+    
+    url += "&url=";
+    url += host;
+  }
+  else
+  {
+    url += "?do=dyn";
+    
+    url += "&topic=";
+    url += conf_topic;
+    
+    url += "&no=";
+    url += counter;
+    
+    url += "&wifi_ss=";
+    url += wifi_ss;
+    
+    url += "&payload="; 
+    url += "{"; 
+        url += "\"status";
+        url += "\":\"";
+        url += 1;
+        url += "\"";
+    url += "}";
+  }
 
   // This will send the request to the server
   client.print(String("GET ") + url + " HTTP/1.1\r\n" +
@@ -337,13 +372,14 @@ void setup(void){
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-  loop_counter = 0;
+  counter = 0;
 }
 //================================================
 void loop(void){
 //================================================
 
-  loop_counter += 1;
+  counter += 1;
+  if (counter > conf_wrap) counter = 1;
   
   gow_publish();
 
