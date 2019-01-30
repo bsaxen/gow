@@ -169,7 +169,7 @@ if (counter%10 == 0)
     
     url += "&payload="; 
     url += "{"; 
-    for (i=1;i<=nsensors;i++)
+    for (int i=1;i<=nsensors;i++)
     {
         url += "\"temp";
         url += i;
