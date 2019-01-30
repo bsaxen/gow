@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowNilm.c
-// Date.......: 2018-12-17
+// Date.......: 2019-01-30
 // Author.....: Benny Saxen
 // Description: nilm - electricity 
 //=============================================
@@ -9,6 +9,9 @@
 char* publishTopic = "kvv32/nilm/0";
 int conf_period = 5;
 int conf_wrap   = 999999;
+const char* conf_tags       = "tag1,tag2,tag3";
+const char* conf_desc       = "some_description";
+const char* conf_platform   = "esp8266";
 const char* ssid       = "my_ssid";
 const char* password   = "my passw";
 const char* host       = "192.168.1.242";
@@ -18,13 +21,13 @@ const char* privateKey = "....................";
 #include <ESP8266WiFi.h>
 
 const byte interrupt_pin = 5;
-const byte led_pin = 4;
-int timeToCheckStatus = 0;
+const byte led_pin       = 4;
+int timeToCheckStatus    = 0;
 unsigned long t1,t2,dt,ttemp;
-float elpow = 0.0;
-int interrupt_counter = 0;
+float elpow               = 0.0;
+int interrupt_counter     = 0;
 int electric_meter_pulses = 1000;  //1000 pulses/kWh
-int bounce_value = 50; // minimum time between interrupts
+int bounce_value          = 50; // minimum time between interrupts
 //===============================================================
 // Interrupt function for measuring the time between pulses and number of pulses
 // Always stored in RAM
@@ -56,11 +59,12 @@ void setup(){
     attachInterrupt(interrupt_pin, measure, FALLING);
 
 }
+int counter = 0;
 //===============================================================
 void loop(void){
 //===============================================================
   delay(conf_period*1000);
-  ++value;
+  ++counter;
 
   Serial.print("connecting to ");
   Serial.println(host);
@@ -75,29 +79,54 @@ void loop(void){
 
   // We now create a URI for the request
   String url = "/gowServer.php";
-  url += "?do=data";
-  url += "&topic=";
-  url += publishTopic;
-  url += "&no=";
-  url += elpow;
-  url += "&wrap=";
-  url += conf_wrap;
-  url += "&type=";
-  url += "ELECTRICITY";
-  url += "&value=";
-  url += value;
-  url += "&ts=";
-  url += "-";
-  url += "&unit=";
-  url += "watt";
-  url += "&period=";
-  url += conf_period;
-  //url += "&url=";
-  //url += "http://192.168.1.242/git/gow/";
-  url += "&hw=";
-  url += "esp8266";
-  url += "&message=";
-  url += "2";
+
+  if (counter%10 == 0)
+  {  
+    url += "?do=stat";
+    
+    url += "&topic=";
+    url += conf_topic;
+    
+    url += "&wrap=";
+    url += conf_wrap;
+    
+    url += "&platfrom=";
+    url += conf_platfrom;
+    
+    url += "&action=";
+    url += 1;
+      
+    url += "&ssid=";
+    url += ssid;
+    
+    url += "&tags=";
+    url += conf_tags;
+    
+    url += "&desc=";
+    url += conf_desc;
+    
+    url += "&period=";
+    url += conf_period;
+    
+    url += "&url=";
+    url += host;
+  }
+  else
+  {
+    url += "?do=dyn";
+    
+    url += "&topic=";
+    url += publishTopic;
+    
+    url += "&no=";
+    url += counter;
+    
+    url += "&wifi_ss=";
+    url += wifi_ss;
+    
+    url += "&payload=";
+    url += payload;  
+  }
     
   Serial.print("Requesting URL: ");
   Serial.println(url);
