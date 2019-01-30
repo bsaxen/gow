@@ -134,7 +134,6 @@ void loop(void){
         url += "\":\"";
         url += 123;
         url += "\"";
-    }
     url += "}";
   }
     
