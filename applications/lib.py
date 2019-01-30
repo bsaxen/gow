@@ -34,9 +34,11 @@ class datastream:
 
 class configuration:
 	c_title      = 'Configuration Title'
+	c_tags       = 'tag1,tag2,tag3'
+	c_desc       = 'some_description'
 	c_url        = 'gow.simuino.com'
 	c_server_app = 'gowServer.php'
-	c_hw         = 'python'
+	c_platform   = 'python'
 	c_period     = 10.0
 	c_wrap       = 999999
 	c_topic1     = "topic1"
@@ -124,14 +126,18 @@ def lib_readConfiguration(confile,c1):
 				word = line.split()
 				if word[0] == 'c_title':
 					c1.c_title         = word[1]
+				if word[0] == 'c_tags':
+					c1.c_tags         = word[1]
+				if word[0] == 'c_desc':
+					c1.c_desc         = word[1]
 				if word[0] == 'c_url':
 					c1.c_url         = word[1]
 				if word[0] == 'c_app':
 					c1.c_server_app     = word[1]
 				if word[0] == 'c_period':
 					c1.c_period         = word[1]
-				if word[0] == 'c_hw':
-					c1.c_hw             = word[1]
+				if word[0] == 'c_platfrom':
+					c1.c_patform             = word[1]
 				if word[0] == 'c_wrap':
 					c1.c_wrap           = word[1]
 				if word[0] == 'c_topic1':
@@ -208,9 +214,11 @@ def lib_readConfiguration(confile,c1):
 		fh = open(confile, 'w')
 		fh.write('c_title    Configuration Title\n')
 		fh.write('c_url      gow.simuino.com\n')
+		fh.write('c_tags     tag1,tag2,tag3\n')
+		fh.write('c_desc     some_description\n')
 		fh.write('c_server   gowServer.php\n')
 		fh.write('c_period   10.0\n')
-		fh.write('c_hw       python\n')
+		fh.write('c_platform python\n')
 		fh.write('c_wrap     999999\n')
 
 		fh.write('c_topic1   topic1\n')
