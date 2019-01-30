@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-01-25
+# Date.......: 2019-01-30
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -32,18 +32,19 @@ print "Number of datastreams: " + str(r1.c_nds)
 
 max_period = 0
 for num in range(0,r1.c_nds):
-    url = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num])
+    url_static  = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
+    url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
     print url
-    period = float(lib_readJsonMeta(url,'period'))
+    period = float(lib_readJsonMeta(url_static,'period'))
     print period
     #if period > max_period:
     #    max_period = period
     schedule.append(period)
     work.append(period)
-    no = float(lib_readJsonMeta(url,'no'))
+    no = float(lib_readJsonMeta(url_dynamic,'no'))
     running.append(no)
     print no
-    x      = float(lib_readJsonPayload(url,r1.c_ds_param[num]))
+    x      = float(lib_readJsonPayload(url_dynamic,r1.c_ds_param[num]))
     print x
     lib_mysqlInsert(r1,1,r1.c_ds_table[num],'value',x)
 #=============================================
@@ -69,14 +70,14 @@ while True:
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
             work[num] = schedule[num]
-            url = lib_buildUrl(r1.c_ds_url[num],r1.c_ds_topic[num])
+            url_static = lib_buildUrl(r1.c_ds_url[num],r1.c_ds_topic[num],'static')
             print url
-            period = float(lib_readJsonMeta(url,'period'))
+            period = float(lib_readJsonMeta(url_static,'period'))
             print period
             #if period > max_period:
             #    max_period = period
             schedule[num] = period
-            no = float(lib_readJsonMeta(url,'no'))
+            no = float(lib_readJsonMeta(url_dynamic,'no'))
             print no
             delta_no = no - running[num]
             ok = 0
@@ -93,7 +94,7 @@ while True:
                 ok = 1
             if ok == 1:
                 running[num] = no
-                x  = float(lib_readJsonPayload(url,r1.c_ds_param[num]))
+                x  = float(lib_readJsonPayload(url_dynamic,r1.c_ds_param[num]))
                 print x
                 lib_mysqlInsert(r1,0,r1.c_ds_table[num],'value',x)
 #===================================================
