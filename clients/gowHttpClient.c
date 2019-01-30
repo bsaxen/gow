@@ -1,19 +1,20 @@
 //=============================================
 // File.......: httpClient.c
-// Date.......: 2019-01-29
+// Date.......: 2019-01-30
 // Author.....: Benny Saxen
 // Description: Basic http client
 //=============================================
 // Configuration
 //=============================================
-char* publishTopic = "test/topic/here/0";
-int conf_period = 10;
-int conf_wrap   = 999999;
-int action = 1;
+char* conf_topic = "test/topic/here/0";
+int conf_period  = 10;
+int conf_wrap    = 999999;
+int conf_action  = 1;
 int wifi_ss = 0;
 char* payload = "{};
-char* tags = "tag1,tag2,tag3";
-char* desc = "your description";
+char* conf_tags = "tag1,tag2,tag3";
+char* conf_desc = "your_description";
+char* conf_platform = "esp8266";
 const char* ssid       = "my_ssid";
 const char* password   = "my passw";
 const char* host       = "192.168.1.242";
@@ -21,9 +22,6 @@ const char* streamId   = "....................";
 const char* privateKey = "....................";
 //=============================================
 #include <ESP8266WiFi.h>
-
-
-
 
 void setup() {
   Serial.begin(115200);
@@ -58,6 +56,8 @@ int counter = 0;
 void loop() {
   delay(conf_period*1000);
   ++counter;
+  
+  if (counter > conf_wrap) counter = 1;
 
   Serial.print("connecting to ");
   Serial.println(host);
@@ -76,7 +76,7 @@ void loop() {
   stat_url += "?do=stat";
   
   stat_url += "&topic=";
-  stat_url += publishTopic;
+  stat_url += conf_topic;
   
   stat_url += "&ssid=";
   stat_url += ssid;
@@ -88,19 +88,19 @@ void loop() {
   stat_url += conf_period;
   
   stat_url += "&url=";
-  stat_url += "gow.asd.com";
+  stat_url += host;
   
   stat_url += "&platform=";
-  stat_url += "esp8266";
+  stat_url += conf_platform;
 
   stat_url += "&tags=";
-  stat_url += tags;
+  stat_url += conf_tags;
 
   stat_url += "&desc=";
-  stat_url += desc;
+  stat_url += conf_desc;
 
   stat_url += "&action=";
-  stat_url += action;
+  stat_url += conf_action;
   
   //===================================
   String dyn_url = "/gowServer.php";
@@ -108,7 +108,7 @@ void loop() {
   dyn_url += "?do=dyn";
   
   dyn_url += "&topic=";
-  dyn_url += publishTopic;
+  dyn_url += conf_topic;
   
   dyn_url += "&no=";
   dyn_url += counter;
@@ -119,6 +119,7 @@ void loop() {
   dyn_url += "&payload=";
   dyn_url += payload;
   
+  String cur_url = " ";
   if (counter%100 == 0)
   {
     cur_url = stat_url;
