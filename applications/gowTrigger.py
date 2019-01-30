@@ -1,7 +1,7 @@
 # ==================================================
 # File: gowTrigger.py
 # Author: Benny Saxen
-# Date: 2019-01-25
+# Date: 2019-01-30
 # Description:
 # Trigger an action or a publication
 # ==================================================
@@ -11,7 +11,18 @@ counter = 0
 #===================================================
 # Functions
 #===================================================
-def job():
+
+#===================================================
+def jobStatic():
+    global r1
+
+    # Action
+    #lib_placeOrder(c1, c1.c_topic1, c1.c_action1)
+    # Publication
+    lib_publish_static(r1, r1.c_topic1 )
+
+#===================================================
+def jobDynamic():
     global r1
     global counter
     counter += 1
@@ -20,13 +31,13 @@ def job():
     # Action
     #lib_placeOrder(c1, c1.c_topic1, c1.c_action1)
     # Publication
-    lib_publish(r1, r1.c_topic1, r1.c_payload1, counter )
+    lib_publish_dynamic(r1, r1.c_topic1, r1.c_payload1, counter )
 #===================================================
 # Main
 #===================================================
-print "======== gowTrigger version 2019-01-25 =========="
-schedule.every(10).seconds.do(job)
-#schedule.every(1).minutes.do(job)
+print "======== gowTrigger version 2019-01-30 =========="
+schedule.every(10).seconds.do(jobDynamic)
+schedule.every(10).minutes.do(jobStatic)
 #schedule.every().hour.do(job)
 #schedule.every().day.at("10:30").do(job)
 #schedule.every().monday.do(job)
