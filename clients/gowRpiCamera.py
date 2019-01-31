@@ -31,17 +31,20 @@ counter = 0
 c1 = configuration()
 confile = "gowrpicamera.conf"
 print "Read configuration"
-lib_readConfiguration(confile,r1)
+lib_readConfiguration(confile,c1)
+lib_publish_static(c1, c1.c_topic1 )
 #===================================================
 # Loop
 #===================================================
 while True:
+	
    counter += 1
    if counter > conf_wrap:
 	counter = 1
 	
-   print "sleep: " + str(r1.c_period) + " triggered: " + str(counter)
-   time.sleep(float(r1.c_period))
+   lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, counter )
+   print "sleep: " + str(c1.c_period) + " triggered: " + str(counter)
+   time.sleep(float(c1.c_period))
 #===================================================
 # End of file
 #===================================================
