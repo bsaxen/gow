@@ -1,7 +1,7 @@
 # =============================================
 # File: lib.py
 # Author: Benny Saxen
-# Date: 2019-01-30
+# Date: 2019-01-31
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -12,7 +12,6 @@ import datetime
 import random
 import string
 import json
-import time
 
 class datastream:
 	d_topic = ''
