@@ -80,6 +80,14 @@ class configuration:
 	c_ds_table = []
 	c_ds_param = []
 	c_nds = 0
+	
+	# Image
+	c_image_user   = 'folke'
+	c_image_url    = 'gow.test.com'
+	c_image_path   = 'images_dir'
+	c_image_prefix = 'some'
+	c_image_name   = 'any'
+	
 #=====================================================
 def lib_buildUrl(uri,topic,dynstat):
 	url =  'http://' + uri + '/' + topic + '/' + dynstat +'.json'
@@ -206,6 +214,18 @@ def lib_readConfiguration(confile,c1):
 					c1.c_ds_table.append(word[3])
 					c1.c_ds_param.append(word[4])
 					c1.c_nds += 1
+					
+				# Image
+				if word[0] == 'c_image_user':
+					c1.c_image_user      = word[1]
+				if word[0] == 'c_image_user':
+					c1.c_image_url       = word[1]
+				if word[0] == 'c_image_url':
+					c1.c_image_path      = word[1]
+				if word[0] == 'c_image_path':
+					c1.c_image_path      = word[1]
+				if word[0] == 'c_image_name':
+					c1.c_image_name      = word[1]
 			else:
 				print line
 		fh.close()
@@ -253,6 +273,12 @@ def lib_readConfiguration(confile,c1):
 		fh.write('c_dbuser       folke\n')
 		fh.write('c_dbpassword   something\n')
 		fh.write('c_stream       uri topic table param\n')
+		
+		fh.write('c_image_user   folke\n')
+		fh.write('c_image_url    gow.test.com\n')
+		fh.write('c_image_path   images\n')
+		fh.write('c_image_prefix some\n')
+		fh.write('c_image_name   any\n')
 		fh.close()
 		print "Configuration file created: " + confile
 		print "Edit your configuration and restart the application"
