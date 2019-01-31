@@ -1,7 +1,7 @@
 # ==================================================
 # File: gowTrigger.py
 # Author: Benny Saxen
-# Date: 2019-01-30
+# Date: 2019-01-31
 # Description:
 # Trigger an action or a publication
 # ==================================================
@@ -14,16 +14,16 @@ counter = 0
 
 #===================================================
 def jobStatic():
-    global r1
+    global c1
 
     # Action
     #lib_placeOrder(c1, c1.c_topic1, c1.c_action1)
     # Publication
-    lib_publish_static(r1, r1.c_topic1 )
+    lib_publish_static(c1, c1.c_topic1 )
 
 #===================================================
 def jobDynamic():
-    global r1
+    global c1
     global counter
     counter += 1
     if counter > r1.c_wrap:
@@ -31,9 +31,9 @@ def jobDynamic():
     # Action
     #lib_placeOrder(c1, c1.c_topic1, c1.c_action1)
     # Publication
-    lib_publish_dynamic(r1, r1.c_topic1, r1.c_payload1, counter )
+    lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, counter )
 #===================================================
-# Main
+# Setup
 #===================================================
 print "======== gowTrigger version 2019-01-30 =========="
 schedule.every(10).seconds.do(jobDynamic)
@@ -42,16 +42,20 @@ schedule.every(10).minutes.do(jobStatic)
 #schedule.every().day.at("10:30").do(job)
 #schedule.every().monday.do(job)
 #schedule.every().wednesday.at("13:15").do(job)
-r1 = configuration()
+c1 = configuration()
 confile = "gowtrigger.conf"
 print "Read configuration"
-lib_readConfiguration(confile,r1)
+lib_readConfiguration(confile,c1)
+lib_publish_static(c1, c1.c_topic1 )
 counter = 0
-print "Loop"
+#===================================================
+# Loop
+#===================================================
 while True:
-    print "sleep: " + str(r1.c_period) + " triggered: " + str(counter)
+    lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, counter )
+    print "sleep: " + str(c1.c_period) + " triggered: " + str(counter)
     schedule.run_pending()
-    time.sleep(float(r1.c_period))
+    time.sleep(float(c1.c_period))
 #===================================================
 # End of file
 #===================================================
