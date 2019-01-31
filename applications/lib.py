@@ -107,7 +107,7 @@ def lib_writeFile(fname,message,ts):
         print "ERROR write to file " + fname
     return
 #=====================================================
-def log(application,message):
+def lib_log(application,message):
 	msg = application + " " + message
 	lib_writeFile('gow.log',msg,1)
 	return
