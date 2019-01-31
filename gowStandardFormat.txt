@@ -1,3 +1,4 @@
+Version: 2019-01-31
 =================================
 Rest API
 =================================
@@ -25,32 +26,35 @@ List topics:
 Static Part: 
 filename: <topic>/static.json
 =================================
+Meta
+- topic
+- sys_ts
+- dev_ts
 
-topic
-sys_ts
-dev_ts
+Data
+- period
+- wrap
+- action
+- platform
+- url
+- tags
+- desc
+- ssid
 
-wrap
-platform
-action
-ssid
-url
-tags
-desc
-period
 
 =================================
 Dynamic Part:
 filename: <topic>/dynamic.json
 =================================
-topic
-sys_ts
-dev_ts
+Meta
+- topic
+- sys_ts
+- dev_ts
 
-dev_ts
-no
-wifi_ss
-payload
+Data
+- no
+- wifi_ss
+- payload
 
 =================================
 Action:
