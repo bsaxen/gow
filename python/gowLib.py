@@ -16,16 +16,8 @@ import json
 class datastream:
 	d_topic = ''
 	d_no = 0
-	d_wrap = 999999
 	d_dev_ts = ""
 	d_sys_ts = ""
-	d_platform = ""
-	d_action = 1
-	d_ssid   = 0
-	d_url = ""
-	d_tags = "tag1,tag2"
-	d_desc = "some"
-	d_period = 10
 	d_wifi_ss = 0
 	
 	d_value = 0.0
@@ -80,14 +72,14 @@ class configuration:
 	c_ds_table = []
 	c_ds_param = []
 	c_nds = 0
-	
+
 	# Image
 	c_image_user   = 'folke'
 	c_image_url    = 'gow.test.com'
 	c_image_path   = 'images_dir'
 	c_image_prefix = 'some'
 	c_image_name   = 'any'
-	
+
 #=====================================================
 def lib_buildUrl(uri,topic,dynstat):
 	url =  'http://' + uri + '/' + topic + '/' + dynstat +'.json'
@@ -214,7 +206,7 @@ def lib_readConfiguration(confile,c1):
 					c1.c_ds_table.append(word[3])
 					c1.c_ds_param.append(word[4])
 					c1.c_nds += 1
-					
+
 				# Image
 				if word[0] == 'c_image_user':
 					c1.c_image_user      = word[1]
@@ -273,7 +265,7 @@ def lib_readConfiguration(confile,c1):
 		fh.write('c_dbuser       folke\n')
 		fh.write('c_dbpassword   something\n')
 		fh.write('c_stream       uri topic table param\n')
-		
+
 		fh.write('c_image_user   folke\n')
 		fh.write('c_image_url    gow.test.com\n')
 		fh.write('c_image_path   images\n')
@@ -361,7 +353,7 @@ def lib_publish_static(c1, itopic, actions ):
 	data['url']       = c1.c_url
 	data['tags']      = c1.c_tags
 	data['desc']      = c1.c_desc
-	
+
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
 	#print req
@@ -383,7 +375,7 @@ def lib_publish_dynamic(c1, itopic, ipayload, n, actions ):
 	server = c1.c_server_app
 	data = {}
 	res = '-'
-	
+
 	data['do']         = 'dyn'
 	data['topic']      = itopic
 	data['no']         = n

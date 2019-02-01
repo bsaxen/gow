@@ -28,7 +28,7 @@ import urllib
 import urllib2
 import time
 import datetime
-from lib import *
+from gowLib import *
 
 STATE_INIT    = 0
 STATE_OFF     = 1
@@ -156,7 +156,7 @@ while True:
 	payload = '{"coolwarm":"' + str(t1.r_coolwarm) + '"}'
 	resp = lib_publish(c1, c1.c_topic4,payload,counter,2 )
 	print resp
-	
+
 	print "---> sleep " + str(c1.c_period)
 	time.sleep(float(c1.c_period))
 

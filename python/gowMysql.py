@@ -1,20 +1,13 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-01-30
+# Date.......: 2019-02-01
 # Author.....: Benny Saxen
 # Description:
 #=============================================
 # Libraries
 #=============================================
-import MySQLdb
-import requests
-import json
-import urllib2
-import time
-import datetime
-import sys
-from lib import *
+from gowLib import *
 #=============================================
 # Configuration
 #=============================================
@@ -24,7 +17,7 @@ running  = []
 #=============================================
 # setup
 #=============================================
-print "======== gowMysql version 2019-01-25 =========="
+print "======== gowMysql version 2019-02-01 =========="
 r1 = configuration()
 confile = 'gowmysql.conf'
 lib_readConfiguration(confile,r1)

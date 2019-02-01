@@ -6,7 +6,7 @@
 # Trigger an action or a publication
 # ==================================================
 import schedule
-from lib import *
+from gowLib import *
 counter = 0
 #===================================================
 # Functions
@@ -52,6 +52,9 @@ counter = 0
 # Loop
 #===================================================
 while True:
+    counter += 1
+    if counter > conf_wrap:
+   	    counter = 1
     lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, counter )
     print "sleep: " + str(c1.c_period) + " triggered: " + str(counter)
     schedule.run_pending()

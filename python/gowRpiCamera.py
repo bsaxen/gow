@@ -5,7 +5,7 @@
 # Description: application for running a picamera
 # =============================================
 import os
-from lib import *
+from gowLib import *
 from picamera import PiCamera
 
 #===================================================
@@ -37,11 +37,11 @@ lib_publish_static(c1, c1.c_topic1 )
 # Loop
 #===================================================
 while True:
-	
+
    counter += 1
    if counter > conf_wrap:
 	counter = 1
-	
+
    lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, counter )
    print "sleep: " + str(c1.c_period) + " triggered: " + str(counter)
    time.sleep(float(c1.c_period))
