@@ -1,7 +1,7 @@
 # =============================================
-# File: lib.py
+# File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-01-31
+# Date: 2019-02-01
 # Description: GOW python library
 # =============================================
 import MySQLdb
