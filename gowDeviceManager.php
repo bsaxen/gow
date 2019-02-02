@@ -2,10 +2,10 @@
 session_start();
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-01-26
+// Date.......: 2019-02-02
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
-$version = '2019-01-29'
+$version = '2019-02-02'
 //=============================================
 // Configuration
 //=============================================
@@ -37,16 +37,22 @@ function restApi($api,$url,$topic)
 }
 
 //=============================================
-function getStatus($doc)
+function getStatus($url)
 //=============================================
 {
-  global $g_message;
-  $url = str_replace(".html", ".json", $doc);
+  global $g_action;
+  
+  $url = $url.'static.json';
   $json = file_get_contents($url);
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
   $period      = $res['gow']['period'];
-  $g_message   = $res['gow']['message'];
+  $g_action   = $res['gow']['action'];
+  
+  $url = $url.'dynamic.json';
+  $json = file_get_contents($url);
+  $json = utf8_encode($json);
+  $res = json_decode($json, TRUE);
   $timestamp   = $res['gow']['sys_ts'];
   $now = date_create('now')->format('Y-m-d H:i:s');
   
@@ -160,7 +166,9 @@ echo("<h1>GOW Device Manager $version</h1>");
 //echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
    //echo ("<a href=#>refresh</a><br>");
 echo "<a href=\"http://gow.simuino.com/gowDtManager.php\" target=\"_blank\">Model Manager</a>";
-$doc = 'http://'.$sel_url.'/'.$sel_path.'/device.json';
+$doc = 'http://'.$sel_url.'/'.$sel_path.'/static.json';
+echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
+$doc = 'http://'.$sel_url.'/'.$sel_path.'/dynamic.json';
 echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
 
 if ($form_send == 1)
@@ -239,7 +247,7 @@ if ($form_send == 1)
                $link = $topic[0];
                for ($jj=1;$jj<$topic_num;$jj++)
                   $link = $link."/$topic[$jj]";
-               $doc = 'http://'.$url.'/'.$link.'/device.html';
+               $doc = 'http://'.$url.'/'.$link;
                $status = getStatus($doc);
                if ($status == 0)
                {
@@ -251,7 +259,7 @@ if ($form_send == 1)
                echo "<td><a href=gowDeviceManager.php?do=select&sel_url=$url&sel_path=$link>$link</a></td>";
                $rest = 'http://'.$url.'?do=delete&topic='.$link;
                //echo "<tr><td></td><td><a href=gowDeviceManager.php?do=select&sel_doc=$doc>$link</a></td>";
-               if ($g_message == 2) {
+               if ($g_action == 2) {
                   echo "<td><a href=gowDeviceManager.php?do=form&api=action&url=$url&topic=$link>send</a></td>";
               }
               else {
