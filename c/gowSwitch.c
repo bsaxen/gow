@@ -10,8 +10,6 @@
 
 struct Configuration c1;
 struct Data d1;
-int wifi_ss = 0;
-
 //=============================================
 
 #define FAN_PIN 5  // D1 pin on NodeMCU 1.0
@@ -58,6 +56,8 @@ void loop()
 
   ++d1.counter;
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
+  d1.rssi = WiFi.RSSI();
+  
   Serial.println(d1.counter);
   String stat_url = lib_buildUrlStatic(c1);
   String dyn_url = lib_buildUrlDynamic(c1, d1);
