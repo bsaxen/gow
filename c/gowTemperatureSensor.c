@@ -12,10 +12,6 @@
 
 struct Configuration c1;
 struct Data d1;
-int wifi_ss = 0;
-
-
-
 //=============================================
 
 #include <OneWire.h>
@@ -90,7 +86,8 @@ void loop()
 
   delay(c1.conf_period*1000);
   ++d1.counter;
-
+  d1.rssi = WiFi.RSSI();
+    
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
 
   //Retrieve one or more temperature values
