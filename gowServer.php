@@ -33,7 +33,7 @@ $obj = new gowDoc();
 $conf_action_file_name = 'action.gow';
 //=============================================
 $date         = date_create();
-$gs_ts        = date_format($date, 'Y-m-d H:i:s');
+$obj->sys_ts  = date_format($date, 'Y-m-d H:i:s');
 
 //=============================================
 function contains($needle, $haystack)
