@@ -84,7 +84,7 @@ void loop()
   char order[10];
   char buf[100];
 
-  delay(c1.conf_period*1000);
+  
   ++d1.counter;
   d1.rssi = WiFi.RSSI();
     
@@ -131,7 +131,7 @@ void loop()
   }
 
   String msg = lib_wifiConnectandSend(c1, cur_url);
-
+  delay(c1.conf_period*1000);
 }
 //=============================================
 // End of File
