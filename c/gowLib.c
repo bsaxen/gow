@@ -9,105 +9,66 @@
 
 struct Configuration
 {
-  char* conf_topic = "test/topic/here/0";
+  String conf_topic = "benny/saxen/esp";
   int conf_period  = 10;
   int conf_wrap    = 999999;
   int conf_action  = 1;
-  char* conf_tags = "tag1,tag2,tag3";
-  char* conf_desc = "your_description";
-  char* conf_platform = "esp8266";
-  char* conf_ssid       = "my_ssid";
-  char* conf_password   = "my passw";
-  char* conf_host       = "192.168.1.242";
-  char* conf_streamId   = "....................";
-  char* conf_privateKey = "....................";
-}
+  String conf_tags = "tag1,tag2,tag3";
+  String conf_desc = "your_description";
+  String conf_platform = "esp8266";
+  String conf_ssid       = "bridge";
+  String conf_password   = "qweqwe";
+  String conf_host       = "gow.qwe.com";
+  String conf_streamId   = "....................";
+  String conf_privateKey = "....................";
+};
 
-struct data
+struct Data
 {
   int counter;
   int wifi_ss;
-}
+};
 
 //=============================================
-int lib_decode_ON_OFF(String* msg)
+int lib_decode_ON_OFF(String msg)
 //=============================================
 {
   char buf[100];
   int result = 0;
 
-  msg.toCharArray(buf);
+  msg.toCharArray(buf,100);
 
   if( strstr(buf,"OFF") != NULL)
   {
       result = 1;
-      digitalWrite(FAN_PIN,HIGH);
   }
 
   if( strstr(buf,"ONN") != NULL)
   {
       result = 2;
-      digitalWrite(FAN_PIN,LOW);
   }
   return result;
 }
-/=============================================
-int lib_decode_STEPPER(String* msg)
+//=============================================
+int lib_decode_STEPPER(String msg)
 //=============================================
 {
   char buf[100];
   int result = 0;
 
-  msg.toCharArray(buf);
+  msg.toCharArray(buf,100);
 
-  action.toCharArray(buf,x);
   Serial.println(buf);
 
-  // RESET
-  if(strstr(buf,"reboot") != NULL)
-  {
-    software_Reset();
-  }
-  else if(strstr(buf,"reset") != NULL)
-  {
-    reset_pos();
-  }
-  else if(strstr(buf,"move") != NULL)// move stepper
-  {
-       for (char* p = buf; p = strchr(p, ','); ++p)
-       {
-          *p = ' ';
-       }
-       for (char* p = buf; p = strchr(p, ':'); ++p)
-       {
-          *p = ' ';
-       }
-       Serial.println(buf);
-       sscanf(buf,"%s %d %d %d %d",order, &dir,&step_size,&steps,&step_delay);
-       move_stepper(dir,step_size,steps,step_delay);
-  }
-  else if(strstr(buf,"period") != NULL)// set new period
-  {
-       for (char* p = buf; p = strchr(p, ','); ++p)
-       {
-          *p = ' ';
-       }
-       for (char* p = buf; p = strchr(p, ':'); ++p)
-       {
-          *p = ' ';
-       }
-       Serial.println(buf);
-       sscanf(buf,"%s %d",order, &conf_period);
-  }
 
   return result;
 }
 //=============================================
-void lib_buildUrlStatic(struct Configuration c2, String* stat_url)
+String lib_buildUrlStatic(struct Configuration c2)
 //=============================================
 {
   //===================================
-  stat_url = "/gowServer.php";
+  String stat_url = "/gowServer.php";
   //===================================
   stat_url += "?do=stat";
 
@@ -137,9 +98,11 @@ void lib_buildUrlStatic(struct Configuration c2, String* stat_url)
 
   stat_url += "&action=";
   stat_url += c2.conf_action;
+
+  return stat_url;
 }
 //=============================================
-void lib_buildUrlDynamic(struct Configuration c2,struct Data d2, String* dyn_url)
+String lib_buildUrlDynamic(struct Configuration c2,struct Data d2)
 //=============================================
 {
   //===================================
@@ -163,19 +126,26 @@ void lib_buildUrlDynamic(struct Configuration c2,struct Data d2, String* dyn_url
   dyn_url += 123;
   dyn_url += "\"";
   dyn_url += "}";*/
+  return dyn_url;
 }
 //=============================================
 void lib_wifiBegin(struct Configuration c2)
 //=============================================
 {
+  char ssid[100];
+  char password[100];
+  
   Serial.print("Connecting to ");
   Serial.println(c2.conf_ssid);
+
+   c2.conf_ssid.toCharArray(ssid,100);
+   c2.conf_password.toCharArray(password,100);
 
   /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,
    would try to act as both a client and an access-point and could cause
    network-issues with your other WiFi-devices on your WiFi-network. */
    WiFi.mode(WIFI_STA);
-   WiFi.begin(c2.conf_ssid, c2.conf_password);
+   WiFi.begin(ssid, password);
 
    while (WiFi.status() != WL_CONNECTED) {
      delay(500);
@@ -199,7 +169,7 @@ void lib_wireBegin(struct Configuration c2)
 }
 
 //=============================================
-String lib_wifiConnectandSend(struct Configuration c2, char* cur_url)
+String lib_wifiConnectandSend(struct Configuration c2, String cur_url)
 //=============================================
 {
   String sub = "-";
@@ -208,7 +178,7 @@ String lib_wifiConnectandSend(struct Configuration c2, char* cur_url)
   // Use WiFiClient class to create TCP connections
   WiFiClient client;
   const int httpPort = 80;
-  if (!client.connect(c2.conf_host, c2.conf_httpPort)) {
+  if (!client.connect(c2.conf_host,httpPort)) {
     Serial.println("connection failed");
   //return;
   }
