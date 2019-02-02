@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowLib.c
-// Date.......: 2019-02-01
+// Date.......: 2019-02-02
 // Author.....: Benny Saxen
 // Description:
 //=============================================
@@ -185,6 +185,17 @@ void lib_wifiBegin(struct Configuration c2)
    Serial.println("WiFi connected");
    Serial.println("IP address: ");
    Serial.println(WiFi.localIP());
+}
+
+//=============================================
+void lib_wireBegin(struct Configuration c2)
+//=============================================
+{
+  Serial.print("Connecting to router via wire");
+
+   Serial.println("Wire connected");
+   Serial.println("IP address: ");
+   Serial.println("benny");
 }
 
 //=============================================
