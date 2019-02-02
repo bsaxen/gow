@@ -23,7 +23,7 @@ class gowDoc {
     
     public $no;
     public $dev_ts;
-    public $wifi_ss;
+    public $wrssi;
     public $payload;   
 }
 
@@ -78,7 +78,7 @@ function saveDynamicData($obj)
         fwrite($doc, "   \"sys_ts\":    \"$obj->sys_ts\",\n");
         fwrite($doc, "   \"dev_ts\":    \"$obj->dev_ts\",\n");
         fwrite($doc, "   \"no\":        \"$obj->no\",\n");
-        fwrite($doc, "   \"wifi_ss\":   \"$obj->wifi_ss\",\n");
+        fwrite($doc, "   \"rssi\":      \"$obj->rssi\",\n");
         fwrite($doc, "   \"payload\":   \"$obj->payload\"\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
@@ -324,7 +324,7 @@ if (isset($_GET['do']))
           $obj->dev_ts = $_GET['dev_ts'];
         }
         if (isset($_GET['wifi_ss'])) {
-          $obj->wifi_ss = $_GET['wifi_ss'];
+          $obj->rssi = $_GET['rssi'];
         }
         if (isset($_GET['payload'])) {
           $payload = $_GET['payload'];
