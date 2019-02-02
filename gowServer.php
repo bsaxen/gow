@@ -23,7 +23,7 @@ class gowDoc {
     
     public $no;
     public $dev_ts;
-    public $wrssi;
+    public $rssi;
     public $payload;   
 }
 
