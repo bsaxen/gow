@@ -37,19 +37,21 @@ function restApi($api,$url,$topic)
 }
 
 //=============================================
-function getStatus($url)
+function getStatus($uri)
 //=============================================
 {
   global $g_action;
   
-  $url = $url.'/static.json';
+  $url = $uri.'/static.json';
+  echo "$url<br>"
   $json = file_get_contents($url);
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
   $period      = $res['gow']['period'];
   $g_action   = $res['gow']['action'];
   
-  $url = $url.'/dynamic.json';
+  $url = $uri.'/dynamic.json';
+  echo "$url<br>"
   $json = file_get_contents($url);
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
