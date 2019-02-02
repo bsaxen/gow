@@ -42,14 +42,14 @@ function getStatus($url)
 {
   global $g_action;
   
-  $url = $url.'static.json';
+  $url = $url.'/static.json';
   $json = file_get_contents($url);
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
   $period      = $res['gow']['period'];
   $g_action   = $res['gow']['action'];
   
-  $url = $url.'dynamic.json';
+  $url = $url.'/dynamic.json';
   $json = file_get_contents($url);
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
