@@ -10,6 +10,8 @@
 
 struct Configuration c1;
 struct Data d1;
+String stat_url;
+String dyn_url;
 //=============================================
 
 #define FAN_PIN 5  // D1 pin on NodeMCU 1.0
@@ -43,44 +45,43 @@ void setup() {
   delay(2000);
   digitalWrite(FAN_PIN,HIGH);
   g_status = 1;
+  
+  stat_url = lib_buildUrlStatic(c1);
+  String dont_care = lib_wifiConnectandSend(c1, stat_url);
 }
 
 //=============================================
 void loop()
 //=============================================
 {
-  String msg;
-  char buf[100];
-
   Serial.println("Start...");
 
   ++d1.counter;
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
   d1.rssi = WiFi.RSSI();
   
-  Serial.println(d1.counter);
-  String stat_url = lib_buildUrlStatic(c1);
-  String dyn_url = lib_buildUrlDynamic(c1, d1);
-  Serial.println(stat_url);
-  Serial.println(dyn_url);
-  String cur_url = " ";
-  if (d1.counter%100 == 0)
-  {
-    cur_url = stat_url;
-  }
-  else
-  {
-    cur_url = dyn_url;
-  }
-  Serial.println(cur_url);
-  msg = lib_wifiConnectandSend(c1, cur_url);
+  dyn_url = lib_buildUrlDynamic(c1, d1);
+  dyn_url += "&payload=";
+  dyn_url += "{";
+  dyn_url += "\"status\":\"";
+  dyn_url += g_status;
+  dyn_url += "\"}";
+  
+  String msg = lib_wifiConnectandSend(c1, cur_url);
   Serial.println(msg);
   int res = lib_decode_ON_OFF(msg);
 
-  if (res == 1) digitalWrite(FAN_PIN,LOW);
-  if (res == 2) digitalWrite(FAN_PIN,HIGH);
-  g_status = res;
-
+  if (res == 1) 
+  {
+    digitalWrite(FAN_PIN,LOW);
+    g_status = res;
+  }
+  if (res == 2) 
+  {
+    digitalWrite(FAN_PIN,HIGH);
+    g_status = res;
+  }
+  
   delay(c1.conf_period*1000);
 }
 //=============================================
