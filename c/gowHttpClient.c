@@ -10,10 +10,6 @@
 
 struct Configuration c1;
 struct Data d1;
-int wifi_ss = 0;
-
-
-
 //=============================================
 String stat_url = " ";
 String dyn_url = " ";
@@ -47,6 +43,7 @@ void loop() {
 //=============================================
   delay(c1.conf_period*1000);
   ++d1.counter;
+  d1.rssi = WiFi.RSSI();
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
   dyn_url = lib_buildUrlDynamic(c1, d1);
   String msg = lib_wifiConnectandSend(c1, dyn_url);
