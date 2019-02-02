@@ -327,7 +327,7 @@ if (isset($_GET['do']))
           $obj->rssi = $_GET['rssi'];
         }
         if (isset($_GET['payload'])) {
-          $payload = $_GET['payload'];
+          $obj->payload = $_GET['payload'];
         }
 
         saveDynamicData($obj);
