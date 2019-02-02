@@ -10,9 +10,6 @@
 
 struct Configuration c1;
 struct Data d1;
-int wifi_ss = 0;
-
-
 //=============================================
 
 const byte interrupt_pin = 5;
@@ -75,7 +72,7 @@ void loop()
 {
   ++d1.counter;
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
-
+  d1.rssi = WiFi.RSSI();
   String stat_url = lib_buildUrlStatic(c1);
   String dyn_url = lib_buildUrlDynamic(c1, d1);
 
