@@ -60,7 +60,7 @@ function saveStaticData($obj)
         fwrite($doc, "   \"period\":   \"$obj->period\",\n");
         fwrite($doc, "   \"url\":      \"$obj->url\",\n");
         fwrite($doc, "   \"platform\": \"$obj->platform\",\n");
-        fwrite($doc, "   \"ssid\":     \"$obj->ssid\",\n");
+        fwrite($doc, "   \"ssid\":     \"$obj->ssid\"\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
   }
@@ -79,7 +79,7 @@ function saveDynamicData($obj)
         fwrite($doc, "   \"dev_ts\":    \"$obj->dev_ts\",\n");
         fwrite($doc, "   \"no\":        \"$obj->no\",\n");
         fwrite($doc, "   \"wifi_ss\":   \"$obj->wifi_ss\",\n");
-        fwrite($doc, "   \"payload\":   \"$obj->payload\",\n");
+        fwrite($doc, "   \"payload\":   \"$obj->payload\"\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
   }
