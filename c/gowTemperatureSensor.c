@@ -12,6 +12,9 @@
 
 struct Configuration c1;
 struct Data d1;
+
+String stat_url;
+String dyn_url;
 //=============================================
 
 #include <OneWire.h>
@@ -73,6 +76,9 @@ void setup()
 
   lib_wifiBegin(c1);
   d1.counter = 0;
+    
+  stat_url = lib_buildUrlStatic(c1);
+  String dont_care = lib_wifiConnectandSend(c1, stat_url);
 }
 
 //=============================================
@@ -103,32 +109,25 @@ void loop()
       }
   }
 
-  String stat_url = lib_buildUrlStatic(c1);
-  String dyn_url = lib_buildUrlDynamic(c1, d1);
+  
+  dyn_url = lib_buildUrlDynamic(c1, d1);
 
-  String cur_url = " ";
-  if (d1.counter%100 == 0)
-  {
-    cur_url = stat_url;
-  }
-  else
-  {
-    cur_url = dyn_url;
 
-    // Add payload
-    cur_url += "&payload=";
-    cur_url += "{";
-    for (int i=1;i<=nsensors;i++)
-    {
+  String cur_url = dyn_url;
+
+  // Add payload
+  cur_url += "&payload=";
+  cur_url += "{";
+  for (int i=1;i<=nsensors;i++)
+  {
         cur_url += "\"temp";
         cur_url += i;
         cur_url += "\":\"";
         cur_url += temps[i-1];
         cur_url += "\"";
         if(i < nsensors)cur_url += ",";
-    }
-    cur_url += "}";
   }
+  cur_url += "}";
 
   String msg = lib_wifiConnectandSend(c1, cur_url);
   delay(c1.conf_period*1000);
