@@ -19,8 +19,7 @@ String stat_url = " ";
 String dyn_url = " ";
 //=============================================
 void setup() {
-//=============================================
-  
+//=============================================  
   c1.conf_topic = "test/topic/here/0";
   c1.conf_period  = 10;
   c1.conf_wrap    = 999999;
@@ -38,33 +37,19 @@ void setup() {
   delay(100);
   lib_wifiBegin(c1);
   d1.counter = 0;
+  stat_url = lib_buildUrlStatic(c1);
+  String dont_care = lib_wifiConnectandSend(c1, stat_url);
 }
 
 
 //=============================================
 void loop() {
 //=============================================
-
   delay(c1.conf_period*1000);
   ++d1.counter;
-
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
-
-  String stat_url = lib_buildUrlStatic(c1);
-  String dyn_url = lib_buildUrlDynamic(c1, d1);
-
-  String cur_url = " ";
-  if (d1.counter%100 == 0)
-  {
-    cur_url = stat_url;
-  }
-  else
-  {
-    cur_url = dyn_url;
-  }
-
-  String msg = lib_wifiConnectandSend(c1, cur_url);
-
+  dyn_url = lib_buildUrlDynamic(c1, d1);
+  String msg = lib_wifiConnectandSend(c1, dyn_url);
 }
 //=============================================
 // End of File
