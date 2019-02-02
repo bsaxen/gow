@@ -26,7 +26,7 @@ struct Configuration
 struct Data
 {
   int counter;
-  int wifi_ss;
+  int rssi;
 };
 
 //=============================================
@@ -116,8 +116,8 @@ String lib_buildUrlDynamic(struct Configuration c2,struct Data d2)
   dyn_url += "&no=";
   dyn_url += d2.counter;
 
-  dyn_url += "&wifi_ss=";
-  dyn_url += d2.wifi_ss;
+  dyn_url += "&rssi=";
+  dyn_url += d2.rssi;
 
   /*dyn_url += "&payload=";
   dyn_url += "{";
@@ -128,6 +128,14 @@ String lib_buildUrlDynamic(struct Configuration c2,struct Data d2)
   dyn_url += "}";*/
   return dyn_url;
 }
+//=============================================
+void lib_wifiRSSI(struct Data d2)
+//=============================================
+{
+  d2.rssi = WiFi.RSSI();
+  return;
+}
+  
 //=============================================
 void lib_wifiBegin(struct Configuration c2)
 //=============================================
@@ -156,18 +164,6 @@ void lib_wifiBegin(struct Configuration c2)
    Serial.println("IP address: ");
    Serial.println(WiFi.localIP());
 }
-
-//=============================================
-void lib_wireBegin(struct Configuration c2)
-//=============================================
-{
-  Serial.print("Connecting to router via wire");
-
-   Serial.println("Wire connected");
-   Serial.println("IP address: ");
-   Serial.println("benny");
-}
-
 //=============================================
 String lib_wifiConnectandSend(struct Configuration c2, String cur_url)
 //=============================================
