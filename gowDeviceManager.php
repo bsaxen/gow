@@ -5,7 +5,7 @@ session_start();
 // Date.......: 2019-02-02
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
-$version = '2019-02-02'
+$version = '2019-02-02';
 //=============================================
 // Configuration
 //=============================================
