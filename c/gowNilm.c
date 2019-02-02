@@ -6,25 +6,13 @@
 //=============================================
 // Configuration
 //=============================================
-#include "gowLib.c"
+//#include "gowLib.c"
 
 struct Configuration c1;
 struct Data d1;
 int wifi_ss = 0;
 
-c1.conf_topic = "test/topic/here/0";
-c1.conf_period  = 10;
-c1.conf_wrap    = 999999;
-c1.conf_action  = 1;
 
-c1.conf_tags = "tag1,tag2,tag3";
-c1.conf_desc = "your_description";
-c1.conf_platform = "esp8266";
-c1.ssid       = "my_ssid";
-c1.password   = "my passw";
-c1.host       = "192.168.1.242";
-c1.streamId   = "....................";
-c1.privateKey = "....................";
 //=============================================
 
 const byte interrupt_pin = 5;
@@ -58,6 +46,20 @@ void ICACHE_RAM_ATTR measure(){
 //===============================================================
 void setup(){
 //===============================================================
+    c1.conf_topic = "test/topic/here/0";
+    c1.conf_period  = 10;
+    c1.conf_wrap    = 999999;
+    c1.conf_action  = 1;
+
+    c1.conf_tags = "tag1,tag2,tag3";
+    c1.conf_desc = "your_description";
+    c1.conf_platform = "esp8266";
+    c1.conf_ssid       = "my_ssid";
+    c1.conf_password   = "my passw";
+    c1.conf_host       = "192.168.1.242";
+    c1.conf_streamId   = "....................";
+    c1.conf_privateKey = "....................";
+    
     bounce_value = 36000./electric_meter_pulses; // based on max power = 100 000 Watt
 
     pinMode(interrupt_pin, INPUT_PULLUP);
@@ -71,15 +73,11 @@ void setup(){
 void loop()
 //=============================================
 {
-  char msg[100];
-
-  delay(c1.conf_period*1000);
-
   ++d1.counter;
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
 
-  lib_buildUrlStatic(c1, stat_url);
-  lib_buildUrlDynamic(c1, d1, dyn_url);
+  String stat_url = lib_buildUrlStatic(c1);
+  String dyn_url = lib_buildUrlDynamic(c1, d1);
 
   String cur_url = " ";
   if (d1.counter%100 == 0)
@@ -99,8 +97,8 @@ void loop()
     cur_url += "}";
   }
 
-  msg = lib_wifiConnectandSend(c1, cur_url);
-
+  String msg = lib_wifiConnectandSend(c1, cur_url);
+  delay(c1.conf_period*1000);
 }
 //=============================================
 // End of File
