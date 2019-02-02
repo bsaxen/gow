@@ -14,7 +14,7 @@ $version = '2019-02-02';
 $date         = date_create();
 $ts           = date_format($date, 'Y-m-d H:i:s');
 $now          = date_create('now')->format('Y-m-d H:i:s');
-echo "<br>$ts $now<br>";
+//echo "<br>$ts $now<br>";
 //=============================================
 // library
 //=============================================
