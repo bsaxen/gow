@@ -323,7 +323,7 @@ if (isset($_GET['do']))
         if (isset($_GET['dev_ts'])) {
           $obj->dev_ts = $_GET['dev_ts'];
         }
-        if (isset($_GET['wifi_ss'])) {
+        if (isset($_GET['rssi'])) {
           $obj->rssi = $_GET['rssi'];
         }
         if (isset($_GET['payload'])) {
