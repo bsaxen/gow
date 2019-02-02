@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-01-29
+// Date.......: 2019-02-02
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -46,8 +46,8 @@ function contains($needle, $haystack)
 function saveStaticData($obj)
 //=============================================
 {
-  $static_file = $obj->topic.'/static.json';
-  $doc = fopen($static_file, "w");
+  $f_file = $obj->topic.'/static.json';
+  $doc = fopen($f_file, "w");
   if ($doc)
   {
         fwrite($doc, "{\"gow\": {\n");
@@ -70,8 +70,8 @@ function saveStaticData($obj)
 function saveDynamicData($obj)
 //=============================================
 {
-  $static_file = $obj->topic.'/dynamic.json';
-  $doc = fopen($static_file, "w");
+  $f_file = $obj->topic.'/dynamic.json';
+  $doc = fopen($f_file, "w");
   if ($doc)
   {
         fwrite($doc, "{\"gow\": {\n");
@@ -275,7 +275,7 @@ if (isset($_GET['do']))
         deleteTopic($obj->topic);
       }
       
-      // Dynamic data only
+ 
       if ($do == 'stat')
       {
   
@@ -313,7 +313,7 @@ if (isset($_GET['do']))
 
       } // stat
 
-      // Dynamic data
+
       if ($do == 'dyn')
       {
   
@@ -330,7 +330,7 @@ if (isset($_GET['do']))
           $payload = $_GET['payload'];
         }
 
-        saveStaticData($obj);
+        saveDynamicData($obj);
         echo readActionFileList($obj->topic);
 
       } // dyn
