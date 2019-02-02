@@ -43,7 +43,7 @@ function getStatus($uri)
   global $g_action;
   
   $url = $uri.'/static.json';
-  echo "$url<br>";
+  //echo "$url<br>";
   $json = file_get_contents($url);
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
@@ -51,7 +51,7 @@ function getStatus($uri)
   $g_action   = $res['gow']['action'];
   
   $url = $uri.'/dynamic.json';
-  echo "$url<br>";
+  //echo "$url<br>";
   $json = file_get_contents($url);
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
@@ -253,7 +253,7 @@ if ($form_send == 1)
                $status = getStatus($doc);
                if ($status == 0)
                {
-                 echo "<tr><td bgcolor=\"#DAF7A6\">TOPIC</td>";
+                 echo "<tr><td bgcolor=\"#DAF7A6\">ON-LINE</td>";
                }
                else {
                  echo "<tr><td bgcolor=\"yellow\">$status</td>";
