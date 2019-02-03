@@ -65,13 +65,14 @@ while True:
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
             work[num] = schedule[num]
+            
             url_static = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
-            print url
+            print url_static
             period = float(lib_readJsonMeta(url_static,'period'))
             print period
-            #if period > max_period:
-            #    max_period = period
             schedule[num] = period
+
+            url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
             no = float(lib_readJsonMeta(url_dynamic,'no'))
             print no
             delta_no = no - running[num]
