@@ -32,6 +32,8 @@ for num in range(0,r1.c_nds):
     print url_dynamic
     period = float(lib_readJsonMeta(url_static,'period'))
     print period
+    desc = lib_readJsonMeta(url_static,'desc')
+    print desc
     #if period > max_period:
     #    max_period = period
     schedule.append(period)
@@ -41,7 +43,7 @@ for num in range(0,r1.c_nds):
     print no
     x      = float(lib_readJsonPayload(url_dynamic,r1.c_ds_param[num]))
     print x
-    lib_mysqlInsert(r1,1,r1.c_ds_table[num],'value',x)
+    lib_mysqlInsert(r1,1,desc,'value',x)
 #=============================================
 # loop
 #=============================================
@@ -70,6 +72,8 @@ while True:
             print url_static
             period = float(lib_readJsonMeta(url_static,'period'))
             print period
+            desc = lib_readJsonMeta(url_static,'desc')
+            print desc
             schedule[num] = period
 
             url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
@@ -92,7 +96,7 @@ while True:
                 running[num] = no
                 x  = float(lib_readJsonPayload(url_dynamic,r1.c_ds_param[num]))
                 print x
-                lib_mysqlInsert(r1,0,r1.c_ds_table[num],'value',x)
+                lib_mysqlInsert(r1,0,desc,'value',x)
 #===================================================
 # End of file
 #===================================================
