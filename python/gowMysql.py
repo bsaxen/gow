@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-02-01
+# Date.......: 2019-02-03
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -27,7 +27,8 @@ max_period = 0
 for num in range(0,r1.c_nds):
     url_static  = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
     url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
-    print url
+    print url_static
+    print url_dynamic
     period = float(lib_readJsonMeta(url_static,'period'))
     print period
     #if period > max_period:
