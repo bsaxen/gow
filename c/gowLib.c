@@ -176,7 +176,7 @@ String lib_wifiConnectandSend(struct Configuration c2, String cur_url)
   const int httpPort = 80;
   if (!client.connect(c2.conf_host,httpPort)) {
     Serial.println("connection failed");
-  //return;
+    return sub;
   }
 
   // This will send the request to the server
@@ -188,8 +188,9 @@ String lib_wifiConnectandSend(struct Configuration c2, String cur_url)
      if (millis() - timeout > 5000) {
         Serial.println(">>> Client Timeout !");
         client.stop();
-    //return;
+        return sub;
      }
+     delay(5);
   }
 
   // Read all the lines of the reply from server and print them to Serial
