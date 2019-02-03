@@ -118,14 +118,21 @@ void loop()
   // Add payload
   cur_url += "&payload=";
   cur_url += "{";
-  for (int i=1;i<=nsensors;i++)
+  if (nsensors > 0)
   {
+    for (int i=1;i<=nsensors;i++)
+    {
         cur_url += "\"temp";
         cur_url += i;
         cur_url += "\":\"";
         cur_url += temps[i-1];
         cur_url += "\"";
         if(i < nsensors)cur_url += ",";
+    }
+  }
+  else
+  {
+    cur_url +=  "\"void\":\"0\"";  
   }
   cur_url += "}";
 
