@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowTemperatureSensor.c
-// Date.......: 2019-02-02
+// Date.......: 2019-02-03
 // Author.....: Benny Saxen
 // Description: Signal from D1 pin.
 // 4.7kOhm between signal and Vcc
@@ -78,7 +78,7 @@ void setup()
   d1.counter = 0;
     
   stat_url = lib_buildUrlStatic(c1);
-  String dont_care = lib_wifiConnectandSend(c1, stat_url);
+  String dont_care = lib_wifiConnectandSend(c1,d1,stat_url);
 }
 
 //=============================================
@@ -129,7 +129,7 @@ void loop()
   }
   cur_url += "}";
 
-  String msg = lib_wifiConnectandSend(c1, cur_url);
+  String msg = lib_wifiConnectandSend(c1,d1,cur_url);
   delay(c1.conf_period*1000);
 }
 //=============================================
