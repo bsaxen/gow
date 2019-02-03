@@ -27,7 +27,7 @@ struct Data
 {
   int counter;
   int rssi;
-  int fail
+  int fail;
 };
 
 //=============================================
