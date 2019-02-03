@@ -19,6 +19,7 @@ running  = []
 #=============================================
 print "======== gowMysql version 2019-02-01 =========="
 r1 = configuration()
+d1 = datastream()
 confile = 'gowmysql.conf'
 lib_readConfiguration(confile,r1)
 print "Number of datastreams: " + str(r1.c_nds)
@@ -64,7 +65,7 @@ while True:
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
             work[num] = schedule[num]
-            url_static = lib_buildUrl(r1.c_ds_url[num],r1.c_ds_topic[num],'static')
+            url_static = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
             print url
             period = float(lib_readJsonMeta(url_static,'period'))
             print period
