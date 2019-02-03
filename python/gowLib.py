@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-01
+# Date: 2019-02-03
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -321,18 +321,18 @@ def lib_readJsonPayload(url,par):
 	r = urllib2.urlopen(url)
 	j = json.load(r)
 	ts=j['gow']['sys_ts']
-	period=j['gow']['period']
+	#period=j['gow']['period']
 	xts1 = time.mktime(datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").timetuple())
 	xts2 = time.mktime(datetime.datetime.strptime(now, "%Y-%m-%d %H:%M:%S").timetuple())
 	diff = xts2 - xts1
 	#print str(period) + " " + str(diff)
-	old = 0
-	if diff > period:
-		old = 1
-		print "old data"
+	#old = 0
+	#if diff > period:
+	#	old = 1
+	#	print "old data"
 	x =  j['gow']['payload'][par]
-	if old == 1:
-		x = 123456789
+	#if old == 1:
+	#	x = 123456789
 	return x
 #===================================================
 def lib_publish_static(c1, itopic, actions ):
