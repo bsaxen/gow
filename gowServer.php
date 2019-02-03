@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-02-02
+// Date.......: 2019-02-03
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -24,7 +24,8 @@ class gowDoc {
     public $no;
     public $dev_ts;
     public $rssi;
-    public $payload;   
+    public $payload;
+    public $fail;
 }
 
 $obj = new gowDoc();
@@ -79,6 +80,7 @@ function saveDynamicData($obj)
         fwrite($doc, "   \"dev_ts\":    \"$obj->dev_ts\",\n");
         fwrite($doc, "   \"no\":        \"$obj->no\",\n");
         fwrite($doc, "   \"rssi\":      \"$obj->rssi\",\n");
+        fwrite($doc, "   \"fail\":      \"$obj->fail\",\n");
         fwrite($doc, "   \"payload\":     $obj->payload\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
@@ -325,6 +327,9 @@ if (isset($_GET['do']))
         }
         if (isset($_GET['rssi'])) {
           $obj->rssi = $_GET['rssi'];
+        }
+        if (isset($_GET['fail'])) {
+          $obj->fail = $_GET['fail'];
         }
         if (isset($_GET['payload'])) {
           $obj->payload = $_GET['payload'];
