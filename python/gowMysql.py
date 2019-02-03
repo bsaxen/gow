@@ -43,7 +43,12 @@ for num in range(0,r1.c_nds):
     print no
     x      = float(lib_readJsonPayload(url_dynamic,r1.c_ds_param[num]))
     print x
-    lib_mysqlInsert(r1,1,desc,'value',x)
+    if r1.c_ds_table[num] == 'auto':
+        table = desc
+    else:
+        table = r1.c_ds_table[num]
+        
+    lib_mysqlInsert(r1,1,table,'value',x)
 #=============================================
 # loop
 #=============================================
@@ -96,7 +101,12 @@ while True:
                 running[num] = no
                 x  = float(lib_readJsonPayload(url_dynamic,r1.c_ds_param[num]))
                 print x
-                lib_mysqlInsert(r1,0,desc,'value',x)
+                if r1.c_ds_table[num] == 'auto':
+                    table = desc
+                else:
+                    table = r1.c_ds_table[num]
+                    
+                lib_mysqlInsert(r1,0,table,'value',x)
 #===================================================
 # End of file
 #===================================================
