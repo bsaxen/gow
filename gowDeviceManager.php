@@ -2,10 +2,10 @@
 session_start();
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-02-02
+// Date.......: 2019-02-03
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
-$version = '2019-02-02';
+$version = '2019-02-03';
 //=============================================
 // Configuration
 //=============================================
@@ -14,6 +14,8 @@ $version = '2019-02-02';
 $date         = date_create();
 $ts           = date_format($date, 'Y-m-d H:i:s');
 $now          = date_create('now')->format('Y-m-d H:i:s');
+$g_rssi       = 0;
+$g_action     = 0;
 //echo "<br>$ts $now<br>";
 //=============================================
 // library
@@ -40,7 +42,7 @@ function restApi($api,$url,$topic)
 function getStatus($uri)
 //=============================================
 {
-  global $g_action;
+  global $g_action, $g_rssi;
   
   $url = $uri.'/static.json';
   //echo "$url<br>";
@@ -56,6 +58,7 @@ function getStatus($uri)
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
   $timestamp   = $res['gow']['sys_ts'];
+  $g_rssi   = $res['gow']['rssi'];
   $now = date_create('now')->format('Y-m-d H:i:s');
   
   $diff = strtotime($now) - strtotime($timestamp);
@@ -204,9 +207,9 @@ if ($form_send == 1)
        <td><input type= \"submit\" value=\"Add Domain\"></td></tr>
      </form>
      ";
-     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td></tr>";
-     echo "<tr bgcolor=\"#FFC300\"><td>Domain</td><td>Status/Topic</td><td>Message</td><td>Edit</td></tr>";
-     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td></tr>";
+     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td><td></td></tr>";
+     echo "<tr bgcolor=\"#FFC300\"><td>Domain</td><td>RSSI</td><td>Status/Topic</td><td>Message</td><td>Edit</td></tr>";
+     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td><td></td></tr>";
 
      while(!feof($file))
      {
@@ -227,10 +230,10 @@ if ($form_send == 1)
            //echo "<tr><td>$res</td><td>b1</td></tr>";
            //echo "<tr><td>$url</td><td>b2</td></tr>";
            if ($res === false) {
-             echo "<tr><td>$url</td><td bgcolor=\"red\">NO CONNECTION</td>";
+             echo "<tr><td>$url</td><td></td><td bgcolor=\"red\">NO CONNECTION</td>";
            }
            else {
-             echo "<tr><td>$url</td><td bgcolor=\"#DAF7A6\">CONNECTED</td>";
+             echo "<tr><td>$url</td><td></td><td bgcolor=\"#DAF7A6\">CONNECTED</td>";
            }
            echo "<td></td>";
            echo "<td><a href=gowDeviceManager.php?do=delete&domain=$url>delete</a></td></tr>";
@@ -258,6 +261,7 @@ if ($form_send == 1)
                else {
                  echo "<tr><td bgcolor=\"yellow\">$status</td>";
                }
+               echo "<td>$g_rssi</td>";
                echo "<td><a href=gowDeviceManager.php?do=select&sel_url=$url&sel_path=$link>$link</a></td>";
                $rest = 'http://'.$url.'?do=delete&topic='.$link;
                //echo "<tr><td></td><td><a href=gowDeviceManager.php?do=select&sel_doc=$doc>$link</a></td>";
