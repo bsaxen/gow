@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowLib.c
-// Date.......: 2019-02-02
+// Date.......: 2019-02-03
 // Author.....: Benny Saxen
 // Description:
 //=============================================
@@ -27,6 +27,7 @@ struct Data
 {
   int counter;
   int rssi;
+  int fail
 };
 
 //=============================================
@@ -119,6 +120,9 @@ String lib_buildUrlDynamic(struct Configuration c2,struct Data d2)
   dyn_url += "&rssi=";
   dyn_url += d2.rssi;
 
+  dyn_url += "&fail=";
+  dyn_url += d2.fail;
+  
   /*dyn_url += "&payload=";
   dyn_url += "{";
   dyn_url += "\"temp";
@@ -127,13 +131,6 @@ String lib_buildUrlDynamic(struct Configuration c2,struct Data d2)
   dyn_url += "\"";
   dyn_url += "}";*/
   return dyn_url;
-}
-//=============================================
-void lib_wifiRSSI(struct Data d2)
-//=============================================
-{
-  d2.rssi = WiFi.RSSI();
-  return;
 }
   
 //=============================================
@@ -165,7 +162,7 @@ void lib_wifiBegin(struct Configuration c2)
    Serial.println(WiFi.localIP());
 }
 //=============================================
-String lib_wifiConnectandSend(struct Configuration c2, String cur_url)
+String lib_wifiConnectandSend(struct Configuration c2,struct Data d2, String cur_url)
 //=============================================
 {
   String sub = "-";
@@ -176,6 +173,7 @@ String lib_wifiConnectandSend(struct Configuration c2, String cur_url)
   const int httpPort = 80;
   if (!client.connect(c2.conf_host,httpPort)) {
     Serial.println("connection failed");
+    d2.fail += 1;
     return sub;
   }
 
