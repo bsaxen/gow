@@ -1,4 +1,4 @@
-Version: 2019-01-31
+Version: 2019-02-04
 =================================
 Rest API
 =================================
@@ -56,6 +56,12 @@ Data
 - wifi_ss
 - payload
 
+=================================
+Payload Part:
+filename: <topic>/payload.json
+=================================
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+<http://example.org/#indoor> <http://www.sdf.net/schemas/is> <http://example.org/celcius/#12.0> .
 =================================
 Action:
 =================================
