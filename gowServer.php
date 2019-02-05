@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-02-03
+// Date.......: 2019-02-05
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -81,6 +81,21 @@ function saveDynamicData($obj)
         fwrite($doc, "   \"no\":        \"$obj->no\",\n");
         fwrite($doc, "   \"rssi\":      \"$obj->rssi\",\n");
         fwrite($doc, "   \"fail\":      \"$obj->fail\",\n");
+        fwrite($doc, "   \"payload\":     $obj->payload\n");
+        fwrite($doc, "}}\n ");
+        fclose($doc);
+  }
+  return;
+}
+//=============================================
+function savePayloadData($obj)
+//=============================================
+{
+  $f_file = $obj->topic.'/payload.json';
+  $doc = fopen($f_file, "w");
+  if ($doc)
+  {
+        fwrite($doc, "{\"gow\": {\n");
         fwrite($doc, "   \"payload\":     $obj->payload\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
@@ -336,6 +351,7 @@ if (isset($_GET['do']))
         }
 
         saveDynamicData($obj);
+        savePayloadData($obj);
         echo readActionFileList($obj->topic);
 
       } // dyn
