@@ -2,10 +2,10 @@
 session_start();
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-02-03
+// Date.......: 2019-02-05
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
-$version = '2019-02-03';
+$version = '2019-02-05';
 //=============================================
 // Configuration
 //=============================================
@@ -167,13 +167,15 @@ echo "<html>
    </head>
    <body> ";
 
-echo("<h1>GOW Device Manager $version</h1>");
+//echo("<h1>GOW Device Manager $version</h1>");
 //echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
    //echo ("<a href=#>refresh</a><br>");
 echo "<a href=\"http://gow.simuino.com/gowDtManager.php\" target=\"_blank\">Model Manager</a>";
 $doc = 'http://'.$sel_url.'/'.$sel_path.'/static.json';
 echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
 $doc = 'http://'.$sel_url.'/'.$sel_path.'/dynamic.json';
+echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
+$doc = 'http://'.$sel_url.'/'.$sel_path.'/payload.json';
 echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
 
 if ($form_send == 1)
