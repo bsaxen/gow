@@ -27,6 +27,13 @@ while True:
 
 	msg = lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, d1.no, action)
 	print msg
+	if ":" in msg:
+		p = msg.split(':')
+		print p[1]
+		q = p[1].split(",")
+		print q[0]
+		print q[1]	
+		print q[2]	
 	print "sleep: " + str(c1.c_period) + " triggered: " + str(d1.no)
 	time.sleep(float(c1.c_period))
 
