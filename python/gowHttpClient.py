@@ -26,7 +26,7 @@ while True:
 		d1.no = 1
 
 	msg = lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, d1.no, action)
-	
+	print msg
 	print "sleep: " + str(c1.c_period) + " triggered: " + str(d1.no)
 	time.sleep(float(c1.c_period))
 
