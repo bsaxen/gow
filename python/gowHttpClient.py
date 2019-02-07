@@ -1,14 +1,14 @@
 # =============================================
 # File: gowHttpClient.py
 # Author: Benny Saxen
-# Date: 2019-02-06
+# Date: 2019-02-07
 # Description:
 # =============================================
 from gowLib import *
 #===================================================
 # Setup
 #===================================================
-print "======== gowHttpClient version 2019-02-01 =========="
+print "======== gowHttpClient version 2019-02-07 =========="
 c1 = configuration()
 d1 = datastream()
 action = 2
@@ -36,6 +36,9 @@ while True:
 		print q[2]	
 	print "sleep: " + str(c1.c_period) + " triggered: " + str(d1.no)
 	time.sleep(float(c1.c_period))
+	error = 1
+	if (error == 1):
+		lib_publish_log("test error mesage")
 
 #===================================================
 # End of file
