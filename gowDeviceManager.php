@@ -1,11 +1,20 @@
 <?php
 session_start();
+
+$sel_url    = $_SESSION["url"];
+$sel_path   = $_SESSION["path"];
+
+$flag_show_static  = $_SESSION["flag_show_static"];
+$flag_show_dynamic = $_SESSION["flag_show_dynamic"];
+$flag_show_payload = $_SESSION["flag_show_payload"];
+$flag_show_log     = $_SESSION["flag_show_log"];
+
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-02-05
+// Date.......: 2019-02-07
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
-$version = '2019-02-05';
+$version = '2019-02-07';
 //=============================================
 // Configuration
 //=============================================
@@ -49,7 +58,7 @@ function getStatus($uri)
   $json = file_get_contents($url);
   $json = utf8_encode($json);
   $res = json_decode($json, TRUE);
-  $period      = $res['gow']['period'];
+  $period     = $res['gow']['period'];
   $g_action   = $res['gow']['action'];
   
   $url = $uri.'/dynamic.json';
@@ -92,8 +101,31 @@ function sendMessage($url,$topic,$msg,$tag)
 //=============================================
 // Back-End
 //=============================================
-$sel_url    = $_SESSION["url"];
-$sel_path   = $_SESSION["path"];
+
+if (isset($_GET['flag'])) {
+  $flag = $_GET['flag'];
+  $status = $_GET['status'];
+  if ($flag == "static")
+  {
+    $flag_show_static = $status;
+    $_SESSION["flag_show_static"] = $status;
+  }
+  if ($flag == "dynamic")
+  {
+    $flag_show_dynamic = $status;
+    $_SESSION["flag_show_dynamic"] = $status;
+  }
+  if ($flag == "payload")
+  {
+    $flag_show_payload = $status;
+    $_SESSION["flag_show_payload"] = $status;
+  }
+  if ($flag == "log")
+  {
+    $flag_show_log = $status;
+    $_SESSION["flag_show_log"] = $status;
+  }
+}
 
 if (isset($_GET['do'])) {
 
@@ -171,12 +203,31 @@ echo "<html>
 //echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
    //echo ("<a href=#>refresh</a><br>");
 echo "<a href=\"http://gow.simuino.com/gowDtManager.php\" target=\"_blank\">Model Manager</a>";
-$doc = 'http://'.$sel_url.'/'.$sel_path.'/static.json';
-echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
-$doc = 'http://'.$sel_url.'/'.$sel_path.'/dynamic.json';
-echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
-$doc = 'http://'.$sel_url.'/'.$sel_path.'/payload.json';
-echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
+
+if ($flag_show_static == 1)
+{
+  $doc = 'http://'.$sel_url.'/'.$sel_path.'/static.json';
+  echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
+}
+
+if ($flag_show_dynamic == 1)
+{
+  $doc = 'http://'.$sel_url.'/'.$sel_path.'/dynamic.json';
+  echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
+}
+
+if ($flag_show_payload == 1)
+{
+  $doc = 'http://'.$sel_url.'/'.$sel_path.'/payload.json';
+  echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
+}
+
+if ($flag_show_log == 1)
+{
+  $doc = 'http://'.$sel_url.'/'.$sel_path.'/log.json';
+  echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
+}
+
 
 if ($form_send == 1)
 {
@@ -282,5 +333,25 @@ if ($form_send == 1)
      echo("</table>");
 
    }
+if ($flag_show_static == 0)
+  echo "<br><a href=\"gowDeviceManager.php?flag=static&status=1\" >Static On</a> ";
+else
+  echo "<br><a href=\"gowDeviceManager.php?flag=static&status=0\" >Static Off</a> ";
+
+if ($flag_show_dynamic == 0)
+  echo "<br><a href=\"gowDeviceManager.php?flag=dynamic&status=1\" >Dynamic On</a> ";
+else
+  echo "<br><a href=\"gowDeviceManager.php?flag=dynamic&status=0\" >Dynamic Off</a> ";
+
+if ($flag_show_payload == 0)
+  echo "<br><a href=\"gowDeviceManager.php?flag=payload&status=1\" >Payload On</a> ";
+else
+  echo "<br><a href=\"gowDeviceManager.php?flag=payload&status=0\" >Payload Off</a> ";
+
+if ($flag_show_log == 0)
+  echo "<br><a href=\"gowDeviceManager.php?flag=log&status=1\" >Log On</a> ";
+else
+  echo "<br><a href=\"gowDeviceManager.php?flag=log&status=0\" >log Off</a> ";
+
 echo "</body></html>";
 // End of file
