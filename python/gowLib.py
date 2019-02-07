@@ -410,19 +410,17 @@ def lib_publish_log(c1, itopic, message ):
 	data['do']         = 'log'
 	data['topic']      = itopic
 	data['dev_ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['log'] = message
+	data['log']        = message
 
 	values = urllib.urlencode(data)
 	req = 'http://' + url + '/' + server + '?' + values
-	#print req
+
 	try:
 		response = urllib2.urlopen(req)
 		the_page = response.read()
 	except urllib2.URLError as e:
 		print e.reason
-	if actions == 2:
-		res = the_page
-	return res
+	return
 #===================================================
 def lib_placeOrder(c1, itopic, iaction):
 #===================================================
