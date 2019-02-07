@@ -224,7 +224,7 @@ if ($flag_show_payload == 1)
 
 if ($flag_show_log == 1)
 {
-  $doc = 'http://'.$sel_url.'/'.$sel_path.'/log.json';
+  $doc = 'http://'.$sel_url.'/'.$sel_path.'/log.gow';
   echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
 }
 
