@@ -38,7 +38,7 @@ while True:
 	time.sleep(float(c1.c_period))
 	error = 1
 	if (error == 1):
-		lib_publish_log("test error mesage")
+		lib_publish_log(c1, c.c_topic1, "test error message")
 
 #===================================================
 # End of file
