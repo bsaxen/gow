@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-02-05
+// Date.......: 2019-02-07
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -26,6 +26,7 @@ class gowDoc {
     public $rssi;
     public $payload;
     public $fail;
+    public $log;
 }
 
 $obj = new gowDoc();
@@ -98,6 +99,32 @@ function savePayloadData($obj)
         fwrite($doc, "{\"gow\": {\n");
         fwrite($doc, "   \"payload\":     $obj->payload\n");
         fwrite($doc, "}}\n ");
+        fclose($doc);
+  }
+  return;
+}
+//=============================================
+function saveLog($obj)
+//=============================================
+{
+  $f_file = $obj->topic.'/log.gow';
+  $doc = fopen($f_file, "a");
+  if ($doc)
+  {
+        fwrite($doc, "$obj->sys_ts $obj->log\n");
+        fclose($doc);
+  }
+  return;
+}
+//=============================================
+function initLog()
+//=============================================
+{
+  $f_file = $obj->topic.'/log.gow';
+  $doc = fopen($f_file, "w");
+  if ($doc)
+  {
+        fwrite($doc, "$obj->sys_ts Created\n");
         fclose($doc);
   }
   return;
@@ -286,6 +313,11 @@ if (isset($_GET['do']))
         $msg   = $_GET['msg'];
         $tag   = $_GET['tag'];
         writeActionFile($obj->topic, $msg, $tag);
+      }
+      if ($do == 'log')
+      {
+        $obj->log   = $_GET['log'];
+        saveLog($obj);
       }
       if ($do == 'delete')
       {
