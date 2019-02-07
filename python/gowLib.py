@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-03
+# Date: 2019-02-07
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -393,6 +393,31 @@ def lib_publish_dynamic(c1, itopic, ipayload, n, actions ):
 		#if actions == 2:
 		#	print 'Message to ' + itopic + ': ' + the_page
 		#lib_evaluateAction(the_page)
+	except urllib2.URLError as e:
+		print e.reason
+	if actions == 2:
+		res = the_page
+	return res
+
+#===================================================
+def lib_publish_log(c1, itopic, message ):
+#===================================================
+	url = c1.c_url
+	server = c1.c_server_app
+	data = {}
+	res = '-'
+
+	data['do']         = 'log'
+	data['topic']      = itopic
+	data['dev_ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	data['log'] = message
+
+	values = urllib.urlencode(data)
+	req = 'http://' + url + '/' + server + '?' + values
+	#print req
+	try:
+		response = urllib2.urlopen(req)
+		the_page = response.read()
 	except urllib2.URLError as e:
 		print e.reason
 	if actions == 2:
