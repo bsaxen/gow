@@ -1,7 +1,7 @@
 # =============================================
 # File: gowHttpClient.py
 # Author: Benny Saxen
-# Date: 2019-02-07
+# Date: 2019-02-09
 # Description:
 # =============================================
 from gowLib import *
@@ -26,14 +26,8 @@ while True:
 		d1.no = 1
 
 	msg = lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, d1.no, action)
-	print msg
-	if ":" in msg:
-		p = msg.split(':')
-		print p[1]
-		q = p[1].split(",")
-		print q[0]
-		print q[1]	
-		print q[2]	
+	lib_common_action(c1,msg)
+
 	print "sleep: " + str(c1.c_period) + " triggered: " + str(d1.no)
 	time.sleep(float(c1.c_period))
 	error = 1
