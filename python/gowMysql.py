@@ -29,9 +29,7 @@ for num in range(0,r1.c_nds):
     url_static  = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
     url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
     url_payload = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'payload')
-    print url_static
-    print url_dynamic
-    print url_payload
+
     period = float(lib_readJsonMeta(url_static,'period'))
     print period
     desc = lib_readJsonMeta(url_static,'desc')
@@ -70,20 +68,20 @@ while True:
     time.sleep(1)
 
     for num in range(0,r1.c_nds):
+        url_static  = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
+        url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
+        url_payload = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'payload')
         work[num] -= 1
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
             work[num] = schedule[num]
             
-            url_static = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
-            print url_static
             period = float(lib_readJsonMeta(url_static,'period'))
             print period
             desc = lib_readJsonMeta(url_static,'desc')
             print desc
             schedule[num] = period
 
-            url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
             no = float(lib_readJsonMeta(url_dynamic,'no'))
             print no
             delta_no = no - running[num]
