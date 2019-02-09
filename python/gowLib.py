@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-07
+# Date: 2019-02-09
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -111,6 +111,28 @@ def lib_log(application,message):
 	msg = application + " " + message
 	lib_writeFile('gow.log',msg,1)
 	return
+#===================================================
+def lib_common_action(c1,order):
+	if ":" in order:
+		p = order.split(':')
+		q = p[1].split(",")
+		m = len(q)
+		if m == 1:
+			if q[0] == 'test':
+				print 'test1'
+		if m == 2:
+			if q[0] == 'period':
+				c1.c_period = q[1]
+			if q[0] == 'action':
+				c1.c_action = q[1]
+			if q[0] == 'topic':
+				c1.c_topic1 = q[1]
+			if q[0] == 'desc':
+				c1.c_desc = q[1]
+		if m == 3:
+			if q[0] == 'test':
+				print 'test3'
+
 #===================================================
 def lib_evaluateAction( action):
 	print action
