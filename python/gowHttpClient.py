@@ -30,7 +30,6 @@ while True:
 
 	print "sleep: " + str(c1.c_period) + " triggered: " + str(d1.no)
 	time.sleep(float(c1.c_period))
-	error = 1
 	if (error == 1):
 		lib_publish_log(c1, c1.c_topic1, "test error message")
 
