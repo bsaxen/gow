@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-02-07
+// Date.......: 2019-02-09
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -82,7 +82,6 @@ function saveDynamicData($obj)
         fwrite($doc, "   \"no\":        \"$obj->no\",\n");
         fwrite($doc, "   \"rssi\":      \"$obj->rssi\",\n");
         fwrite($doc, "   \"fail\":      \"$obj->fail\",\n");
-        fwrite($doc, "   \"payload\":     $obj->payload\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
   }
