@@ -339,14 +339,14 @@ def lib_readJsonMeta(url,par):
 #=============================================
 def lib_readJsonPayload(url,par):
 #=============================================
-	now = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+	#now = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 	r = urllib2.urlopen(url)
 	j = json.load(r)
-	ts=j['gow']['sys_ts']
+	#ts=j['gow']['sys_ts']
 	#period=j['gow']['period']
-	xts1 = time.mktime(datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").timetuple())
-	xts2 = time.mktime(datetime.datetime.strptime(now, "%Y-%m-%d %H:%M:%S").timetuple())
-	diff = xts2 - xts1
+	#xts1 = time.mktime(datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").timetuple())
+	#xts2 = time.mktime(datetime.datetime.strptime(now, "%Y-%m-%d %H:%M:%S").timetuple())
+	#diff = xts2 - xts1
 	#print str(period) + " " + str(diff)
 	#old = 0
 	#if diff > period:
