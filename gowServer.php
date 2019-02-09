@@ -81,7 +81,7 @@ function saveDynamicData($obj)
         fwrite($doc, "   \"dev_ts\":    \"$obj->dev_ts\",\n");
         fwrite($doc, "   \"no\":        \"$obj->no\",\n");
         fwrite($doc, "   \"rssi\":      \"$obj->rssi\",\n");
-        fwrite($doc, "   \"fail\":      \"$obj->fail\",\n");
+        fwrite($doc, "   \"fail\":      \"$obj->fail\"\n");
         fwrite($doc, "}}\n ");
         fclose($doc);
   }
