@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-$sel_url    = $_SESSION["url"];
-$sel_path   = $_SESSION["path"];
+$sel_domain = $_SESSION["domain"];
+$sel_device = $_SESSION["device"];
 
 $flag_show_static  = $_SESSION["flag_show_static"];
 $flag_show_dynamic = $_SESSION["flag_show_dynamic"];
@@ -11,10 +11,10 @@ $flag_show_log     = $_SESSION["flag_show_log"];
 
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-02-07
+// Date.......: 2019-02-09
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
-$version = '2019-02-07';
+$version = '2019-02-09';
 //=============================================
 // Configuration
 //=============================================
@@ -52,7 +52,7 @@ function getStatus($uri)
 //=============================================
 {
   global $g_action, $g_rssi;
-  
+
   $url = $uri.'/static.json';
   //echo "$url<br>";
   $json = file_get_contents($url);
@@ -60,7 +60,7 @@ function getStatus($uri)
   $res = json_decode($json, TRUE);
   $period     = $res['gow']['period'];
   $g_action   = $res['gow']['action'];
-  
+
   $url = $uri.'/dynamic.json';
   //echo "$url<br>";
   $json = file_get_contents($url);
@@ -69,11 +69,11 @@ function getStatus($uri)
   $timestamp   = $res['gow']['sys_ts'];
   $g_rssi   = $res['gow']['rssi'];
   $now = date_create('now')->format('Y-m-d H:i:s');
-  
+
   $diff = strtotime($now) - strtotime($timestamp);
   //echo "now=$now ts=$timestamp diff= $diff";
-  
-  if ($diff > $period) 
+
+  if ($diff > $period)
   {
     $res = $diff;
   }
@@ -131,25 +131,80 @@ if (isset($_GET['do'])) {
 
   $do = $_GET['do'];
 
+  if($do == 'add_domain')
+  {
+    $form_add_domain = 1;
+  }
+
+  if($do == 'send_action')
+  {
+    $form_send_action = 1;
+  }
+
   if($do == 'select')
   {
-    if (isset($_GET['sel_url']))
+    if (isset($_GET['domain']))
     {
-      $sel_url = $_GET['sel_url'];
-      $_SESSION["url"] = $sel_url;
+      $sel_domain = $_GET['domain'];
+      $_SESSION["domain"] = $sel_domain;
     }
-    if (isset($_GET['sel_path']))
+    if (isset($_GET['device']))
     {
-      $sel_path = $_GET['sel_path'];
-      $_SESSION["path"]   = $sel_path;
+      $sel_device = $_GET['device'];
+      $_SESSION["device"]   = $sel_device;
+    }
+  }
+
+  if($do == 'info')
+  {
+    if (isset($_GET['what']))
+    {
+      $temp = $_GET['what'];
+
+      if ($temp == 'static')
+      {
+        $flag_show_static += 1;
+        if ($flag_show_static > 1)$flag_show_static = 0;
+        $_SESSION["flag_show_static"] = $flag_show_static;
+      }
+
+      if ($temp == 'dynamic')
+      {
+        $flag_show_dynamic += 1;
+        if ($flag_show_dynamic > 1)$flag_show_dynamic = 0;
+        $_SESSION["flag_show_dynamic"] = $flag_show_dynamic;
+      }
+
+      if ($temp == 'payload')
+      {
+        $flag_show_payload += 1;
+        if ($flag_show_payload > 1)$flag_show_payload = 0;
+        $_SESSION["flag_show_payload"] = $flag_show_payload;
+      }
+
+      if ($temp == 'log')
+      {
+        $flag_show_log += 1;
+        if ($flag_show_log > 1)$flag_show_log = 0;
+        $_SESSION["flag_show_log"] = $flag_show_log;
+      }
+
+
     }
   }
 
   if($do == 'delete')
   {
-    $domain   = $_GET['domain'];
-    $fn = $domain.'.domain';
-    if (file_exists($fn)) unlink($fn);
+    $what   = $_GET['what'];
+    if ($what == 'domain')
+    {
+      $fn = $sel_domain.'.domain';
+      if (file_exists($fn)) unlink($fn);
+    }
+    if ($what == 'device')
+    {
+      restApi('delete',$sel_domain,$sel_device);
+    }
   }
 
   if($do == 'rest')
@@ -159,13 +214,7 @@ if (isset($_GET['do'])) {
     $topic = $_GET['topic'];
     restApi($api,$url,$topic);
   }
-  if($do == 'form')
-  {
-    $api   = $_GET['api'];
-    $url   = $_GET['url'];
-    $topic = $_GET['topic'];
-    $form_send = 1;
-  }
+
 }
 
 if (isset($_POST['do'])) {
@@ -179,11 +228,11 @@ if (isset($_POST['do'])) {
 
   if ($do == 'send_message')
   {
-    $url   = $_POST['url'];
-    $topic = $_POST['topic'];
-    $msg   = $_POST['message'];
-    $tag   = $_POST['tag'];
-    if (strlen($msg) > 2)sendMessage($url,$topic,$msg,$tag);
+    $domain   = $_POST['domain'];
+    $device   = $_POST['device'];
+    $msg      = $_POST['message'];
+    $tag      = $_POST['tag'];
+    if (strlen($msg) > 2)sendMessage($domain,$device,$msg,$tag);
   }
 
 }
@@ -193,165 +242,256 @@ if (isset($_POST['do'])) {
 //=============================================
 $data = array();
 
-echo "<html>
-   <head>
-      <title>GOW Device Manager</title>
-   </head>
-   <body> ";
+   echo "<html>
+      <head>
+      <style>
+      html {
+          min-height: 100%;
+      }
 
+      body {
+          background: -webkit-linear-gradient(left, #93B874, #C9DCB9);
+          background: -o-linear-gradient(right, #93B874, #C9DCB9);
+          background: -moz-linear-gradient(right, #93B874, #C9DCB9);
+          background: linear-gradient(to right, #93B874, #C9DCB9);
+          background-color: #93B874;
+      }
+      /* Navbar container */
+   .navbar {
+     overflow: hidden;
+     background-color: #333;
+     font-family: Arial;
+   }
+
+   /* Links inside the navbar */
+   .navbar a {
+     float: left;
+     font-size: 16px;
+     color: white;
+     text-align: center;
+     padding: 14px 16px;
+     text-decoration: none;
+   }
+
+   /* The dropdown container */
+   .dropdown {
+     float: left;
+     overflow: hidden;
+   }
+
+   /* Dropdown button */
+   .dropdown .dropbtn {
+     font-size: 16px;
+     border: none;
+     outline: none;
+     color: white;
+     padding: 14px 16px;
+     background-color: inherit;
+     font-family: inherit; /* Important for vertical align on mobile phones */
+     margin: 0; /* Important for vertical align on mobile phones */
+   }
+
+   /* Add a red background color to navbar links on hover */
+   .navbar a:hover, .dropdown:hover .dropbtn {
+     background-color: red;
+   }
+
+   /* Dropdown content (hidden by default) */
+   .dropdown-content {
+     display: none;
+     position: absolute;
+     background-color: #f9f9f9;
+     min-width: 160px;
+     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+     z-index: 1;
+   }
+
+   /* Links inside the dropdown */
+   .dropdown-content a {
+     float: none;
+     color: black;
+     padding: 12px 16px;
+     text-decoration: none;
+     display: block;
+     text-align: left;
+   }
+
+   /* Add a grey background color to dropdown links on hover */
+   .dropdown-content a:hover {
+     background-color: #ddd;
+   }
+
+   /* Show the dropdown menu on hover */
+   .dropdown:hover .dropdown-content {
+     display: block;
+   }
+      </style>
+         <title>GOW Device Manager</title>
+      </head>
+      <body > ";
+
+      echo("<h1>GOW Device Manager $sel_domain $sel_device</h1>");
+      echo "<div class=\"navbar\">";
+
+      echo "<a href=\"gowDeviceManager.php?do=add_domain\">Add Domain</a>";
+
+      echo "  <div class=\"dropdown\">
+          <button class=\"dropbtn\">Select Information
+            <i class=\"fa fa-caret-down\"></i>
+          </button>
+          <div class=\"dropdown-content\">
+           ";
+          echo "<a href=gowDeviceManager.php?do=info&what=static>static</a>";
+          echo "<a href=gowDeviceManager.php?do=info&what=dynamic>dynamic</a>";
+          echo "<a href=gowDeviceManager.php?do=info&what=payload>payload</a>";
+          echo "<a href=gowDeviceManager.php?do=info&what=log>log</a>";
+          echo "</div></div>";
+
+        echo "<div class=\"dropdown\">
+            <button class=\"dropbtn\">Select Domain
+              <i class=\"fa fa-caret-down\"></i>
+            </button>
+            <div class=\"dropdown-content\">
+            ";
+
+            $do = 'ls *.domain > domain.list';
+            system($do);
+            $file = fopen('domain.list', "r");
+            if ($file)
+            {
+              {
+                $line = fgets($file);
+                if (strlen($line) > 2)
+                {
+                    $line = trim($line);
+                    $domain = str_replace(".domain", "", $line);
+                    echo "<a href=gowDeviceManager.php?do=select&domain=$domain>$domain</a>";
+                }
+              }
+            }
+            echo "</div></div>";
+
+            echo "<div class=\"dropdown\">
+                  <button class=\"dropbtn\">Select Device
+                    <i class=\"fa fa-caret-down\"></i>
+                  </button>
+                  <div class=\"dropdown-content\">
+                  ";
+
+                  $request = 'http://'.$sel_domain."/gowServer.php?do=list_topics";
+                  //echo $request;
+                  $ctx = stream_context_create(array('http'=>
+                   array(
+                     'timeout' => 2,  //2 Seconds
+                       )
+                     ));
+                  $res = file_get_contents($request,false,$ctx);
+                  $data = explode(":",$res);
+                  $num = count($data);
+
+                  for ($ii = 0; $ii < $num; $ii++)
+                  {
+                    $id = str_replace(".reg", "", $data[$ii]);
+                    if (strlen($id) > 2)
+                    {
+                      $topic = explode("_",$id);
+                      $topic_num = count($topic);
+                      //$link = 'http://'.$url;
+                      $device = $topic[0];
+                      for ($jj=1;$jj<$topic_num;$jj++)
+                         $device = $device."/$topic[$jj]";
+                      $doc = 'http://'.$sel_domain.'/'.$device;
+                      $status = getStatus($doc);
+                      $temp = $device;
+                      if ($g_action == 2) $temp = '.'.$temp;
+                      if ($status == 0)
+                      {
+                        echo "<a style=\"background: #2FBC63;\" href=gowDeviceManager.php?do=select&device=$device>$temp</a>";
+                      }
+                      else {
+                        echo "<a style=\"background: #F5E50F;\" href=gowDeviceManager.php?do=select&device=$device>$temp $status</a>";
+                      }
+                      //echo " $g_rssi ";
+                  }
+                }
+          echo "</div></div>";
+
+      echo "<a href=\"gowDeviceManager.php?do=send_action\">Send Action</a>";
+
+      echo "<div class=\"dropdown\">
+            <button class=\"dropbtn\">Delete
+              <i class=\"fa fa-caret-down\"></i>
+            </button>
+            <div class=\"dropdown-content\">
+            ";
+      echo "<a href=gowDeviceManager.php?do=delete&what=domain>$sel_domain</a>";
+      echo "<a href=gowDeviceManager.php?do=delete&what=device>$sel_device</a>";
+      echo "</div></div>";
+
+      echo "</div>";
+   //=============================================
 //echo("<h1>GOW Device Manager $version</h1>");
 //echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
    //echo ("<a href=#>refresh</a><br>");
-echo "<a href=\"http://gow.simuino.com/gowDtManager.php\" target=\"_blank\">Model Manager</a>";
+//echo "<a href=\"http://gow.simuino.com/gowDtManager.php\" target=\"_blank\">Model Manager</a>";
 
-if ($flag_show_static == 1)
+if ($form_send_action == 1)
 {
-  $doc = 'http://'.$sel_url.'/'.$sel_path.'/static.json';
-  echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
-}
-
-if ($flag_show_dynamic == 1)
-{
-  $doc = 'http://'.$sel_url.'/'.$sel_path.'/dynamic.json';
-  echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
-}
-
-if ($flag_show_payload == 1)
-{
-  $doc = 'http://'.$sel_url.'/'.$sel_path.'/payload.json';
-  echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
-}
-
-if ($flag_show_log == 1)
-{
-  $doc = 'http://'.$sel_url.'/'.$sel_path.'/log.gow';
-  echo ("<iframe src=$doc width=\"400\" height=\"300\"></iframe>");
-}
-
-
-if ($form_send == 1)
-{
+  $doc = 'http://'.$sel_domain.'/'.$sel_device;
+  $status = getStatus($doc);
+  if ($g_action == 2)
+  {
   echo "<br><br>
   <table border=0>";
   echo "
   <form action=\"#\" method=\"post\">
     <input type=\"hidden\" name=\"do\" value=\"send_message\">
-    <tr><td>Url</td><td> <input type=\"text\" name=\"url\" value=$url></td>
-    <tr><td>Topic</td><td> <input type=\"text\" name=\"topic\" value=$topic></td>
+    <tr><td>Domain</td><td> <input type=\"text\" name=\"domain\" value=$sel_domain></td>
+    <tr><td>Device</td><td> <input type=\"text\" name=\"device\" value=$sel_device></td>
     <tr><td>Tag</td><td> <input type=\"text\" name=\"tag\" ></td>
     <tr><td>Message</td><td> <input type=\"text\" name=\"message\"></td>
     <td><input type= \"submit\" value=\"Send\"></td></tr>
   </form>
   </table>";
+  }
+  else {
+    echo("<br>Device not able to receive orders<br>");
+  }
+}
+if ($form_add_domain == 1)
+{
+  echo "
+  <form action=\"#\" method=\"post\">
+    <input type=\"hidden\" name=\"do\" value=\"add_domain\">
+    Add Domain<input type=\"text\" name=\"domain\">
+    <input type= \"submit\" value=\"Add Domain\">
+    </form> ";
 }
 
+if ($flag_show_static == 1)
+{
+  $doc = 'http://'.$sel_domain.'/'.$sel_device.'/static.json';
+  echo ("<br>static<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+}
 
-   $do = 'ls *.domain > domain.list';
-   system($do);
-   $file = fopen('domain.list', "r");
-   if ($file)
-   {
-     echo "<br><br>
-     <table border=0>";
-     echo "
-     <form action=\"#\" method=\"post\">
-       <input type=\"hidden\" name=\"do\" value=\"add_domain\">
-       <tr><td>Add Domain</td><td> <input type=\"text\" name=\"domain\"></td>
-       <td><input type= \"submit\" value=\"Add Domain\"></td></tr>
-     </form>
-     ";
-     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td><td></td></tr>";
-     echo "<tr bgcolor=\"#FFC300\"><td>Domain</td><td>RSSI</td><td>Status/Topic</td><td>Message</td><td>Edit</td></tr>";
-     echo "<tr bgcolor=\"#FF0000\"><td></td><td></td><td></td><td></td><td></td></tr>";
+if ($flag_show_dynamic == 1)
+{
+  $doc = 'http://'.$sel_domain.'/'.$sel_device.'/dynamic.json';
+  echo ("<br>dynamic<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+}
 
-     while(!feof($file))
-     {
-       $line = fgets($file);
-       //echo "<tr><td>$line</td><td>benny</td></tr>";
-       if (strlen($line) > 2)
-       {
-           $line = trim($line);
-           $url = str_replace(".domain", "", $line);
-           $request = 'http://'.$url."/gowServer.php?do=list_topics";
-           //echo $request;
-           $ctx = stream_context_create(array('http'=>
-            array(
-              'timeout' => 2,  //2 Seconds
-                )
-              ));
-           $res = file_get_contents($request,false,$ctx);
-           //echo "<tr><td>$res</td><td>b1</td></tr>";
-           //echo "<tr><td>$url</td><td>b2</td></tr>";
-           if ($res === false) {
-             echo "<tr><td>$url</td><td></td><td bgcolor=\"red\">NO CONNECTION</td>";
-           }
-           else {
-             echo "<tr><td>$url</td><td></td><td bgcolor=\"#DAF7A6\">CONNECTED</td>";
-           }
-           echo "<td></td>";
-           echo "<td><a href=gowDeviceManager.php?do=delete&domain=$url>delete</a></td></tr>";
+if ($flag_show_payload == 1)
+{
+  $doc = 'http://'.$sel_domain.'/'.$sel_device.'/payload.json';
+  echo ("<br>payload<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+}
 
-           $data = explode(":",$res);
-           $num = count($data);
-
-           for ($ii = 0; $ii < $num; $ii++)
-           {
-             $id = str_replace(".reg", "", $data[$ii]);
-             if (strlen($id) > 2)
-             {
-               $topic = explode("_",$id);
-               $topic_num = count($topic);
-               //$link = 'http://'.$url;
-               $link = $topic[0];
-               for ($jj=1;$jj<$topic_num;$jj++)
-                  $link = $link."/$topic[$jj]";
-               $doc = 'http://'.$url.'/'.$link;
-               $status = getStatus($doc);
-               if ($status == 0)
-               {
-                 echo "<tr><td bgcolor=\"#DAF7A6\">ON-LINE</td>";
-               }
-               else {
-                 echo "<tr><td bgcolor=\"yellow\">$status</td>";
-               }
-               echo "<td>$g_rssi</td>";
-               echo "<td><a href=gowDeviceManager.php?do=select&sel_url=$url&sel_path=$link>$link</a></td>";
-               $rest = 'http://'.$url.'?do=delete&topic='.$link;
-               //echo "<tr><td></td><td><a href=gowDeviceManager.php?do=select&sel_doc=$doc>$link</a></td>";
-               if ($g_action == 2) {
-                  echo "<td><a href=gowDeviceManager.php?do=form&api=action&url=$url&topic=$link>send</a></td>";
-              }
-              else {
-                  echo "<td></td>";
-              }
-               echo "<td><a href=gowDeviceManager.php?do=rest&api=delete&url=$url&topic=$link>remove</a></td></tr>";
-           }
-         }
-       }
-     }
-
-     echo("</table>");
-
-   }
-if ($flag_show_static == 0)
-  echo "<br><a href=\"gowDeviceManager.php?flag=static&status=1\" >Static On</a> ";
-else
-  echo "<br><a href=\"gowDeviceManager.php?flag=static&status=0\" >Static Off</a> ";
-
-if ($flag_show_dynamic == 0)
-  echo "<br><a href=\"gowDeviceManager.php?flag=dynamic&status=1\" >Dynamic On</a> ";
-else
-  echo "<br><a href=\"gowDeviceManager.php?flag=dynamic&status=0\" >Dynamic Off</a> ";
-
-if ($flag_show_payload == 0)
-  echo "<br><a href=\"gowDeviceManager.php?flag=payload&status=1\" >Payload On</a> ";
-else
-  echo "<br><a href=\"gowDeviceManager.php?flag=payload&status=0\" >Payload Off</a> ";
-
-if ($flag_show_log == 0)
-  echo "<br><a href=\"gowDeviceManager.php?flag=log&status=1\" >Log On</a> ";
-else
-  echo "<br><a href=\"gowDeviceManager.php?flag=log&status=0\" >log Off</a> ";
+if ($flag_show_log == 1)
+{
+  $doc = 'http://'.$sel_domain.'/'.$sel_device.'/log.gow';
+  echo ("<br>log<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+}
 
 echo "</body></html>";
 // End of file
+
