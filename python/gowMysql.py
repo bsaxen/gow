@@ -31,7 +31,7 @@ for num in range(0,r1.c_nds):
     url_payload = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'payload')
     print url_static
     print url_dynamic
-    print url_dynamic
+    print url_payload
     period = float(lib_readJsonMeta(url_static,'period'))
     print period
     desc = lib_readJsonMeta(url_static,'desc')
@@ -43,7 +43,7 @@ for num in range(0,r1.c_nds):
     no = float(lib_readJsonMeta(url_dynamic,'no'))
     running.append(no)
     print no
-    x      = float(lib_readJsonPayload(url_dynamic,r1.c_ds_param[num]))
+    x      = float(lib_readJsonPayload(url_payload,r1.c_ds_param[num]))
     print x
     if r1.c_ds_table[num] == 'auto':
         table = desc
@@ -101,7 +101,7 @@ while True:
                 ok = 1
             if ok == 1:
                 running[num] = no
-                x  = float(lib_readJson(url_payload,r1.c_ds_param[num]))
+                x  = float(lib_readJsonPayload(url_payload,r1.c_ds_param[num]))
                 print x
                 if r1.c_ds_table[num] == 'auto':
                     table = desc
