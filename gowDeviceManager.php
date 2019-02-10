@@ -471,25 +471,25 @@ if ($form_add_domain == 1)
 if ($flag_show_static == 1)
 {
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/static.json';
-  echo ("<br>static<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+  echo ("<br>static<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"100%\"></iframe>");
 }
 
 if ($flag_show_dynamic == 1)
 {
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/dynamic.json';
-  echo ("<br>dynamic<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+  echo ("<br>dynamic<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"100%\"></iframe>");
 }
 
 if ($flag_show_payload == 1)
 {
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/payload.json';
-  echo ("<br>payload<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+  echo ("<br>payload<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"100%\"></iframe>");
 }
 
 if ($flag_show_log == 1)
 {
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/log.gow';
-  echo ("<br>log<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+  echo ("<br>log<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"100%\"></iframe>");
 }
 
 echo "</body></html>";
