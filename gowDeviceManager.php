@@ -244,6 +244,8 @@ $data = array();
 
    echo "<html>
       <head>
+      <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
+      <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script>
       <style>
       html {
           min-height: 100%;
@@ -330,6 +332,55 @@ $data = array();
       </head>
       <body > ";
 
+//=========================================================================
+// body
+//=========================================================================
+?>
+<script type="text/javascript">
+window.onload = function(){
+    var tid = setInterval(getData, 3000);
+    function getData() {
+        console.log("Getting  data");
+        $.ajax({
+            url:		'gowDmAjax.php',
+            /*dataType:	'json',*/
+            dataType:	'text',
+            success:	setData,
+            type:		'GET',
+            data:		{
+                domain: '<?php echo("$sel_domain")?>',
+                device: '<?php echo("$sel_device")?>'
+            }
+        });
+    }
+    function setData(result)
+    {
+        console.log("data!");
+        console.log(result);
+        var resArray = result.split("=");
+        var n = resArray.length;
+        console.log(n);
+
+        var i;
+        var input;
+        for (i = 1; i <= n;i++)
+        {
+          console.log(resArray[i]);
+          var id = 'no';
+          id = id.concat(i.toString());
+          input = document.getElementById(id);
+
+          if (resArray[i] == 0)
+            input.style.background = "green";
+          if (resArray[i] > 0)
+            input.style.background = "red";
+        }
+    }
+}
+</script>
+
+
+<?php
       echo("<h1>GOW Device Manager $sel_domain $sel_device</h1>");
       echo "<div class=\"navbar\">";
 
@@ -412,8 +463,8 @@ $data = array();
                         echo "<a style=\"background: #F5E50F;\" href=gowDeviceManager.php?do=select&device=$device>$temp $status</a>";
                       }
                       //echo " $g_rssi ";
-                  }
-                }
+                     }
+                   }
           echo "</div></div>";
 
       echo "<a href=\"gowDeviceManager.php?do=send_action\">Send Action</a>";
@@ -429,6 +480,51 @@ $data = array();
       echo "</div></div>";
 
       echo "</div>";
+
+      // Ajax fields
+      $request = 'http://'.$sel_domain."/gowServer.php?do=list_topics";
+      //echo $request;
+      $ctx = stream_context_create(array('http'=>
+       array(
+         'timeout' => 2,  //2 Seconds
+           )
+         ));
+      $res = file_get_contents($request,false,$ctx);
+      $data = explode(":",$res);
+      $num = count($data);
+
+      $nn = 0;
+      echo "<table>";
+      for ($ii = 0; $ii < $num; $ii++)
+      {
+        echo "<tr>";
+        $id = str_replace(".reg", "", $data[$ii]);
+        if (strlen($id) > 2)
+        {
+          $nn += 1;
+          echo "<td>$nn</td>";
+          echo "<td>$id</td>";
+          $topic = explode("_",$id);
+          $topic_num = count($topic);
+          //$link = 'http://'.$url;
+          $device = $topic[0];
+          for ($jj=1;$jj<=$topic_num;$jj++)
+             $device = $device."/$topic[$jj]";
+          $doc = 'http://'.$sel_domain.'/'.$device;
+          $status = getStatus($doc);
+          $temp = $device;
+          if ($g_action == 2) $temp = '.'.$temp;
+          if ($status == 0)
+          {
+            echo("<td><input style=\"background: #2FBC63;\" id=\"no$nn\" type=\"text\" name=\"n_no\" size=8 /></td>");
+          }
+          else {
+            echo("<td><input style=\"background: #F5E50F;\" id=\"no$nn\" type=\"text\" name=\"n_no\" size=8 /></td>");
+          }
+        }
+          echo ("</tr>");
+      }
+     echo "</table>";
    //=============================================
 //echo("<h1>GOW Device Manager $version</h1>");
 //echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
@@ -471,27 +567,26 @@ if ($form_add_domain == 1)
 if ($flag_show_static == 1)
 {
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/static.json';
-  echo ("<br>static<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"100%\"></iframe>");
+  echo ("<br>static<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
 }
 
 if ($flag_show_dynamic == 1)
 {
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/dynamic.json';
-  echo ("<br>dynamic<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"100%\"></iframe>");
+  echo ("<br>dynamic<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
 }
 
 if ($flag_show_payload == 1)
 {
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/payload.json';
-  echo ("<br>payload<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"100%\"></iframe>");
+  echo ("<br>payload<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
 }
 
 if ($flag_show_log == 1)
 {
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/log.gow';
-  echo ("<br>log<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"100%\"></iframe>");
+  echo ("<br>log<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
 }
 
 echo "</body></html>";
 // End of file
-
