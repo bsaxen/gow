@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-09
+# Date: 2019-02-11
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -111,6 +111,17 @@ def lib_log(application,message):
 	msg = application + " " + message
 	lib_writeFile('gow.log',msg,1)
 	return
+#=====================================================
+def lib_getDeviceStatus(domain,device):
+	print domain
+	print device
+	status = 1
+	return status
+#=====================================================
+def lib_listDomainDevices(domain):
+	print domain
+	devlist = 1
+	return devlist
 #===================================================
 def lib_common_action(c1,order):
 	if ":" in order:
