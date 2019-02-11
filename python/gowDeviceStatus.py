@@ -17,38 +17,31 @@ running  = []
 #=============================================
 # setup
 #=============================================
-print "======== gowMysql version 2019-02-01 =========="
 r1 = configuration()
 d1 = datastream()
-confile = 'gowmysql.conf'
+confile = 'gowdevicestatus.conf'
 lib_readConfiguration(confile,r1)
-print "Number of datastreams: " + str(r1.c_nds)
+
+no_devices = lib_noDomainDevices(r1.c_domain)
+device_list = lib_listDomainDevices(r1.c_domain)
+
+print "Number of devices: " + str(no_devices)
 
 max_period = 0
-for num in range(0,r1.c_nds):
-    url_static  = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
-    url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
-    url_payload = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'payload')
+for num in range(1,no_devices):
+    url_static  = lib_buildUrl(r1.c_domain,device_list[num],'static')
+    url_dynamic = lib_buildUrl(r1.c_domain,device_list[num],'dynamic')
+    url_payload = lib_buildUrl(r1.c_domain,device_list[num],'payload')
 
     period = float(lib_readJsonMeta(url_static,'period'))
     print period
     desc = lib_readJsonMeta(url_static,'desc')
     print desc
-    #if period > max_period:
-    #    max_period = period
     schedule.append(period)
     work.append(period)
     no = float(lib_readJsonMeta(url_dynamic,'no'))
     running.append(no)
     print no
-    x      = float(lib_readJsonPayload(url_payload,r1.c_ds_param[num]))
-    print x
-    if r1.c_ds_table[num] == 'auto':
-        table = desc
-    else:
-        table = r1.c_ds_table[num]
-        
-    lib_mysqlInsert(r1,1,table,'value',x)
 #=============================================
 # loop
 #=============================================
@@ -67,10 +60,11 @@ while True:
     #print "sleep " + str(1)
     time.sleep(1)
 
-    for num in range(0,r1.c_nds):
-        url_static  = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
-        url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
-        url_payload = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'payload')
+    for num in range(1,n_devices):
+        url_static  = lib_buildUrl(r1.c_domain,device_list[num],'static')
+        url_dynamic = lib_buildUrl(r1.c_domain,device_list[num],'dynamic')
+        url_payload = lib_buildUrl(r1.c_domain,device_list[num],'payload') 
+        
         work[num] -= 1
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
@@ -99,14 +93,7 @@ while True:
                 ok = 1
             if ok == 1:
                 running[num] = no
-                x  = float(lib_readJsonPayload(url_payload,r1.c_ds_param[num]))
-                print x
-                if r1.c_ds_table[num] == 'auto':
-                    table = desc
-                else:
-                    table = r1.c_ds_table[num]
-                    
-                lib_mysqlInsert(r1,0,table,'value',x)
+
 #===================================================
 # End of file
 #===================================================
