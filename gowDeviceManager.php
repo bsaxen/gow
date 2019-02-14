@@ -11,10 +11,10 @@ $flag_show_log     = $_SESSION["flag_show_log"];
 
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-02-09
+// Date.......: 2019-02-13
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
-$version = '2019-02-09';
+$version = '2019-02-13';
 //=============================================
 // Configuration
 //=============================================
@@ -29,7 +29,119 @@ $g_action     = 0;
 //=============================================
 // library
 //=============================================
+//=============================================
+function prettyTolk( $json )
+//=============================================
+{
+    global $rank,$g_nn;
+    $result = '';
+    $level = 0;
+    $nn = 1;
+    $in_quotes = false;
+    $in_escape = false;
+    $ends_line_level = NULL;
+    $json_length = strlen( $json );
 
+    for( $i = 0; $i < $json_length; $i++ ) {
+        $char = $json[$i];
+        $new_line_level = NULL;
+        $post = "";
+        if( $ends_line_level !== NULL ) {
+            $new_line_level = $ends_line_level;
+            $ends_line_level = NULL;
+        }
+        if ( $in_escape ) {
+            $in_escape = false;
+        } else if( $char === '"' )
+        {
+            $in_quotes = !$in_quotes;
+        }
+        else if( ! $in_quotes )
+        {
+            if($word)
+            {
+              $tmp = $rank[$nn];
+              //echo ("$word nn=$nn level=$level<br>");
+              //if($tmp > 0 && $tmp != $level) echo "JSON Error: $word<br>";
+              $rank[$nn] = $level;
+            }
+
+            $word = '';
+            switch( $char )
+            {
+                case '}': case ']':
+                    $level--;
+                    $ends_line_level = NULL;
+                    $new_line_level = $level;
+                    break;
+
+                case '{': case '[':
+                    $level++;
+
+                case ',':
+                    $ends_line_level = $level;
+                    break;
+
+                case ':':
+                    $nn++;
+                    //echo "nn=$nn<br>";
+                    $post = " ";
+                    break;
+
+                case " ": case "\t": case "\n": case "\r":
+                    $char = "";
+                    $ends_line_level = $new_line_level;
+                    $new_line_level = NULL;
+                    break;
+            }
+        } else if ( $char === '\\' ) {
+            $in_escape = true;
+        }
+        else {
+          $word .= $char;
+        }
+        if( $new_line_level !== NULL ) {
+            $result .= "\n".str_repeat( "\t", $new_line_level );
+        }
+        $result .= $char.$post;
+        //echo "$level $char<br>";
+    }
+    $g_nn = $nn-1;
+    return $result;
+}
+
+//=============================================
+function generateForm($inp)
+//=============================================
+{
+  global $rank,$g_nn;
+
+  $id = 'void';
+
+  $jsonIterator = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode($inp, TRUE)),RecursiveIteratorIterator::SELF_FIRST);
+  echo("<table border=0>");
+  $nn = 0;
+  foreach ($jsonIterator as $key => $val) {
+    $nn++;
+    if ($key == 'id') $id = $val;
+    echo "<tr>";
+    for($ii=1;$ii<$rank[$nn];$ii++)echo "<td></td>";
+
+      if(is_array($val))
+      {
+        echo "<td color=\"#C5FD69\">$key</td>";
+      }
+      else
+      {
+          echo "<td>$key</td><td bgcolor=\"#C5FD69\">$val</td><tr>";
+      }
+      echo "</tr>";
+   }
+   echo "</table>";
+   //if ($id == 'void') $id = generateRandomString(12);
+   if ($g_nn != $nn)echo("ERROR: Key duplicate in JSON structure: $nn $g_nn<br>");
+   return $id;
+}
 //=============================================
 function addDomain ($domain)
 //=============================================
@@ -247,6 +359,56 @@ $data = array();
       <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />
       <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script>
       <style>
+
+      #container {
+      color: #336600;
+      background-color: cornsilk;
+      float: left;
+      width: 1000px;
+      height: 900px;
+      }
+
+      #status {
+      color: #336600;
+      //background-color: grey;
+      float: left;
+      width: 300px;
+
+      }
+
+      #static {
+      color: #336600;
+      //background-color: grey;
+      float: left;
+      width: 250px;
+
+      }
+
+      #dynamic {
+      color: #336600;
+      //background-color: red;
+      float: left;
+      width: 250px;
+
+      }
+
+      #payload {
+      color: #336600;
+      //background-color: blue;
+      float: left;
+      width: 400px;
+
+      }
+
+
+      #log {
+      color: #336600;
+      //background-color: yellow;
+      float: left;
+      width: 600px;
+
+      }
+
       html {
           min-height: 100%;
       }
@@ -494,6 +656,7 @@ window.onload = function(){
       $num = count($data);
 
       $nn = 0;
+      echo "<div id=\"status\">";
       echo "<table>";
       for ($ii = 0; $ii < $num; $ii++)
       {
@@ -525,6 +688,7 @@ window.onload = function(){
           echo ("</tr>");
       }
      echo "</table>";
+     echo "</div>";
    //=============================================
 //echo("<h1>GOW Device Manager $version</h1>");
 //echo("url=$sel_url topic=$sel_path format=$sel_format<br>");
@@ -564,29 +728,49 @@ if ($form_add_domain == 1)
     </form> ";
 }
 
+//  echo "<div id=\"container\">";
 if ($flag_show_static == 1)
 {
+  echo "<div id=\"static\">";
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/static.json';
-  echo ("<br>static<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+  $json   = file_get_contents($doc);
+  $result = prettyTolk( $json);
+  $id = generateForm($json);
+  //echo ("<br>static<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+  echo "</div>";
 }
 
 if ($flag_show_dynamic == 1)
 {
+    echo "<div id=\"dynamic\">";
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/dynamic.json';
-  echo ("<br>dynamic<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+  $json   = file_get_contents($doc);
+  $result = prettyTolk( $json);
+  $id = generateForm($json);
+  //echo ("<br>dynamic<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+    echo "</div>";
 }
 
 if ($flag_show_payload == 1)
 {
+    echo "<div id=\"payload\">";
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/payload.json';
-  echo ("<br>payload<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+  $json   = file_get_contents($doc);
+  $result = prettyTolk( $json);
+  $id = generateForm($json);
+  //echo ("<br>payload<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+    echo "</div>";
 }
 
 if ($flag_show_log == 1)
 {
+    echo "<div id=\"log\">";
   $doc = 'http://'.$sel_domain.'/'.$sel_device.'/log.gow';
-  echo ("<br>log<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"300\"></iframe>");
+  echo ("<br>log<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"600\"></iframe>");
+    echo "</div>";
 }
+//  echo "</div";
+
 
 echo "</body></html>";
 // End of file
