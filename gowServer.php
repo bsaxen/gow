@@ -120,12 +120,12 @@ function initLog()
 //=============================================
 {
   $f_file = $obj->topic.'/log.gow';
-  $echo "a1";
+  echo "a1";
   echo $f_file;
   $doc = fopen($f_file, "w");
   if ($doc)
   {
-        $echo "a2";
+        echo "a2";
         fwrite($doc, "$obj->sys_ts Created\n");
         fclose($doc);
   }
