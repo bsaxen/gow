@@ -12,7 +12,7 @@ if ( !file_exists($work_dir) ) {
 }
 //=============================================
 // File.......: gowDtManager.php
-// Date.......: 2019-01-03
+// Date.......: 2019-02-15
 // Author.....: Benny Saxen
 // Description:
 //=============================================
@@ -153,6 +153,10 @@ function generateTwinUI($id)
 {
   global $rank;
 
+  define("INFRASTRUCTURES", 1);
+  define("CHANNELS", 2);
+  define("ACTUATORS", 3);
+
   $filename = $id.'.twin';
   $json   = file_get_contents($filename);
 
@@ -165,26 +169,105 @@ function generateTwinUI($id)
     $jsonIterator = new RecursiveIteratorIterator(new RecursiveArrayIterator(json_decode($json, TRUE)),RecursiveIteratorIterator::SELF_FIRST);
     fwrite($file,"<html>");
 
+    $nch = 0;
+    $nin = 0;
+    $nac = 0;
     foreach ($jsonIterator as $key => $val)
     {
+      if ($key == 'id') $id = $val;
+      if ($key == 'date') $date = $val;
 
-      if ($key == 'id')fwrite($file,"<h1>Digital Twin $val</h1>");
-      if ($key == 'date')fwrite($file,"Date: $val<br>");
-      if ($key == 'measure_frequency')fwrite($file,"Frequency: $val<br>");
-      if ($key == 'protocol')fwrite($file,"Protocol: $val<br>");
-      if ($key == 'broker')fwrite($file,"Broker: $val<br>");
-
-      /*if(is_array($val))
+      $hit = 0;
+      if ($key == 'infrastructures')
       {
-          fwrite($file,"<h1>2Digital Twin $val</h1>");
+        $state = INFRASTRUCTURES;
+        $hit = 1;
       }
-      else
+      if ($key == 'channels')
       {
-          fwrite($file,"<h1>3Digital Twin $val</h1>");
-      }*/
+        $state = CHANNELS;
+        $hit = 1;
+      }
+      if ($key == 'actuators')
+      {
+        $state = ACTUATORS;
+        $hit = 1;
+      }
+      //fwrite($file,"$key : $val<br>");
+      if(is_array($val) && $hit == 0)
+      {
+          if ($state == INFRASTRUCTURES)
+          {
+            $nin++;
+            echo "IN $key <br>";
+            $infrastructure[$nin] = $key;
+          }
+          if ($state == CHANNELS)
+          {
+            $nch++;
+            echo "CH $key <br>";
+            $channel[$nch] = $key;
+          }
+          if ($state == ACTUATORS)
+          {
+            $nac++;
+            echo "AC $key <br>";
+            $actuator[$nac] = $key;
+          }
+
+
+      }
+      else if ($hit == 0)
+      {
+          echo "$state ---------$key = $val <br>";
+          if ($state == INFRASTRUCTURES)
+          {
+            if ($key == 'protocol') $protocol[$nin] = $val;
+            if ($key == 'broker')   $broker[$nin] = $val;
+            if ($key == 'port')     $port[$nin] = $val;
+          }
+          if ($state == CHANNELS)
+          {
+            if ($key == 'source')   $channel_source[$nch] = $val;
+            if ($key == 'type')     $channel_type[$nch] = $val;
+            if ($key == 'stream')   $channel_stream[$nch] = $val;
+            if ($key == 'payload')  $channel_payload[$nch] = $val;
+          }
+          if ($state == ACTUATORS)
+          {
+            if ($key == 'type')     $actuator_type[$nin] = $val;
+            if ($key == 'stream')   $actuator_stream[$nin] = $val;
+            if ($key == 'param1')   $actuator_param1[$nin] = $val;
+            if ($key == 'param2')   $actuator_param2[$nin] = $val;
+          }
+          //fwrite($file,"<h1>3Digital Twin $val</h1>");
+      }
+
 
    }
 
+   for ($ii = 1; $ii <= $nin; $ii++)
+   {
+     echo "$ii $infrastructure[$ii]<br>";
+   }
+
+   for ($ii = 1; $ii <= $nch; $ii++)
+   {
+     echo "$ii $channel[$ii]<br>";
+     for ($jj = 1; $jj <= $nin; $jj++)
+     {
+       if ($channel_source[$ii] == $infrastructure[$jj]) $match = $jj;
+     }
+     echo $match;
+     $doc = 'http://'.$broker[$match].'/'.$channel_stream[$ii].'/payload.json';
+     echo "$doc <br>";
+     fwrite($file,"<br><br><iframe id= \"ilog\" style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"600\"></iframe>");
+   }
+
+   for ($ii = 1; $ii <= $nac; $ii++)
+   {
+     echo "$ii $actuator[$ii]<br>";
+   }
 
   }
   fclose($file);
@@ -538,3 +621,4 @@ if ($flag_new_twin == 1)
 //=============================================
 echo "</body></html>";
 ?>
+
