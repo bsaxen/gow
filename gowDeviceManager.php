@@ -11,10 +11,10 @@ $flag_show_log     = $_SESSION["flag_show_log"];
 
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-02-13
+// Date.......: 2019-02-15
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
-$version = '2019-02-13';
+$version = '2019-02-15';
 //=============================================
 // Configuration
 //=============================================
@@ -29,6 +29,12 @@ $g_action     = 0;
 //=============================================
 // library
 //=============================================
+//=============================================
+function generateRandomString($length = 15)
+//=============================================
+{
+    return substr(sha1(rand()), 0, $length);
+}
 //=============================================
 function prettyTolk( $json )
 //=============================================
@@ -151,11 +157,12 @@ function addDomain ($domain)
   $fh = fopen($domain, 'w') or die("Can't add domain $domain");
 }
 //=============================================
-function restApi($api,$url,$topic)
+function restApi($api,$domain,$device)
 //=============================================
 {
-  echo("RestApi [$api] url=$url topic=$topic<br>");
-  $call = 'http://'.$url.'/gowServer.php?do='.$api.'&topic='.$topic;
+  //echo("RestApi [$api] domain=$domain device=$device<br>");
+  $call = 'http://'.$domain.'/gowServer.php?do='.$api.'&topic='.$device;
+  //echo $call;
   $res = file_get_contents($call);
 }
 
@@ -316,6 +323,10 @@ if (isset($_GET['do'])) {
     if ($what == 'device')
     {
       restApi('delete',$sel_domain,$sel_device);
+    }
+    if ($what == 'log')
+    {
+      restApi('clearlog',$sel_domain,$sel_device);
     }
   }
 
@@ -499,7 +510,11 @@ $data = array();
 //=========================================================================
 ?>
 <script type="text/javascript">
+
+
+
 window.onload = function(){
+
     var tid = setInterval(getData, 3000);
     function getData() {
         console.log("Getting  data");
@@ -639,6 +654,7 @@ window.onload = function(){
             ";
       echo "<a href=gowDeviceManager.php?do=delete&what=domain>$sel_domain</a>";
       echo "<a href=gowDeviceManager.php?do=delete&what=device>$sel_device</a>";
+      echo "<a href=gowDeviceManager.php?do=delete&what=log>clear log $sel_device</a>";
       echo "</div></div>";
 
       echo "</div>";
@@ -764,9 +780,10 @@ if ($flag_show_payload == 1)
 
 if ($flag_show_log == 1)
 {
+  $rnd = generateRandomString(3);
     echo "<div id=\"log\">";
-  $doc = 'http://'.$sel_domain.'/'.$sel_device.'/log.gow';
-  echo ("<br>log<br><iframe style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"600\"></iframe>");
+  $doc = 'http://'.$sel_domain.'/'.$sel_device.'/log.gow?ignore='.$rnd;
+  echo ("<br>log<br><iframe id= \"ilog\" style=\"background: #FFFFFF;\" src=$doc width=\"400\" height=\"600\"></iframe>");
     echo "</div>";
 }
 //  echo "</div";
