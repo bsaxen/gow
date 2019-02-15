@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-02-09
+// Date.......: 2019-02-15
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -312,6 +312,10 @@ if (isset($_GET['do']))
         $msg   = $_GET['msg'];
         $tag   = $_GET['tag'];
         writeActionFile($obj->topic, $msg, $tag);
+      }
+      if ($do == 'clearlog')
+      {
+        initLog();
       }
       if ($do == 'log')
       {
