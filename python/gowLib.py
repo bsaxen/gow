@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-11
+# Date: 2019-02-16
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -13,7 +13,18 @@ import random
 import string
 import json
 
-class datastream:
+class CommonUse:
+	STATE_OFF     = 1
+  	STATE_ON      = 2
+   	MODE_OFFLINE  = 1
+   	MODE_ONLINE   = 2
+   	r_state   = 0
+   	r_mode    = 0
+   	r_counter = 0
+   	r_stop    = 0
+   	r_errors  = 0
+
+class Datastream:
 	d_topic = ''
 	d_no = 0
 	d_dev_ts = ""
@@ -23,7 +34,7 @@ class datastream:
 	d_value = 0.0
 
 
-class configuration:
+class Configuration:
 	c_title      = 'Configuration Title'
 	c_tags       = 'tag1,tag2,tag3'
 	c_desc       = 'some_description'
