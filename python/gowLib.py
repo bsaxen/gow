@@ -13,11 +13,13 @@ import random
 import string
 import json
 
+STATE_OFF     = 1
+STATE_ON      = 2
+MODE_OFFLINE  = 1
+MODE_ONLINE   = 2
+
 class CommonUse:
-	STATE_OFF     = 1
-  	STATE_ON      = 2
-   	MODE_OFFLINE  = 1
-   	MODE_ONLINE   = 2
+
    	r_state   = 0
    	r_mode    = 0
    	r_counter = 0
