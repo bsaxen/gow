@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-16
+# Date: 2019-02-17
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -44,6 +44,7 @@ class Configuration:
 	c_server_app = 'gowServer.php'
 	c_platform   = 'python'
 	c_period     = 10.0
+	c_order      = 2
 	c_wrap       = 999999
 	c_topic1     = "topic1"
 	c_topic2     = "topic2"
@@ -92,6 +93,86 @@ class Configuration:
 	c_image_path   = 'images_dir'
 	c_image_prefix = 'some'
 	c_image_name   = 'any'
+#===================================================
+def lib_gowPublishStatic(co):
+#===================================================
+	domain = co.c_url
+	server = co.c_server_app
+	data = {}
+	# meta data
+	data['do']       = 'stat'
+	data['desc']     = co.c_desc
+	data['tags']     = co.c_tags
+	data['topic']    = co.c_topic1
+	data['wrap']     = co.c_wrap
+	data['period']   = co.c_period
+	data['platform'] = 'python'
+	data['url']      = domain
+  	data['ssid']     = 'nowifi'
+	data['action']   = co.c_order
+
+	values = urllib.urlencode(data)
+	req = 'http://' + domain + '/' + server + '?' + values
+	print req
+	try:
+		response = urllib2.urlopen(req)
+		the_page = response.read()
+		print 'Message to ' + co.c_topic1 + ': ' + the_page
+		#evaluateAction(the_page)
+	except urllib2.URLError as e:
+		print e.reason
+#===================================================
+def lib_gowPublishDynamic(co,cu,payload):
+#===================================================
+	msg = '-'
+	domain = co.c_url
+	server = co.c_server_app
+	data = {}
+	# meta data
+	data['do']       = 'dyn'
+	data['topic']    = co.c_topic1
+	data['no']       = cu.r_counter
+	data['rssi']     = 0
+	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	data['fail']     = 0
+	data['payload']    = payload
+
+	values = urllib.urlencode(data)
+	req = 'http://' + domain + '/' + server + '?' + values
+	print req
+	try:
+		response = urllib2.urlopen(req)
+		msg = response.read()
+		print 'Message to ' + co.c_topic1 + ': ' + msg
+	except urllib2.URLError as e:
+		print e.reason
+
+	return msg
+#===================================================
+def lib_gowPublishLog(co, message ):
+#===================================================
+	msg = '-'
+	domain = co.c_url
+	server = co.c_server_app
+	data = {}
+
+	data['do']       = 'log'
+	data['topic']    = co.c_topic1
+	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+	data['log']      = message
+
+	values = urllib.urlencode(data)
+	req = 'http://' + domain + '/' + server + '?' + values
+	print req
+	try:
+		response = urllib2.urlopen(req)
+		msg = response.read()
+		print 'Message to ' + co.c_topic1 + ': ' + msg
+		#evaluateAction(the_page)
+	except urllib2.URLError as e:
+		print e.reason
+
+	return msg
 
 #=====================================================
 def lib_buildUrl(uri,topic,dynstat):
