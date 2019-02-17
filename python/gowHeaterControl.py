@@ -13,7 +13,7 @@ import time
 import datetime
 from gowLib import *
 
-#======================================
+#=====================================================
 class HeaterControl:
    bias    = 0.0
    need    = 1
@@ -26,95 +26,6 @@ class HeaterControl:
 
    timeout_temperature_indoor    = 60
    timeout_temperature_outdoor   = 60
-
-#======================================
-
-#===================================================
-def gowPublishStatic(co):
-#===================================================
-	domain = co.c_url
-	server = co.c_server_app
-	data = {}
-	# meta data
-	data['do']       = 'stat'
-	data['desc']     = co.c_desc
-	data['tags']     = co.c_tags
-	data['topic']    = co.c_topic1
-	data['wrap']     = co.c_wrap
-	data['period']   = co.c_period
-	data['platform'] = 'python'
-	data['url']      = domain
-  	data['ssid']     = 'nowifi'
-	data['action']   = 2
-
-	values = urllib.urlencode(data)
-	req = 'http://' + domain + '/' + server + '?' + values
-	print req
-	try:
-		response = urllib2.urlopen(req)
-		the_page = response.read()
-		print 'Message to ' + co.c_topic1 + ': ' + the_page
-		#evaluateAction(the_page)
-	except urllib2.URLError as e:
-		print e.reason
-#===================================================
-def gowPublishDynamic(co,cu,payload):
-#===================================================
-	msg = '-'
-	domain = co.c_url
-	server = co.c_server_app
-	data = {}
-	# meta data
-	data['do']       = 'dyn'
-	data['topic']    = co.c_topic1
-	data['no']       = cu.r_counter
-	data['rssi']     = 0
-	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['fail']     = 0
-	data['payload']    = payload
-
-	values = urllib.urlencode(data)
-	req = 'http://' + domain + '/' + server + '?' + values
-	print req
-	try:
-		response = urllib2.urlopen(req)
-		msg = response.read()
-		print 'Message to ' + co.c_topic1 + ': ' + msg
-	except urllib2.URLError as e:
-		print e.reason
-
-	return msg
-#===================================================
-def gowPublishLog(co, message ):
-#===================================================
-	msg = '-'
-	domain = co.c_url
-	server = co.c_server_app
-	data = {}
-
-	data['do']       = 'log'
-	data['topic']    = co.c_topic1
-	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['log']      = message
-
-	values = urllib.urlencode(data)
-	req = 'http://' + domain + '/' + server + '?' + values
-	print req
-	try:
-		response = urllib2.urlopen(req)
-		msg = response.read()
-		print 'Message to ' + co.c_topic1 + ': ' + msg
-		#evaluateAction(the_page)
-	except urllib2.URLError as e:
-		print e.reason
-
-	return msg
-
-#=====================================================
-def gowPublishTarget(value):
-    msg = "Publish target temperature message: "+str(value)
-    print msg
-
 #=====================================================
 def heater_model(co,cu,hc):
     mintemp = float(co.c_mintemp)
@@ -134,11 +45,11 @@ def heater_model(co,cu,hc):
     ndi = 0
     if hc.temperature_outdoor == 999:
         message = "No data - temperature_outdoor"
-        gowPublishLog(co, message )
+        lib_gowPublishLog(co, message )
         ndi = ndi + 1
     if hc.temperature_indoor == 999:
         message = "No data - temperature_indoor"
-        gowPublishLog(co, message )
+        lib_gowPublishLog(co, message )
         ndi = ndi + 1
 
     if ndi > 0:
@@ -158,30 +69,30 @@ def heater_model(co,cu,hc):
     if hc.timeout_temperature_indoor < 1:
 	message = "Old data - temperature_indoor " + str(hc.timeout_temperature_indoor)
 	old_data= 1
-        gowPublishLog(co, message )
+        lib_gowPublishLog(co, message )
 
     if hc.timeout_temperature_outdoor < 1:
 	message = "Old data - temperature_outdoor " + str(hc.timeout_temperature_outdoor)
 	old_data= 1
-	gowPublishLog(co, message )
+	lib_gowPublishLog(co, message )
 
     if cu.r_mode == MODE_OFFLINE:
 	if all_data_is_available == 1 and old_data == 0:
 	    cu.r_mode = MODE_ONLINE
             message = 'MODE_ONLINE'
-	    gowPublishLog(co, message )
+	    lib_gowPublishLog(co, message )
 
     if cu.r_mode == MODE_ONLINE:
 	if old_data == 1:
 	    cu.r_mode = MODE_OFFLINE
 	    message = 'MODE_OFFLINE'
-	    gowPublishLog(co, message )
+	    lib_gowPublishLog(co, message )
 
         if cu.r_state == STATE_OFF:
             if cu.r_stop == 0:
                 cu.r_state = STATE_ON
                 message = 'STATE_ON'
-                gowPublishLog(co, message )
+                lib_gowPublishLog(co, message )
 
         if cu.r_state == STATE_ON:
             hc.need = 1
@@ -223,7 +134,7 @@ def heater_model(co,cu,hc):
     payload += '}\n'
 
     print payload
-    msg = gowPublishDynamic(co,cu,payload)
+    msg = lib_gowPublishDynamic(co,cu,payload)
 
     if ":" in msg:
 		p = msg.split(':')
@@ -258,7 +169,7 @@ ds = Datastream()
 confile = "gowheatercontrol.conf"
 print "Read configuration"
 lib_readConfiguration(confile,co)
-gowPublishStatic(co)
+lib_gowPublishStatic(co)
 
 cu.r_mode = MODE_OFFLINE
 cu.r_state = STATE_OFF
