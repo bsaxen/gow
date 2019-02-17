@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowTemperatureSensor.c
-// Date.......: 2019-02-03
+// Date.......: 2019-02-17
 // Author.....: Benny Saxen
 // Description: Signal from D1 pin.
 // 4.7kOhm between signal and Vcc
@@ -101,7 +101,8 @@ void loop()
   //Loop through results and publish
   for(int i=0;i<nsensors;i++)
   {
-      float temperature = sensor.getTempCByIndex(i);
+     //float temperature = sensor.getTempCByIndex(i);
+      float temperature = sensor.getTempC(device[i]);
       if (temperature > -100) // filter out bad values , i.e. -127
       {
         temps[i] = temperature;
