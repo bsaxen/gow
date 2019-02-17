@@ -1,7 +1,7 @@
 # =============================================
 # File: gowHeaterControl.py
 # Author: Benny Saxen
-# Date: 2019-02-16
+# Date: 2019-02-17
 # Description: IOANT heater control algorithm
 # Next Generation
 # 90 degrees <=> 1152/4 steps = 288
@@ -241,8 +241,8 @@ def heater_model(co,cu,hc):
 				cu.r_stop = 0
 		if m == 2:
 			if q[0] == 'bias':
-				hc.r_bias = float(q[1])
-				message = 'Bias: ' + str(hc.r_bias)
+				hc.bias = float(q[1])
+				message = 'Bias: ' + str(hc.bias)
 				gowPublishLog(co, message )
 
     return
