@@ -11,7 +11,7 @@ $flag_show_log     = $_SESSION["flag_show_log"];
 
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-02-15
+// Date.......: 2019-02-17
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
 $version = '2019-02-15';
