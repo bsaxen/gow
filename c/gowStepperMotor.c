@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gpwStepperMotor.c
-// Date.......: 2019-02-02
+// Date.......: 2019-02-20
 // Author.....: Benny Saxen
 // Description:
 // Message Api:
@@ -60,7 +60,7 @@ int stepCW(int steps,int dd)
 
 //================================================
 int stepCCW(int steps,int dd)
-//================================================  current_pos +=  number_of_step;
+//================================================
 
 {
   int i;
@@ -113,7 +113,6 @@ void move_stepper(int dir, int step_size, int number_of_step, int delay_between_
 //================================================
         int sw = 0;
 
-
         Serial.print( " dir=");Serial.println( dir);
         Serial.print( " step_size=");Serial.println( step_size);
         Serial.print( " steps=");Serial.println( number_of_step);
@@ -121,7 +120,7 @@ void move_stepper(int dir, int step_size, int number_of_step, int delay_between_
 
         if(step_size == FULL_STEP)
         {
-            Serial.println( "Sstepstepper FULL STEP");
+            Serial.println( "Stepstepper FULL STEP");
             digitalWrite(MS1,LOW);
             digitalWrite(MS2,LOW);
         }
@@ -218,6 +217,8 @@ void setup(void){
 
     lib_wifiBegin(c1);
     d1.counter = 0;
+  
+    String stat_url = lib_buildUrlStatic(c1);
 }
 //================================================
 void loop(void){
@@ -231,29 +232,20 @@ void loop(void){
   
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
 
-  String stat_url = lib_buildUrlStatic(c1);
   String dyn_url = lib_buildUrlDynamic(c1, d1);
 
 
-  String cur_url = " ";
-  if (d1.counter%100 == 0)
-  {
-    cur_url = stat_url;
-  }
-  else
-  {
-    cur_url = dyn_url;
-    // Add payload
-    cur_url += "&payload=";
-    cur_url += "{";
-        cur_url += "\"status";
-        cur_url += "\":\"";
-        cur_url += 1;
-        cur_url += "\"";
-    cur_url += "}";
-  }
+  cur_url = dyn_url;
+  // Add payload
+  dyn_url += "&payload=";
+  dyn_url += "{";
+  dyn_url += "\"status";
+  dyn_url += "\":\"";
+  dyn_url += 1;
+  dyn_url += "\"";
+  dyn_url += "}";
 
-  String msg = lib_wifiConnectandSend(c1, cur_url);
+  String msg = lib_wifiConnectandSend(c1, dyn_url);
 
   int res = lib_decode_STEPPER(msg);
 
