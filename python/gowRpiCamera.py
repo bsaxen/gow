@@ -1,7 +1,7 @@
 # =============================================
 # File:        gowRpiCamera.py
 # Author:      Benny Saxen
-# Date:        2019-01-31
+# Date:        2019-02-20
 # Description: application for running a picamera
 # =============================================
 import os
@@ -28,7 +28,7 @@ def take_picture(p1):
 #===================================================
 print "======== gowRpiCamera version 2019-01-31 =========="
 counter = 0
-c1 = configuration()
+c1 = Configuration()
 confile = "gowrpicamera.conf"
 print "Read configuration"
 lib_readConfiguration(confile,c1)
