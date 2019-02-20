@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-02-09
+# Date.......: 2019-02-20
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -18,8 +18,8 @@ running  = []
 # setup
 #=============================================
 print "======== gowMysql version 2019-02-01 =========="
-r1 = configuration()
-d1 = datastream()
+r1 = Configuration()
+d1 = Datastream()
 confile = 'gowmysql.conf'
 lib_readConfiguration(confile,r1)
 print "Number of datastreams: " + str(r1.c_nds)
