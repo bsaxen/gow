@@ -1,5 +1,5 @@
 //=============================================
-// File.......: gpwStepperMotor.c
+// File.......: gowStepperMotor.c
 // Date.......: 2019-02-20
 // Author.....: Benny Saxen
 // Description:
@@ -219,6 +219,7 @@ void setup(void){
     d1.counter = 0;
   
     String stat_url = lib_buildUrlStatic(c1);
+    String msg = lib_wifiConnectandSend(c1, stat_url);
 }
 //================================================
 void loop(void){
@@ -232,20 +233,18 @@ void loop(void){
   
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
 
-  String dyn_url = lib_buildUrlDynamic(c1, d1);
+  String url = lib_buildUrlDynamic(c1, d1);
 
-
-  cur_url = dyn_url;
   // Add payload
-  dyn_url += "&payload=";
-  dyn_url += "{";
-  dyn_url += "\"status";
-  dyn_url += "\":\"";
-  dyn_url += 1;
-  dyn_url += "\"";
-  dyn_url += "}";
+  url += "&payload=";
+  url += "{";
+  url += "\"position";
+  url += "\":\"";
+  url += current_pos;
+  url += "\"";
+  url += "}";
 
-  String msg = lib_wifiConnectandSend(c1, dyn_url);
+  String msg = lib_wifiConnectandSend(c1, url);
 
   int res = lib_decode_STEPPER(msg);
 
@@ -269,6 +268,9 @@ void loop(void){
   if (move == 1)
   {
    move_stepper(dir, step_size, number_of_step, delay_between_steps);
+   String msg = "Stepper moved: " + dir + " " + number_of_steps;
+   url = lib_buildUrlLog(c1,msg);
+   lib_wifiConnectandSend(c1, url);
   }
 }
 //=============================================
