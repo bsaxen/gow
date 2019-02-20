@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowLib.c
-// Date.......: 2019-02-03
+// Date.......: 2019-02-20
 // Author.....: Benny Saxen
 // Description:
 //=============================================
@@ -132,7 +132,26 @@ String lib_buildUrlDynamic(struct Configuration c2,struct Data d2)
   dyn_url += "}";*/
   return dyn_url;
 }
+//=============================================
+String lib_buildUrlLog(struct Configuration c2, char* message)
+//=============================================
+{
+  //===================================
+  String url = "/gowServer.php";
+  //===================================
+  url += "?do=log";
+
+  url += "&topic=";
+  url += c2.conf_topic;
   
+  url += "&dev_ts=";
+  url += 'void';
+  
+  url += "&log=";
+  url += message;
+
+  return url;
+}  
 //=============================================
 void lib_wifiBegin(struct Configuration c2)
 //=============================================
