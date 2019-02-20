@@ -1,7 +1,7 @@
 # ==================================================
 # File: gowTrigger.py
 # Author: Benny Saxen
-# Date: 2019-01-31
+# Date: 2019-02-20
 # Description:
 # Trigger an action or a publication
 # ==================================================
@@ -35,14 +35,14 @@ def jobDynamic():
 #===================================================
 # Setup
 #===================================================
-print "======== gowTrigger version 2019-01-30 =========="
+print "======== gowTrigger =========="
 schedule.every(10).seconds.do(jobDynamic)
 schedule.every(10).minutes.do(jobStatic)
 #schedule.every().hour.do(job)
 #schedule.every().day.at("10:30").do(job)
 #schedule.every().monday.do(job)
 #schedule.every().wednesday.at("13:15").do(job)
-c1 = configuration()
+c1 = Configuration()
 confile = "gowtrigger.conf"
 print "Read configuration"
 lib_readConfiguration(confile,c1)
