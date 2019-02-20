@@ -1,7 +1,7 @@
 # =============================================
 # File: gowHttpClient.py
 # Author: Benny Saxen
-# Date: 2019-02-09
+# Date: 2019-02-20
 # Description:
 # =============================================
 from gowLib import *
@@ -9,8 +9,8 @@ from gowLib import *
 # Setup
 #===================================================
 print "======== gowHttpClient version 2019-02-07 =========="
-c1 = configuration()
-d1 = datastream()
+c1 = Configuration()
+d1 = Datastream()
 action = 2
 confile = "gowhttpclient.conf"
 print "Read configuration"
