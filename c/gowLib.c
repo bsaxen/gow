@@ -58,10 +58,9 @@ int lib_decode_STEPPER(String msg)
   char buf[100];
   int result = 0;
 
-  msg.toCharArray(buf,100);
-
-  Serial.println(buf);
-
+  //msg.toCharArray(buf,100);
+  //Serial.println(buf);
+  result = msg.toInt();
 
   return result;
 }
