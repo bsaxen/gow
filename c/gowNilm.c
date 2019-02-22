@@ -37,7 +37,7 @@ void ICACHE_RAM_ATTR measure(){
         digitalWrite(led_pin,LOW);
         return;
     }
-    elpow = 3600.*1000.*1000./(electric_meter_pulses*dt);
+    elpow = 3600.*1000.*1000./(c1.conf_em_pulses*dt);
     interrupt_counter++;
     //digitalWrite(led_pin,LOW);
 }
@@ -57,8 +57,9 @@ void setup(){
     c1.conf_host       = "192.168.1.242";
     c1.conf_streamId   = "....................";
     c1.conf_privateKey = "....................";
+    c1.conf_em_pulses  = 1000;
     
-    bounce_value = 36000./electric_meter_pulses; // based on max power = 100 000 Watt
+    bounce_value = 36000./c1.conf_em_pulses; // based on max power = 100 000 Watt
 
     pinMode(interrupt_pin, INPUT_PULLUP);
     pinMode(led_pin, OUTPUT);
@@ -80,12 +81,21 @@ void loop()
     // Add payload
     dyn_url += "&payload=";
     dyn_url += "{";
+    
     dyn_url += "\"elpow";
     dyn_url += "\":\"";
     dyn_url += elpow;
+    dyn_url += "\",";
+    
+    dyn_url += "\"pulses";
+    dyn_url += "\":\"";
+    dyn_url += interrupt_counter;
     dyn_url += "\"";
+    
     dyn_url += "}";
   
+    interrupt_counter = 0;
+    
     String msg = lib_wifiConnectandSend(c1, dyn_url);
     delay(c1.conf_period*1000);
 }
