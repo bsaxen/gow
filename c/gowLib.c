@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowLib.c
-// Date.......: 2019-02-20
+// Date.......: 2019-02-22
 // Author.....: Benny Saxen
 // Description:
 //=============================================
@@ -21,6 +21,7 @@ struct Configuration
   String conf_host       = "gow.qwe.com";
   String conf_streamId   = "....................";
   String conf_privateKey = "....................";
+  int electric_meter_pulses = 1000;
 };
 
 struct Data
