@@ -57,17 +57,22 @@ void setup(){
     c1.conf_host       = "192.168.1.242";
     c1.conf_streamId   = "....................";
     c1.conf_privateKey = "....................";
-    c1.conf_em_pulses  = 1000;
+    c1.conf_em_pulses  = 1000; //1000 pulses/kWh
     
     bounce_value = 36000./c1.conf_em_pulses; // based on max power = 100 000 Watt
 
     pinMode(interrupt_pin, INPUT_PULLUP);
     pinMode(led_pin, OUTPUT);
     digitalWrite(led_pin,LOW);
-    attachInterrupt(interrupt_pin, measure, FALLING);
+
     lib_wifiBegin(c1);
     d1.counter = 0;
     String stat_url = lib_buildUrlStatic(c1);
+    String not_used = lib_wifiConnectandSend(c1,d1, stat_url);
+    String log_url   = lib_buildUrlLog(c1, "Nilm");
+    not_used = lib_wifiConnectandSend(c1,d1, log_url);
+
+    attachInterrupt(interrupt_pin, measure, FALLING);
 }
 //=============================================
 void loop()
@@ -96,7 +101,7 @@ void loop()
   
     interrupt_counter = 0;
     
-    String msg = lib_wifiConnectandSend(c1, dyn_url);
+    String msg = lib_wifiConnectandSend(c1,d1, dyn_url);
     delay(c1.conf_period*1000);
 }
 //=============================================
