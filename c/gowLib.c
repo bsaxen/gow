@@ -21,7 +21,7 @@ struct Configuration
   String conf_host       = "gow.qwe.com";
   String conf_streamId   = "....................";
   String conf_privateKey = "....................";
-  int electric_meter_pulses = 1000;
+  int conf_em_pulses = 1000;
 };
 
 struct Data
