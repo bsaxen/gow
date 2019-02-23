@@ -1,9 +1,9 @@
 # =============================================
 # File: gowHeaterTwin.py
 # Author: Benny Saxen
-# Date: 2019-02-17
-# Description: IDigital Twin of Pellets Heater
-# 
+# Date: 2019-02-21
+# Description: Digital Twin of Pellets Heater
+#
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
 import math
@@ -18,7 +18,7 @@ class Twin:
    r_inertia = 0
    r_onoff   = 0
    r_target  = 999
-	
+
 
    temperature_water_in  = 0.0
    temperature_water_out = 0.0
@@ -39,7 +39,7 @@ cu = CommonUse()
 
 
 #=====================================================
-def heater_model(p1):	
+def heater_model(p1):
 
 	if p1.r_onoff < p1.g_onoff:
 		publishOnOff(p1.r_onoff)
@@ -108,14 +108,14 @@ def heater_model(p1):
 
 	if p1.r_mode == p1.MODE_OFFLINE:
 		if all_data_is_available == 1 and old_data == 0:
-			p1.r_mode = p1.MODE_ONLINE
+			cu.r_mode = p1.MODE_ONLINE
 			write_log("MODE_OFFLINE -> MODE_ONLINE")
-			p1.r_inertia = p1.g_inertia
+			tw.r_inertia = p1.g_inertia
 			message = 'MODE_ONLINE'
 			gow_publishLog(p1, message )
 	if p1.r_mode == p1.MODE_ONLINE:
 		if old_data == 1:
-			p1.r_mode = p1.MODE_OFFLINE
+			cu.r_mode = p1.MODE_OFFLINE
 			write_log("MODE_ONLINE -> MODE_OFFLINE")
 			message = 'MODE_OFFLINE'
 			gow_publishLog(p1, message )
@@ -156,15 +156,14 @@ def heater_model(p1):
 				gow_publishLog(p1, message )
 			if p1.temperature_indoor > 20: # no warming above 20
 				action += 4
-			
-			y = 
 
-    			url = 'http://' + co.c_ds_uri[0] + '/' + co.c_ds_topic[0] + '/payload.json'
-    			print url
-    			tw.r_target = lib_readJsonPayload(url,'target')
-    			print tw.r_target
 
-			tmp1 = y*p1.g_relax
+    		url = 'http://' + co.c_ds_uri[0] + '/' + co.c_ds_topic[0] + '/payload.json'
+    		print url
+    		tw.r_target = lib_readJsonPayload(url,'target')
+    		print tw.r_target
+
+			tmp1 = tw.r_target*p1.g_relax
 			tmp2 = p1.temperature_water_out*p1.g_relax
 			tmp3 = tmp1 - tmp2
 			steps = round(tmp3)
@@ -194,9 +193,9 @@ def heater_model(p1):
 				steps = p1.g_maxsteps
 			if steps < -p1.g_maxsteps:
 				steps = -p1.g_maxsteps
-				
+
 			#show_action_bit_info(action)
-			
+
 			if action == 0 and p1.r_stop == 0:
 				steps = abs(steps)
 				publishStepperMsg(int(steps), direction)
@@ -208,24 +207,18 @@ def heater_model(p1):
 	show_state_mode(p1)
    	if energy < 999:
 		publishEnergyMsg(energy)
-		
+
 	# Current Configuration
 	payload  = '{\n'
-	payload += '"mintemp" : "' + str(p1.g_mintemp) + '",\n'
-	payload += '"maxtemp" : "' + str(p1.g_maxtemp) + '",\n'
-	payload += '"minheat" : "' + str(p1.g_minheat) + '",\n'
-	payload += '"maxheat" : "' + str(p1.g_maxheat) + '",\n'
-	payload += '"x_0" : "' + str(p1.g_x_0) + '",\n'
-	payload += '"y_0" : "' + str(p1.g_y_0) + '",\n'
 	payload += '"relax" : "' + str(p1.g_relax) + '",\n'
 	payload += '"minsmoke" : "' + str(p1.g_minsmoke) + '",\n'
 	payload += '"minsteps" : "' + str(p1.g_minsteps) + '",\n'
 	payload += '"maxsteps" : "' + str(p1.g_maxsteps) + '",\n'
 	payload += '"maxenergy" : "' + str(p1.g_maxenergy) + '",\n'
-	
+
 	payload += '"flags" : "' + str(action) + '",\n'
 	payload += '"steps" : "' + str(steps) + '",\n'
-	payload += '"target" : "' + str(y) + '",\n'
+	payload += '"target" : "' + str(p1.r1_target) + '",\n'
 	payload += '"mode" : "' + str(p1.r_mode) + '",\n'
 	payload += '"state" : "' + str(p1.r_state) + '",\n'
 	payload += '"inertia" : "' + str(p1.g_inertia) + '",\n'
@@ -233,14 +226,12 @@ def heater_model(p1):
 	payload += '"onoff" : "' + str(p1.r_onoff) + '",\n'
 	payload += '"errors" : "' + str(p1.r_errors) + '",\n'
 	payload += '"stop" : "' + str(p1.r_stop) + '",\n'
-	payload += '"bias" : "' + str(p1.r_bias) + '",\n'
-	payload += '"temperature_outdoor" : "' + str(p1.temperature_outdoor) + '",\n'
 	payload += '"temperature_water_out" : "' + str(p1.temperature_water_out) + '",\n'
 	payload += '"temperature_water_in" : "' + str(p1.temperature_water_in) + '",\n'
 	payload += '"temperature_smoke" : "' + str(p1.temperature_smoke) + '"\n'
 	payload += '}\n'
-	msg = publishGowDynamic(p1,payload)
-	# STEPPER,<direcion>,<steps>
+	msg = lib_gowPublishDynamic(p1,payload)
+
 	if ":" in msg:
 		p = msg.split(':')
 		#print p[1]
@@ -259,12 +250,12 @@ def heater_model(p1):
 			if q[0] == 'bias':
 				p1.r_bias = float(q[1])
 				message = 'Bias: ' + str(p1.r_bias)
-				gow_publishLog(p1, message )	
+				gow_publishLog(p1, message )
 
 			if q[0] == 'inertia':
 				p1.g_inertia = float(q[1])
 				message = 'Inertia: ' + str(p1.r_bias)
-				gow_publishLog(p1, message )	
+				gow_publishLog(p1, message )
 
 			if q[0] == 'onoff':
 				p1.g_onoff = float(q[1])
@@ -274,23 +265,27 @@ def heater_model(p1):
 			if q[0] == 'minsmoke':
 				p1.g_minsmoke = float(q[1])
 				message = 'minsmoke: ' + str(p1.g_minsmoke)
-				gow_publishLog(p1, message )	
+				gow_publishLog(p1, message )
 
 			if q[0] == 'minsteps':
 				p1.g_minsteps = float(q[1])
 				message = 'minsteps: ' + str(p1.g_minsteps)
-				gow_publishLog(p1, message )	
+				gow_publishLog(p1, message )
 
 			if q[0] == 'maxsteps':
 				p1.g_maxsteps = float(q[1])
 				message = 'maxsteps: ' + str(p1.g_maxsteps)
-				gow_publishLog(p1, message )	
+				gow_publishLog(p1, message )
 
 			if q[0] == 'maxenergy':
 				p1.g_maxenergy = float(q[1])
 				message = 'maxenergy: ' + str(p1.g_maxenergy)
-				gow_publishLog(p1, message )	
-				
+				gow_publishLog(p1, message )
+			if q[0] == 'target':
+				p1.r_target = float(q[1])
+				message = 'target: ' + str(p1.r_target)
+				gow_publishLog(p1, message )
+
 		if m == 3:
 			direction = CLOCKWISE
 			steps = int(q[2])
@@ -336,7 +331,7 @@ def subscribe_to_topic(par,msgt):
     return shash
 #=====================================================
 def find_extreme(p1):
-	t = datetime.datetime.now() 
+	t = datetime.datetime.now()
 	print "min-max: " + str(p1.v1) + " " + str(p1.v2) + " " + str(p1.v3)
 	if p1.v1 > p1.v2 and p1.v2 > p1.v3:
 		print "values falling"
@@ -353,7 +348,7 @@ def find_extreme(p1):
 		f = d.seconds
 		p1.tmax = t
 		#publishFrequence(f)
-		publishExtreme(2)	
+		publishExtreme(2)
 #=====================================================
 def setup(configuration):
 	global s1
@@ -362,20 +357,20 @@ def setup(configuration):
 	s1.v2 = 30.0
 	s1.v3 = 30.0
 
-	s1.tmin = datetime.datetime.now() 
-	s1.tmax = datetime.datetime.now() 
+	s1.tmin = datetime.datetime.now()
+	s1.tmax = datetime.datetime.now()
 
 	s1.r_counter = 0
 	s1.r_errors = 0
 	s1.r_bias = 0.0
-	
+
 	s1.STATE_INIT = 0
 	s1.STATE_OFF = 1
 	s1.STATE_WARMING = 2
 	s1.STATE_ON = 3
 	s1.MODE_OFFLINE = 1
 	s1.MODE_ONLINE = 2
-	
+
 	s1.g_minsteps = 5
 	s1.g_maxsteps = 30
 	s1.g_minsmoke = 27
@@ -383,7 +378,7 @@ def setup(configuration):
 	s1.g_maxtemp = 10
 	s1.g_minheat = 20
 	s1.g_maxheat = 40
-	
+
 	s1.g_x_0 = 0
 	s1.g_y_0 = 35
 	s1.g_relax = 3.0
@@ -403,7 +398,7 @@ def setup(configuration):
 	s1.timeout_temperature_water_in = 60
 	s1.timeout_temperature_water_out = 60
 	s1.timeout_temperature_smoke = 60
-	
+
 	ioant.setup(configuration)
 	configuration = ioant.get_configuration()
 	tempv   = int(configuration["ioant"]["communication_delay"])
@@ -441,7 +436,7 @@ def loop():
     s1.r_counter += 1
     if s1.r_counter > 999999:
 	s1.r_counter = 0
-    
+
     mtemp = s1.r_counter % 5
     if mtemp == 0:
 	heater_model(s1)
