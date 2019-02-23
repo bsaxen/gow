@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-17
+# Date: 2019-02-23
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -173,10 +173,17 @@ def lib_gowPublishLog(co, message ):
 		print e.reason
 
 	return msg
+#===================================================
+def lib_gowCreateUrl(domain,device):
+#===================================================
+	url = 'http://' + domain + '/' + device + '/'
+	print url
+	
+	return url
 
 #=====================================================
-def lib_buildUrl(uri,topic,dynstat):
-	url =  'http://' + uri + '/' + topic + '/' + dynstat +'.json'
+def lib_buildUrl(uri,device,dynstat):
+	url =  'http://' + uri + '/' + device + '/' + dynstat +'.json'
 	return url
 #=====================================================
 def lib_init_history(fname):
@@ -206,10 +213,17 @@ def lib_log(application,message):
 	lib_writeFile('gow.log',msg,1)
 	return
 #=====================================================
-def lib_getDeviceStatus(domain,device):
-	print domain
-	print device
-	status = 1
+def lib_getDeviceStatus(ds,domain,device):
+	
+	url = lib_gowCreateUrl(domain,device)
+	nu = datetime.datetime.now()
+        then = lib_consumeDatastream(ds,url,'sys_ts'):
+        period = lib_consumeDatastream(ds,url,'period'):
+	res = (nu-then).seconds
+	if res <= period:
+		status = 0
+	else:
+		status = res
 	return status
 #=====================================================
 def lib_listDomainDevices(domain):
