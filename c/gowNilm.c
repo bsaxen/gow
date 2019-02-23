@@ -19,7 +19,6 @@ int timeToCheckStatus    = 0;
 unsigned long t1,t2,dt,ttemp;
 float elpow               = 0.0;
 int interrupt_counter     = 0;
-int electric_meter_pulses = 1000;  //1000 pulses/kWh
 int bounce_value          = 50; // minimum time between interrupts
 //===============================================================
 // Interrupt function for measuring the time between pulses and number of pulses
