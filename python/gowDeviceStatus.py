@@ -17,25 +17,27 @@ running  = []
 #=============================================
 # setup
 #=============================================
-r1 = configuration()
-d1 = datastream()
+c1 = Configuration()
+d1 = Datastream()
 confile = 'gowdevicestatus.conf'
-lib_readConfiguration(confile,r1)
+lib_readConfiguration(confile,c1)
 
-domain = r1.c_uri[0]
+domain = c1.c_url
 
-no_devices = lib_noDomainDevices(domain)
+
 device_list = lib_listDomainDevices(domain)
-
+no_devices = len(device_list) - 1
 print "Number of devices: " + str(no_devices)
 
 max_period = 0
-for num in range(1,no_devices):
+for num in range(0,no_devices):
     url_static  = lib_buildUrl(domain,device_list[num],'static')
     url_dynamic = lib_buildUrl(domain,device_list[num],'dynamic')
     url_payload = lib_buildUrl(domain,device_list[num],'payload')
 
+
     period = float(lib_readJsonMeta(url_static,'period'))
+    print num
     print period
     desc = lib_readJsonMeta(url_static,'desc')
     print desc
@@ -62,16 +64,17 @@ while True:
     #print "sleep " + str(1)
     time.sleep(1)
 
-    for num in range(1,n_devices):
-        url_static  = lib_buildUrl(domain,device_list[num],'static')
-        url_dynamic = lib_buildUrl(domain,device_list[num],'dynamic')
-        url_payload = lib_buildUrl(domain,device_list[num],'payload') 
-        
+    for num in range(0,no_devices):
+
+
         work[num] -= 1
-        #print str(num) + " " + str(work[num])
+        print str(num) + " " + str(work[num])
         if work[num] == 0:
+            url_static  = lib_buildUrl(domain,device_list[num],'static')
+            url_dynamic = lib_buildUrl(domain,device_list[num],'dynamic')
+            url_payload = lib_buildUrl(domain,device_list[num],'payload')
             work[num] = schedule[num]
-            
+
             period = float(lib_readJsonMeta(url_static,'period'))
             print period
             desc = lib_readJsonMeta(url_static,'desc')

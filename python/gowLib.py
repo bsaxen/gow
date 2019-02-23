@@ -32,7 +32,7 @@ class Datastream:
 	d_dev_ts = ""
 	d_sys_ts = ""
 	d_wifi_ss = 0
-	
+
 	d_value = 0.0
 
 
@@ -178,13 +178,14 @@ def lib_gowCreateUrl(domain,device):
 #===================================================
 	url = 'http://' + domain + '/' + device + '/'
 	print url
-	
+
 	return url
 
 #=====================================================
 def lib_buildUrl(uri,device,dynstat):
-	url =  'http://' + uri + '/' + device + '/' + dynstat +'.json'
-	return url
+    url =  'http://' + uri + '/' + device + '/' + dynstat +'.json'
+    print url
+    return url
 #=====================================================
 def lib_init_history(fname):
     try:
@@ -214,11 +215,11 @@ def lib_log(application,message):
 	return
 #=====================================================
 def lib_getDeviceStatus(ds,domain,device):
-	
+
 	url = lib_gowCreateUrl(domain,device)
 	nu = datetime.datetime.now()
-        then = lib_consumeDatastream(ds,url,'sys_ts'):
-        period = lib_consumeDatastream(ds,url,'period'):
+        then = lib_consumeDatastream(ds,url,'sys_ts')
+        period = lib_consumeDatastream(ds,url,'period')
 	res = (nu-then).seconds
 	if res <= period:
 		status = 0
@@ -227,9 +228,16 @@ def lib_getDeviceStatus(ds,domain,device):
 	return status
 #=====================================================
 def lib_listDomainDevices(domain):
-	print domain
-	devlist = 1
-	return devlist
+    url = 'http://' + domain + '/gowServer.php?do='+ 'list_topics'
+    print url
+    response = urllib2.urlopen(url)
+    the_page = response.read()
+    the_page = the_page.replace('.reg','')
+    the_page = the_page.replace('_','/')
+    list = the_page.split(':')
+    print domain
+    print the_page
+    return list
 #===================================================
 def lib_common_action(c1,order):
 	if ":" in order:
