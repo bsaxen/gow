@@ -18,17 +18,14 @@ status   = []
 #=============================================
 # setup
 #=============================================
-c1 = Configuration()
-d1 = Datastream()
-cu = ModuleDynamic()
 
 confile = 'gowdevicestatus.conf'
-lib_readConfiguration(confile,c1)
+lib_readConfiguration(confile,co)
+lib_gowPublishStatic(co)
 
-domain = c1.mydomain
+domain = co.mydomain
 
-lib_gowPublishStatic(c1)
-lib_gowPublishDynamic(c1,cu,'{}')
+lib_gowPublishDynamic(co,md,'{}')
 
 device_list = lib_listDomainDevices(domain)
 no_devices = len(device_list) - 1
@@ -59,29 +56,25 @@ for num in range(0,no_devices):
 now = datetime.datetime.now()#.strftime("%Y-%m-%d %H:%M:%S")
 time.sleep(3)
 total_duration = 0
-cu.mycounter = 0
-report_freq = int(c1.myperiod)
+md.mycounter = 0
+report_freq = int(co.myperiod)
 
 while True:
     then = now
     now = datetime.datetime.now()#.strftime("%Y-%m-%d %H:%M:%S")
-    #print now
-    duration = now - then                         # For build-in functions
+    duration = now - then
     duration_in_s = duration.total_seconds()
-    #print duration_in_s
     total_duration += duration_in_s
-    #print total_duration
-    #print "sleep " + str(1)
     time.sleep(1)
-    cu.mycounter += 1
-    if cu.mycounter%report_freq == 0:
+    md.mycounter += 1
+    if md.mycounter%report_freq == 0:
         payload = '{'
         for num in range(0,no_devices-2):
             payload += '\"' + device_list[num] + '\" :' + '\"' + str(status[num]) +'\",'
         payload += '\"' + device_list[no_devices-1] + '\" :' + '\"' + str(status[no_devices-1]) +'\"'
         payload += '}'
         print payload
-        lib_gowPublishDynamic(c1,cu,payload)
+        lib_gowPublishDynamic(co,md,payload)
     for num in range(0,no_devices):
         work[num] -= 1
         print str(num) + " www " + str(work[num])

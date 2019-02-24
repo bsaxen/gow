@@ -56,11 +56,11 @@ function saveStaticData($obj)
         fwrite($doc, "   \"sys_ts\":   \"$obj->sys_ts\",\n");
         fwrite($doc, "   \"desc\":     \"$obj->desc\",\n");
         fwrite($doc, "   \"tags\":     \"$obj->tags\",\n");
-        fwrite($doc, "   \"action\":   \"$obj->action\",\n");
+        fwrite($doc, "   \"feedback\": \"$obj->feedback\",\n");
         fwrite($doc, "   \"topic\":    \"$obj->topic\",\n");
         fwrite($doc, "   \"wrap\":     \"$obj->wrap\",\n");
         fwrite($doc, "   \"period\":   \"$obj->period\",\n");
-        fwrite($doc, "   \"url\":      \"$obj->url\",\n");
+        fwrite($doc, "   \"domain\":   \"$obj->domain\",\n");
         fwrite($doc, "   \"platform\": \"$obj->platform\",\n");
         fwrite($doc, "   \"ssid\":     \"$obj->ssid\"\n");
         fwrite($doc, "}}\n ");

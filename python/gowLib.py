@@ -44,7 +44,7 @@ class Configuration:
 	myserver     = 'gowServer.php'
 	myplatform   = 'python'
 	myperiod     = 10
-	myfeedback   = 2
+	myfeedback   = 1
 	mywrap       = 999999
 	mytopic      = "benny/saxen/0"
 
@@ -82,11 +82,19 @@ class Configuration:
 	image_path   = 'images_dir'
 	image_prefix = 'some'
 	image_name   = 'any'
+
+
+co = Configuration()
+ds = Datastream()
+md = ModuleDynamic()
+
 #===================================================
 def lib_gowPublishStatic(co):
 #===================================================
+
 	domain = co.mydomain
 	server = co.myserver
+	co.mycounter = 0
 	data = {}
 	# meta data
 	data['do']       = 'stat'
@@ -262,23 +270,25 @@ def lib_readConfiguration(confile,c1):
 			if line[0] != '#':
 				word = line.split()
 				if word[0] == 'c_title':
-					c1.mytitle         = word[1]
+					c1.mytitle            = word[1]
 				if word[0] == 'c_tags':
-					c1.mytags         = word[1]
+					c1.mytags             = word[1]
 				if word[0] == 'c_desc':
-					c1.mydesc         = word[1]
+					c1.mydesc             = word[1]
 				if word[0] == 'c_domain':
-					c1.mydomain         = word[1]
+					c1.mydomain           = word[1]
 				if word[0] == 'c_server':
-					c1.myserver     = word[1]
+					c1.myserver           = word[1]
 				if word[0] == 'c_period':
-					c1.myperiod         = word[1]
+					c1.myperiod           = word[1]
 				if word[0] == 'c_platfrom':
 					c1.myplatform         = word[1]
 				if word[0] == 'c_wrap':
-					c1.mywrap           = word[1]
+					c1.mywrap             = word[1]
 				if word[0] == 'c_topic':
-					c1.mytopic         = word[1]
+					c1.mytopic            = word[1]
+				if word[0] == 'c_feedback':
+					c1.myfeedback         = word[1]
 
 				# Heater algorithm
 				if word[0] == 'c_mintemp':
@@ -340,7 +350,7 @@ def lib_readConfiguration(confile,c1):
 	except:
 		fh = open(confile, 'w')
 		fh.write('c_title     title\n')
-		fh.write('c_domain  gow.simuino.com\n')
+		fh.write('c_domain    gow.simuino.com\n')
 		fh.write('c_tags      tag\n')
 		fh.write('c_desc      some\n')
 		fh.write('c_server    gowServer.php\n')
@@ -348,6 +358,7 @@ def lib_readConfiguration(confile,c1):
 		fh.write('c_platform  python\n')
 		fh.write('c_wrap      999999\n')
 		fh.write('c_topic     benny/saxen/0\n')
+		fh.write('c_feedback  1\n')
 
 		fh.write('c_mintemp      -7\n')
 		fh.write('c_maxtemp      15\n')
