@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-02-15
+// Date.......: 2019-02-24
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -10,7 +10,7 @@
 // Library
 class gowDoc {
     public $sys_ts;
-    
+
     public $action;
     public $topic;
     public $wrap;
@@ -20,7 +20,7 @@ class gowDoc {
     public $ssid;
     public $tags;
     public $desc;
-    
+
     public $no;
     public $dev_ts;
     public $rssi;
@@ -307,7 +307,7 @@ if (isset($_GET['do']))
     // API when topic is available
     if($error == 0)
     {
-      if ($do == 'order')
+      if ($do == 'feedback')
       {
         $msg   = $_GET['msg'];
         $tag   = $_GET['tag'];
@@ -326,11 +326,11 @@ if (isset($_GET['do']))
       {
         deleteTopic($obj->topic);
       }
-      
- 
+
+
       if ($do == 'stat')
       {
-  
+
         if (isset($_GET['wrap'])) {
           $obj->wrap = $_GET['wrap'];
         }
@@ -359,7 +359,7 @@ if (isset($_GET['do']))
         if (isset($_GET['period'])) {
           $obj->period = $_GET['period'];
         }
-        
+
         saveStaticData($obj);
         echo readActionFileList($obj->topic);
 
@@ -368,7 +368,7 @@ if (isset($_GET['do']))
 
       if ($do == 'dyn')
       {
-  
+
         if (isset($_GET['no'])) {
           $obj->no = $_GET['no'];
         }

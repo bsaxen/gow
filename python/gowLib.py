@@ -18,98 +18,87 @@ STATE_ON      = 2
 MODE_OFFLINE  = 1
 MODE_ONLINE   = 2
 
-class CommonUse:
-
-   	r_state   = 0
-   	r_mode    = 0
-   	r_counter = 0
-   	r_stop    = 0
-   	r_errors  = 0
-
 class Datastream:
-	d_topic = ''
-	d_no = 0
-	d_dev_ts = ""
-	d_sys_ts = ""
-	d_wifi_ss = 0
+	topic = 'som/wq'
+	no = 0
+	period = 0
+	dev_ts = ""
+	sys_ts = ""
+	wifi_ss = 0
+	value = 0.0
 
-	d_value = 0.0
-
+class ModuleDynamic:
+   	mystate   = 0
+   	mymode    = 0
+   	mycounter = 0
+   	mystop    = 0
+   	myerrors  = 0
+	mydev_ts = ""
+	mywifi_ss = 0
 
 class Configuration:
-	c_title      = 'Configuration Title'
-	c_tags       = 'tag1,tag2,tag3'
-	c_desc       = 'some_description'
-	c_url        = 'gow.simuino.com'
-	c_server_app = 'gowServer.php'
-	c_platform   = 'python'
-	c_period     = 10.0
-	c_order      = 2
-	c_wrap       = 999999
-	c_topic1     = "topic1"
-	c_topic2     = "topic2"
-	c_topic3     = "topic3"
-	c_topic4     = "topic4"
-	c_action1    = "action1"
-	c_action2    = "action2"
-	c_action3    = "action3"
-	c_action4    = "action4"
-	c_payload1   = "{}"
-	c_payload2   = "{}"
-	c_payload3   = "{}"
-	c_payload4   = "{}"
+	mytitle      = 'title'
+	mytags       = 'tag'
+	mydesc       = 'some'
+	mydomain     = 'gow.simuino.com'
+	myserver     = 'gowServer.php'
+	myplatform   = 'python'
+	myperiod     = 10
+	myfeedback   = 2
+	mywrap       = 999999
+	mytopic      = "benny/saxen/0"
 
 	# Heater algorithm
-	c_mintemp = 0.0
-   	c_maxtemp = 0.0
-   	c_minheat = 0.0
-   	c_maxheat = 0.0
-   	c_x_0     = 0.0
-   	c_y_0     = 0.0
-   	c_relax   = 4.0
-	c_minsmoke = 0.0
-   	c_minsteps  = 0
-   	c_maxsteps  = 0
-   	c_defsteps  = 0
-   	c_maxenergy = 0
+	mintemp = 0.0
+   	maxtemp = 0.0
+   	minheat = 0.0
+   	maxheat = 0.0
+   	x_0     = 0.0
+   	y_0     = 0.0
+   	relax   = 4.0
+	minsmoke = 0.0
+   	minsteps  = 0
+   	maxsteps  = 0
+   	defsteps  = 0
+   	maxenergy = 0
 
 	# database access
-	c_dbhost     = '192.168.1.85'
-	c_dbname     = 'gow'
-	c_dbuser     = 'myuser'
-	c_dbpassword = 'mypswd'
+	dbhost     = '192.168.1.85'
+	dbname     = 'gow'
+	dbuser     = 'myuser'
+	dbpassword = 'mypswd'
 
 	# datastreams subscriptions
-	c_ds_uri = []
-	c_ds_topic = []
+	ds_uri = []
+	ds_topic = []
 	# Database tables and parameters
-	c_ds_table = []
-	c_ds_param = []
-	c_nds = 0
+	ds_table = []
+	ds_param = []
+	nds = 0
 
 	# Image
-	c_image_user   = 'folke'
-	c_image_url    = 'gow.test.com'
-	c_image_path   = 'images_dir'
-	c_image_prefix = 'some'
-	c_image_name   = 'any'
+	image_user   = 'folke'
+	image_url    = 'gow.test.com'
+	image_path   = 'images_dir'
+	image_prefix = 'some'
+	image_name   = 'any'
 #===================================================
 def lib_gowPublishStatic(co):
 #===================================================
-	domain = co.c_url
-	server = co.c_server_app
+	domain = co.mydomain
+	server = co.myserver
 	data = {}
 	# meta data
 	data['do']       = 'stat'
-	data['desc']     = co.c_desc
-	data['tags']     = co.c_tags
-	data['topic']    = co.c_topic1
-	data['wrap']     = co.c_wrap
-	data['period']   = co.c_period
+	data['desc']     = co.mydesc
+	data['tags']     = co.mytags
+	data['topic']    = co.mytopic
+	data['wrap']     = co.mywrap
+	data['period']   = co.myperiod
 	data['platform'] = 'python'
-	data['url']      = domain
+	data['url']      = co.mydomain
   	data['ssid']     = 'nowifi'
-	data['action']   = co.c_order
+	data['action']   = co.myfeedback
 
 	values = urllib.urlencode(data)
 	req = 'http://' + domain + '/' + server + '?' + values
@@ -117,21 +106,21 @@ def lib_gowPublishStatic(co):
 	try:
 		response = urllib2.urlopen(req)
 		the_page = response.read()
-		print 'Message to ' + co.c_topic1 + ': ' + the_page
+		print 'Message to ' + co.mytopic + ': ' + the_page
 		#evaluateAction(the_page)
 	except urllib2.URLError as e:
 		print e.reason
 #===================================================
-def lib_gowPublishDynamic(co,cu,payload):
+def lib_gowPublishDynamic(co,md,payload):
 #===================================================
 	msg = '-'
-	domain = co.c_url
-	server = co.c_server_app
+	domain = co.mydomain
+	server = co.myserver
 	data = {}
 	# meta data
 	data['do']       = 'dyn'
-	data['topic']    = co.c_topic1
-	data['no']       = cu.r_counter
+	data['topic']    = co.mytopic
+	data['no']       = md.mycounter
 	data['rssi']     = 0
 	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['fail']     = 0
@@ -143,7 +132,7 @@ def lib_gowPublishDynamic(co,cu,payload):
 	try:
 		response = urllib2.urlopen(req)
 		msg = response.read()
-		print 'Message to ' + co.c_topic1 + ': ' + msg
+		print 'Message to ' + co.mytopic + ': ' + msg
 	except urllib2.URLError as e:
 		print e.reason
 
@@ -152,12 +141,12 @@ def lib_gowPublishDynamic(co,cu,payload):
 def lib_gowPublishLog(co, message ):
 #===================================================
 	msg = '-'
-	domain = co.c_url
-	server = co.c_server_app
+	domain = co.mydomain
+	server = co.myserver
 	data = {}
 
 	data['do']       = 'log'
-	data['topic']    = co.c_topic1
+	data['topic']    = co.mytopic
 	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['log']      = message
 
@@ -167,7 +156,7 @@ def lib_gowPublishLog(co, message ):
 	try:
 		response = urllib2.urlopen(req)
 		msg = response.read()
-		print 'Message to ' + co.c_topic1 + ': ' + msg
+		print 'Message to ' + co.mytopic + ': ' + msg
 		#evaluateAction(the_page)
 	except urllib2.URLError as e:
 		print e.reason
@@ -239,9 +228,9 @@ def lib_listDomainDevices(domain):
     print the_page
     return list
 #===================================================
-def lib_common_action(c1,order):
-	if ":" in order:
-		p = order.split(':')
+def lib_common_action(c1,feedback):
+	if ":" in feedback:
+		p = feedback.split(':')
 		q = p[1].split(",")
 		m = len(q)
 		if m == 1:
@@ -249,13 +238,13 @@ def lib_common_action(c1,order):
 				print 'test1'
 		if m == 2:
 			if q[0] == 'period':
-				c1.c_period = q[1]
-			if q[0] == 'action':
-				c1.c_action = q[1]
-			if q[0] == 'topic':
-				c1.c_topic1 = q[1]
+				c1.myperiod = q[1]
+			if q[0] == 'feedback':
+				c1.myfeedback = q[1]
+			if q[0] == 'mytopic':
+				c1.mytopic = q[1]
 			if q[0] == 'desc':
-				c1.c_desc = q[1]
+				c1.mydesc = q[1]
 		if m == 3:
 			if q[0] == 'test':
 				print 'test3'
@@ -266,135 +255,99 @@ def lib_evaluateAction( action):
 #===================================================
 def lib_readConfiguration(confile,c1):
 	try:
-		c1.c_nds = 0
+		c1.nds = 0
 		fh = open(confile, 'r')
 		for line in fh:
 			#print line
 			if line[0] != '#':
 				word = line.split()
 				if word[0] == 'c_title':
-					c1.c_title         = word[1]
+					c1.mytitle         = word[1]
 				if word[0] == 'c_tags':
-					c1.c_tags         = word[1]
+					c1.mytags         = word[1]
 				if word[0] == 'c_desc':
-					c1.c_desc         = word[1]
-				if word[0] == 'c_url':
-					c1.c_url         = word[1]
-				if word[0] == 'c_app':
-					c1.c_server_app     = word[1]
+					c1.mydesc         = word[1]
+				if word[0] == 'c_domain':
+					c1.mydomain         = word[1]
+				if word[0] == 'c_server':
+					c1.myserver     = word[1]
 				if word[0] == 'c_period':
-					c1.c_period         = word[1]
+					c1.myperiod         = word[1]
 				if word[0] == 'c_platfrom':
-					c1.c_patform             = word[1]
+					c1.myplatform         = word[1]
 				if word[0] == 'c_wrap':
-					c1.c_wrap           = word[1]
-				if word[0] == 'c_topic1':
-					c1.c_topic1         = word[1]
-				if word[0] == 'c_topic2':
-					c1.c_topic2         = word[1]
-				if word[0] == 'c_topic3':
-					c1.c_topic3         = word[1]
-				if word[0] == 'c_topic4':
-					c1.c_topic4         = word[1]
-				if word[0] == 'c_action1':
-					c1.c_action1         = word[1]
-				if word[0] == 'c_action2':
-					c1.c_action2         = word[1]
-				if word[0] == 'c_action3':
-					c1.c_action3         = word[1]
-				if word[0] == 'c_action4':
-					c1.c_action4         = word[1]
-				if word[0] == 'c_payload1':
-					c1.c_payload1         = word[1]
-				if word[0] == 'c_payload2':
-					c1.c_payload2         = word[1]
-				if word[0] == 'c_payload3':
-					c1.c_payload3         = word[1]
-				if word[0] == 'c_payload4':
-					c1.c_payload4         = word[1]
+					c1.mywrap           = word[1]
+				if word[0] == 'c_topic':
+					c1.mytopic         = word[1]
 
 				# Heater algorithm
 				if word[0] == 'c_mintemp':
-					c1.c_mintemp          = word[1]
+					c1.mintemp          = word[1]
 				if word[0] == 'c_maxtemp':
-					c1.c_maxtemp          = word[1]
+					c1.maxtemp          = word[1]
 				if word[0] == 'c_minheat':
-					c1.c_minheat          = word[1]
+					c1.minheat          = word[1]
 				if word[0] == 'c_maxheat':
-					c1.c_maxheat          = word[1]
+					c1.maxheat          = word[1]
 				if word[0] == 'c_x_0':
-					c1.c_x_0              = word[1]
+					c1.x_0              = word[1]
 				if word[0] == 'c_y_0':
-					c1.c_y_0              = word[1]
+					c1.y_0              = word[1]
 				if word[0] == 'c_relax':
-					c1.c_relax            = word[1]
+					c1.relax            = word[1]
 				if word[0] == 'c_minsmoke':
-					c1.c_minsmoke         = word[1]
+					c1.minsmoke         = word[1]
 				if word[0] == 'c_minsteps':
-					c1.c_minsteps         = word[1]
+					c1.minsteps         = word[1]
 				if word[0] == 'c_maxsteps':
-					c1.c_maxsteps         = word[1]
+					c1.maxsteps         = word[1]
 				if word[0] == 'c_defsteps':
-					c1.c_defsteps         = word[1]
+					c1.defsteps         = word[1]
 				if word[0] == 'c_maxenergy':
-					c1.c_maxenergy        = word[1]
+					c1.maxenergy        = word[1]
 
 				# Database access
 				if word[0] == 'c_dbhost':
-					c1.c_dbhost         = word[1]
+					c1.dbhost         = word[1]
 				if word[0] == 'c_dbname':
-					c1.c_dbname         = word[1]
+					c1.dbname         = word[1]
 				if word[0] == 'c_dbuser':
-					c1.c_dbuser         = word[1]
+					c1.dbuser         = word[1]
 				if word[0] == 'c_dbpassword':
-					c1.c_dbpassword      = word[1]
+					c1.dbpassword      = word[1]
 
 				if word[0] == 'c_stream':
-					c1.c_ds_uri.append(word[1])
-					c1.c_ds_topic.append(word[2])
-					c1.c_ds_table.append(word[3])
-					c1.c_ds_param.append(word[4])
-					c1.c_nds += 1
+					c1.ds_uri.append(word[1])
+					c1.ds_topic.append(word[2])
+					c1.ds_table.append(word[3])
+					c1.ds_param.append(word[4])
+					c1.nds += 1
 
 				# Image
 				if word[0] == 'c_image_user':
-					c1.c_image_user      = word[1]
+					c1.image_user      = word[1]
 				if word[0] == 'c_image_user':
-					c1.c_image_url       = word[1]
+					c1.image_url       = word[1]
 				if word[0] == 'c_image_url':
-					c1.c_image_path      = word[1]
+					c1.image_path      = word[1]
 				if word[0] == 'c_image_path':
-					c1.c_image_path      = word[1]
+					c1.image_path      = word[1]
 				if word[0] == 'c_image_name':
-					c1.c_image_name      = word[1]
+					c1.image_name      = word[1]
 			else:
 				print line
 		fh.close()
 	except:
 		fh = open(confile, 'w')
-		fh.write('c_title    Configuration Title\n')
-		fh.write('c_url      gow.simuino.com\n')
-		fh.write('c_tags     tag1,tag2,tag3\n')
-		fh.write('c_desc     some_description\n')
-		fh.write('c_server   gowServer.php\n')
-		fh.write('c_period   10.0\n')
-		fh.write('c_platform python\n')
-		fh.write('c_wrap     999999\n')
-
-		fh.write('c_topic1   topic1\n')
-		fh.write('c_topic2   topic2\n')
-		fh.write('c_topic3   topic3\n')
-		fh.write('c_topic4   topic4\n')
-
-		fh.write('c_payload1  {}\n')
-		fh.write('c_payload2  {}\n')
-		fh.write('c_payload3  {}\n')
-		fh.write('c_payload4  {}\n')
-
-		fh.write('c_action1  {}\n')
-		fh.write('c_action2  {}\n')
-		fh.write('c_action3  {}\n')
-		fh.write('c_action4  {}\n')
+		fh.write('c_title     title\n')
+		fh.write('c_domain  gow.simuino.com\n')
+		fh.write('c_tags      tag\n')
+		fh.write('c_desc      some\n')
+		fh.write('c_server    gowServer.php\n')
+		fh.write('c_period    10\n')
+		fh.write('c_platform  python\n')
+		fh.write('c_wrap      999999\n')
+		fh.write('c_topic     benny/saxen/0\n')
 
 		fh.write('c_mintemp      -7\n')
 		fh.write('c_maxtemp      15\n')
@@ -427,20 +380,20 @@ def lib_readConfiguration(confile,c1):
 	return
 
 #=============================================
-def lib_consumeDatastream(d,url,par):
+def lib_consumeDatastream(ds,url,par):
 #=============================================
 	j = lib_readDatastream(url)
 	n = lib_decodeDatastream(j,'no',1)
-	d.d_sys_ts = lib_decodeDatastream(j,'sys_ts',1)
-	if n < d.d_no:
-		msg = "Datastream sequence number out of order " + str(d.d_topic)
+	ds.sys_ts = lib_decodeDatastream(j,'sys_ts',1)
+	if n < ds.no:
+		msg = "Datastream sequence number out of order " + str(ds.topic)
 		log('lib',msg)
-	if n > d.d_no or n == 1:
+	if n > ds.no or n == 1:
 		x = lib_decodeDatastream(j,par,0)
-		d.d_value = x
-		d.d_no = n
+		ds.value = x
+		ds.no = n
 	else:
-		x = d.d_value
+		x = ds.value
 	return x
 #=============================================
 def lib_decodeDatastream(j,par,meta):
@@ -483,93 +436,7 @@ def lib_readJsonPayload(url,par):
 	#if old == 1:
 	#	x = 123456789
 	return x
-#===================================================
-def lib_publish_static(c1, itopic, actions ):
-#===================================================
-	url = c1.c_url
-	server = c1.c_server_app
-	data = {}
-	res = '-'
-	# meta data
-	data['do']        = 'stat'
-	data['topic']     = itopic
-	data['wrap']      = c1.c_wrap
-	data['dev_ts']    = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['period']    = c1.c_period
-	data['platform']  = c1.c_platform
-	data['action']    = actions
-	data['ssid']      = 0
-	data['url']       = c1.c_url
-	data['tags']      = c1.c_tags
-	data['desc']      = c1.c_desc
 
-	values = urllib.urlencode(data)
-	req = 'http://' + url + '/' + server + '?' + values
-	#print req
-	try:
-		response = urllib2.urlopen(req)
-		the_page = response.read()
-		#if actions == 2:
-		#	print 'Message to ' + itopic + ': ' + the_page
-		#lib_evaluateAction(the_page)
-	except urllib2.URLError as e:
-		print e.reason
-	if actions == 2:
-		res = the_page
-	return res
-#===================================================
-def lib_publish_dynamic(c1, itopic, ipayload, n, actions ):
-#===================================================
-	url = c1.c_url
-	server = c1.c_server_app
-	data = {}
-	res = '-'
-
-	data['do']         = 'dyn'
-	data['topic']      = itopic
-	data['no']         = n
-	data['wifi_ss']    = 0
-	data['dev_ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	# payload
-	data['payload'] = ipayload
-
-	values = urllib.urlencode(data)
-	req = 'http://' + url + '/' + server + '?' + values
-	#print req
-	try:
-		response = urllib2.urlopen(req)
-		the_page = response.read()
-		#if actions == 2:
-		#	print 'Message to ' + itopic + ': ' + the_page
-		#lib_evaluateAction(the_page)
-	except urllib2.URLError as e:
-		print e.reason
-	if actions == 2:
-		res = the_page
-	return res
-
-#===================================================
-def lib_publish_log(c1, itopic, message ):
-#===================================================
-	url = c1.c_url
-	server = c1.c_server_app
-	data = {}
-	res = '-'
-
-	data['do']         = 'log'
-	data['topic']      = itopic
-	data['dev_ts']     = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-	data['log']        = message
-
-	values = urllib.urlencode(data)
-	req = 'http://' + url + '/' + server + '?' + values
-
-	try:
-		response = urllib2.urlopen(req)
-		the_page = response.read()
-	except urllib2.URLError as e:
-		print e.reason
-	return
 #===================================================
 def lib_placeOrder(c1, itopic, iaction):
 #===================================================

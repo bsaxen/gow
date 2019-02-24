@@ -1,37 +1,44 @@
 # =============================================
 # File: gowHttpClient.py
 # Author: Benny Saxen
-# Date: 2019-02-20
+# Date: 2019-02-24
 # Description:
 # =============================================
 from gowLib import *
 #===================================================
 # Setup
 #===================================================
-print "======== gowHttpClient version 2019-02-07 =========="
-c1 = Configuration()
-d1 = Datastream()
-action = 2
+
+co = Configuration()
+ds = Datastream()
+md = ModuleDynamic()
+
 confile = "gowhttpclient.conf"
 print "Read configuration"
-lib_readConfiguration(confile,c1)
-lib_publish_static(c1, c1.c_topic1, action )
-d1.no = 0
+lib_readConfiguration(confile,co)
+
+mytopic = co.mytopic
+lib_gowPublishStatic(co)
+
+co.mycounter = 0
 #===================================================
 # Loop
 #===================================================
 while True:
-	d1.no += 1
-	if d1.no > c1.c_wrap:
-		d1.no = 1
 
-	msg = lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, d1.no, action)
-	lib_common_action(c1,msg)
+	co.mycounter += 1
+	if co.mycounter > co.mywrap:
+		co.mycounter = 1
 
-	print "sleep: " + str(c1.c_period) + " triggered: " + str(d1.no)
-	time.sleep(float(c1.c_period))
-	if (error == 1):
-		lib_publish_log(c1, c1.c_topic1, "test error message")
+
+	payload = '{}'
+	msg = lib_gowPublishDynamic(co,md,payload)
+	lib_common_action(co,msg)
+	message = 'counter:' + str(co.mycounter)
+	lib_gowPublishLog(co, message)
+
+	print "sleep: " + str(co.myperiod) + " triggered: " + str(co.mycounter)
+	time.sleep(float(co.myperiod))
 
 #===================================================
 # End of file
