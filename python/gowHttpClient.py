@@ -15,10 +15,7 @@ lib_gowPublishStatic(co)
 # Loop
 #===================================================
 while True:
-
-	md.mycounter += 1
-	if md.mycounter > co.mywrap:
-		md.mycounter = 1
+    lib_gowIncreaseCounter(co,md)
 
 	payload = '{}'
 	msg = lib_gowPublishDynamic(co,md,payload)

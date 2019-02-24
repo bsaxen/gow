@@ -1,8 +1,9 @@
 # =============================================
 # File:        gowRpiCamera.py
 # Author:      Benny Saxen
-# Date:        2019-02-20
+# Date:        2019-02-24
 # Description: application for running a picamera
+# feedback: photo
 # =============================================
 import os
 from gowLib import *
@@ -17,34 +18,36 @@ def take_picture(p1):
     camera.close()
     # copy image to server
     os.system("scp {0} {1}@{2}{3}{4}{5}".format("temp.jpg",
-                                              p1.c_image_user,
-                                              p1.c_image_url,
-                                              p1.c_image_path,
-                                              p1.c_image_prefix,
-                                              p1.c_image_name))
+                                              p1.image_user,
+                                              p1.image_url,
+                                              p1.image_path,
+                                              p1.image_prefix,
+                                              p1.image_name))
 
 #===================================================
 # Setup
 #===================================================
-print "======== gowRpiCamera version 2019-01-31 =========="
-counter = 0
-c1 = Configuration()
 confile = "gowrpicamera.conf"
-print "Read configuration"
-lib_readConfiguration(confile,c1)
-lib_publish_static(c1, c1.c_topic1 )
+lib_readConfiguration(confile,co)
+lib_gowPublishStatic(co)
 #===================================================
 # Loop
 #===================================================
 while True:
+    lib_gowIncreaseCounter(co,md)
 
-   counter += 1
-   if counter > conf_wrap:
-	counter = 1
+    payload = '{}'
+    msg = lib_gowPublishDynamic(co,md,payload)
+    action = lib_common_action(co,msg)
 
-   lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, counter )
-   print "sleep: " + str(c1.c_period) + " triggered: " + str(counter)
-   time.sleep(float(c1.c_period))
+    if action == 'photo':
+        print 'take photo'
+	message = 'counter:' + str(md.mycounter)
+	lib_gowPublishLog(co, message)
+        take_picture(co)
+
+    print "sleep: " + str(co.myperiod) + " triggered: " + str(md.mycounter)
+    time.sleep(float(co.myperiod))
 #===================================================
 # End of file
 #===================================================

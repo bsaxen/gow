@@ -1,64 +1,50 @@
 # ==================================================
 # File: gowTrigger.py
 # Author: Benny Saxen
-# Date: 2019-02-20
+# Date: 2019-02-24
 # Description:
-# Trigger an action or a publication
+# Trigger send feedback
+# Note: configured period multiples of schedule period
 # ==================================================
 import schedule
 from gowLib import *
-counter = 0
 #===================================================
 # Functions
 #===================================================
 
 #===================================================
-def jobStatic():
-    global c1
+def sendFeedback():
+    global co
+    lib_placeOrder(co.mydomain, co.myserver, co.device[0], co.feedback[0])
 
-    # Action
-    #lib_placeOrder(c1, c1.c_topic1, c1.c_action1)
-    # Publication
-    lib_publish_static(c1, c1.c_topic1 )
-
-#===================================================
-def jobDynamic():
-    global c1
-    global counter
-    counter += 1
-    if counter > r1.c_wrap:
-        counter = 1
-    # Action
-    #lib_placeOrder(c1, c1.c_topic1, c1.c_action1)
-    # Publication
-    lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, counter )
 #===================================================
 # Setup
 #===================================================
-print "======== gowTrigger =========="
-schedule.every(10).seconds.do(jobDynamic)
-schedule.every(10).minutes.do(jobStatic)
+schedule.every(10).seconds.do(sendFeedback)
+#schedule.every(10).minutes.do(sendFeedback)
 #schedule.every().hour.do(job)
 #schedule.every().day.at("10:30").do(job)
 #schedule.every().monday.do(job)
 #schedule.every().wednesday.at("13:15").do(job)
-c1 = Configuration()
 confile = "gowtrigger.conf"
-print "Read configuration"
-lib_readConfiguration(confile,c1)
-lib_publish_static(c1, c1.c_topic1 )
-counter = 0
+lib_readConfiguration(confile,co)
+lib_gowPublishStatic(co)
 #===================================================
 # Loop
 #===================================================
 while True:
-    counter += 1
-    if counter > conf_wrap:
-   	    counter = 1
-    lib_publish_dynamic(c1, c1.c_topic1, c1.c_payload1, counter )
-    print "sleep: " + str(c1.c_period) + " triggered: " + str(counter)
+    lib_gowIncreaseCounter(co,md)
+
+    payload = '{}'
+    msg = lib_gowPublishDynamic(co,md,payload)
+    lib_common_action(co,msg)
+
+    message = 'counter:' + str(md.mycounter)
+    lib_gowPublishLog(co, message)
+
+    print "sleep: " + str(co.myperiod) + " triggered: " + str(co.mycounter)
     schedule.run_pending()
-    time.sleep(float(c1.c_period))
+    time.sleep(float(co.myperiod))
 #===================================================
 # End of file
 #===================================================

@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-23
+# Date: 2019-02-24
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -48,6 +48,11 @@ class Configuration:
 	mywrap       = 999999
 	mytopic      = "benny/saxen/0"
 
+    # Trigger feedback
+	fb_feedback    = []
+	fb_domain      = []
+	fb_device      = []
+	nfb = 0
 	# Heater algorithm
 	mintemp = 0.0
    	maxtemp = 0.0
@@ -88,6 +93,13 @@ co = Configuration()
 ds = Datastream()
 md = ModuleDynamic()
 
+
+#===================================================
+def lib_gowIncreaseCounter(co,md):
+#===================================================
+	md.mycounter += 1
+	if md.mycounter > co.mywrap:
+		md.mycounter = 1
 #===================================================
 def lib_gowPublishStatic(co):
 #===================================================
@@ -237,13 +249,18 @@ def lib_listDomainDevices(domain):
     return list
 #===================================================
 def lib_common_action(c1,feedback):
+	action = ' '
 	if ":" in feedback:
 		p = feedback.split(':')
 		q = p[1].split(",")
 		m = len(q)
 		if m == 1:
 			if q[0] == 'test':
-				print 'test1'
+				print 'test'
+				action = 'test'
+			if q[0] == 'photo':
+				print 'photo'
+				action = 'photo'
 		if m == 2:
 			if q[0] == 'period':
 				c1.myperiod = q[1]
@@ -256,7 +273,7 @@ def lib_common_action(c1,feedback):
 		if m == 3:
 			if q[0] == 'test':
 				print 'test3'
-
+	return action
 #===================================================
 def lib_evaluateAction( action):
 	print action
@@ -326,6 +343,12 @@ def lib_readConfiguration(confile,c1):
 				if word[0] == 'c_dbpassword':
 					c1.dbpassword      = word[1]
 
+				if word[0] == 'c_feedback':
+					c1.fb_domain.append(word[1])
+					c1.fb_device.append(word[2])
+					c1.fb_feedback.append(word[3])
+					c1.nfb += 1
+
 				if word[0] == 'c_stream':
 					c1.ds_uri.append(word[1])
 					c1.ds_topic.append(word[2])
@@ -360,6 +383,8 @@ def lib_readConfiguration(confile,c1):
 		fh.write('c_topic     benny/saxen/0\n')
 		fh.write('c_feedback  1\n')
 
+		fh.write('c_feedback  domain device feedback\n')
+
 		fh.write('c_mintemp      -7\n')
 		fh.write('c_maxtemp      15\n')
 		fh.write('c_minheat      25\n')
@@ -377,7 +402,7 @@ def lib_readConfiguration(confile,c1):
 		fh.write('c_dbname       gow\n')
 		fh.write('c_dbuser       folke\n')
 		fh.write('c_dbpassword   something\n')
-		fh.write('c_stream       uri topic table param\n')
+		fh.write('c_stream       domain device table param\n')
 
 		fh.write('c_image_user   folke\n')
 		fh.write('c_image_url    gow.test.com\n')
@@ -449,17 +474,15 @@ def lib_readJsonPayload(url,par):
 	return x
 
 #===================================================
-def lib_placeOrder(c1, itopic, iaction):
+def lib_placeOrder(domain, server, device, feedback):
 #===================================================
-	url = c1.c_url
-	server = c1.c_server_app
 	data = {}
-	data['do']     = 'action'
-	data['topic']  = itopic
-	data['order']  = iaction
+	data['do']     = 'feedback'
+	data['topic']  = device
+	data['feedback']  = feedback
 	data['tag']    = lib_generateRandomString()
 	values = urllib.urlencode(data)
-	req = 'http://' + url + '/' + server + '?' + values
+	req = 'http://' + domain + '/' + server + '?' + values
 	print req
 	try:
 		response = urllib2.urlopen(req)
