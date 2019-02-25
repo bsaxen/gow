@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-24
+# Date: 2019-02-25
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -95,13 +95,13 @@ md = ModuleDynamic()
 
 
 #===================================================
-def lib_gowIncreaseCounter(co,md):
+def lib_gowIncreaseMyCounter(co,md):
 #===================================================
 	md.mycounter += 1
 	if md.mycounter > co.mywrap:
 		md.mycounter = 1
 #===================================================
-def lib_gowPublishStatic(co):
+def lib_gowPublishMyStatic(co):
 #===================================================
 
 	domain = co.mydomain
@@ -131,7 +131,7 @@ def lib_gowPublishStatic(co):
 	except urllib2.URLError as e:
 		print e.reason
 #===================================================
-def lib_gowPublishDynamic(co,md,payload):
+def lib_gowPublishMyDynamic(co,md,payload):
 #===================================================
 	msg = '-'
 	domain = co.mydomain
@@ -158,7 +158,7 @@ def lib_gowPublishDynamic(co,md,payload):
 
 	return msg
 #===================================================
-def lib_gowPublishLog(co, message ):
+def lib_gowPublishMyLog(co, message ):
 #===================================================
 	msg = '-'
 	domain = co.mydomain
@@ -183,7 +183,7 @@ def lib_gowPublishLog(co, message ):
 
 	return msg
 #===================================================
-def lib_gowCreateUrl(domain,device):
+def lib_gowCreateAnyUrl(domain,device):
 #===================================================
 	url = 'http://' + domain + '/' + device + '/'
 	print url
@@ -191,8 +191,8 @@ def lib_gowCreateUrl(domain,device):
 	return url
 
 #=====================================================
-def lib_buildUrl(uri,device,dynstat):
-    url =  'http://' + uri + '/' + device + '/' + dynstat +'.json'
+def lib_buildAnyUrl(domain,device,dynstat):
+    url =  'http://' + domain + '/' + device + '/' + dynstat +'.json'
     print url
     return url
 #=====================================================
@@ -236,8 +236,20 @@ def lib_getDeviceStatus(ds,domain,device):
 		status = res
 	return status
 #=====================================================
-def lib_listDomainDevices(domain):
-    url = 'http://' + domain + '/gowServer.php?do='+ 'list_topics'
+def lib_apiListDomainTopics(domain):
+    url = 'http://' + domain + '/gowServer.php?do=list_topics'
+    print url
+    response = urllib2.urlopen(url)
+    the_page = response.read()
+    the_page = the_page.replace('.reg','')
+    the_page = the_page.replace('_','/')
+    list = the_page.split(':')
+    print domain
+    print the_page
+    return list
+#=====================================================
+def lib_apiSearchTopics(domain,key):
+    url = 'http://' + domain + '/gowServer.php?do=search&search='+'key'
     print url
     response = urllib2.urlopen(url)
     the_page = response.read()
