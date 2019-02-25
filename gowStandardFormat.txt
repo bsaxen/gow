@@ -1,4 +1,4 @@
-Version: 2019-02-04
+Version: 2019-02-25
 =================================
 Rest API
 =================================
@@ -9,19 +9,16 @@ Publish dynamic data
   gow.server.com/gowServer.php?topic=<>&do=dyn&no=<>...
 
 Downlink message:
-  gow.server.com/gowServer.php?topic=<>&do=order&tag=<>&msg=<>
+  gow.server.com/gowServer.php?topic=<>&do=feedback&tag=<>&msg=<>
 
 List topics:
-  gow.server.com/gowServer.php?topic=<>&do=list_topics
+  gow.server.com/gowServer.php?do=list_topics
   
 Search:
   gow.server.com/gowServer.php?do=search&search=<string>
   
 Delete topic:
   gow.server.com/gowServer.php?topic=<>&do=delete
-  
-List topics:
-  gow.server.com/gowServer.php?topic=<>&do=list_topics
 =================================
 Static Part: 
 filename: <topic>/static.json
