@@ -93,7 +93,6 @@ co = Configuration()
 ds = Datastream()
 md = ModuleDynamic()
 
-
 #===================================================
 def lib_gowIncreaseMyCounter(co,md):
 #===================================================
@@ -116,9 +115,9 @@ def lib_gowPublishMyStatic(co):
 	data['wrap']     = co.mywrap
 	data['period']   = co.myperiod
 	data['platform'] = 'python'
-	data['url']      = co.mydomain
+	data['domain']      = co.mydomain
   	data['ssid']     = 'nowifi'
-	data['action']   = co.myfeedback
+	data['feedback']   = co.myfeedback
 
 	values = urllib.urlencode(data)
 	req = 'http://' + domain + '/' + server + '?' + values
@@ -140,7 +139,7 @@ def lib_gowPublishMyDynamic(co,md,payload):
 	# meta data
 	data['do']       = 'dyn'
 	data['topic']    = co.mytopic
-	data['no']       = md.mycounter
+	data['counter']  = md.mycounter
 	data['rssi']     = 0
 	data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 	data['fail']     = 0
@@ -225,7 +224,7 @@ def lib_log(application,message):
 #=====================================================
 def lib_getDeviceStatus(ds,domain,device):
 
-	url = lib_gowCreateUrl(domain,device)
+	url = lib_gowCreateAnyUrl(domain,device)
 	nu = datetime.datetime.now()
         then = lib_consumeDatastream(ds,url,'sys_ts')
         period = lib_consumeDatastream(ds,url,'period')
