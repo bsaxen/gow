@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-02-20
+# Date.......: 2019-02-25
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -18,37 +18,35 @@ running  = []
 # setup
 #=============================================
 print "======== gowMysql version 2019-02-01 =========="
-r1 = Configuration()
-d1 = Datastream()
+
 confile = 'gowmysql.conf'
-lib_readConfiguration(confile,r1)
-print "Number of datastreams: " + str(r1.c_nds)
+lib_readConfiguration(confile,co)
+print "Number of datastreams: " + str(co.nds)
+lib_gowPublishMyStatic(co)
 
 max_period = 0
-for num in range(0,r1.c_nds):
-    url_static  = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
-    url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
-    url_payload = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'payload')
+for num in range(0,co.nds):
+    url_static  = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'static')
+    url_dynamic = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'dynamic')
+    url_payload = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'payload')
 
     period = float(lib_readJsonMeta(url_static,'period'))
     print period
     desc = lib_readJsonMeta(url_static,'desc')
     print desc
-    #if period > max_period:
-    #    max_period = period
     schedule.append(period)
     work.append(period)
-    no = float(lib_readJsonMeta(url_dynamic,'no'))
-    running.append(no)
-    print no
-    x      = float(lib_readJsonPayload(url_payload,r1.c_ds_param[num]))
+    counter = float(lib_readJsonMeta(url_dynamic,'counter'))
+    running.append(counter)
+    print counter
+    x      = float(lib_readJsonPayload(url_payload,co.ds_param[num]))
     print x
-    if r1.c_ds_table[num] == 'auto':
+    if co.ds_table[num] == 'auto':
         table = desc
     else:
-        table = r1.c_ds_table[num]
+        table = co.ds_table[num]
         
-    lib_mysqlInsert(r1,1,table,'value',x)
+    lib_mysqlInsert(co,1,table,'value',x)
 #=============================================
 # loop
 #=============================================
@@ -68,9 +66,9 @@ while True:
     time.sleep(1)
 
     for num in range(0,r1.c_nds):
-        url_static  = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'static')
-        url_dynamic = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'dynamic')
-        url_payload = lib_buildUrl(r1.c_ds_uri[num],r1.c_ds_topic[num],'payload')
+        url_static  = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'static')
+        url_dynamic = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'dynamic')
+        url_payload = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'payload')
         work[num] -= 1
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
@@ -82,31 +80,31 @@ while True:
             print desc
             schedule[num] = period
 
-            no = float(lib_readJsonMeta(url_dynamic,'no'))
-            print no
-            delta_no = no - running[num]
+            counter = float(lib_readJsonMeta(url_dynamic,'no'))
+            print counter
+            delta_no = counter - running[num]
             ok = 0
-            if delta_no == 1:
-                print "Correct data: " + str(delta_no)
+            if delta_counter == 1:
+                print "Correct data: " + str(delta_counter)
                 ok = 1
-            if delta_no > 1:
-                print "Missing data: " + str(delta_no)
+            if delta_counter > 1:
+                print "Missing data: " + str(delta_counter)
                 ok = 1
-            if delta_no == 0:
-                print "No update of data: " + str(delta_no)
-            if delta_no < 0:
-                print "Wrap around of data: " + str(delta_no)
+            if delta_counter == 0:
+                print "No update of data: " + str(delta_counter)
+            if delta_counter < 0:
+                print "Wrap around of data: " + str(delta_counter)
                 ok = 1
             if ok == 1:
-                running[num] = no
-                x  = float(lib_readJsonPayload(url_payload,r1.c_ds_param[num]))
+                running[num] = counter
+                x  = float(lib_readJsonPayload(url_payload,co.ds_param[num]))
                 print x
-                if r1.c_ds_table[num] == 'auto':
+                if co.ds_table[num] == 'auto':
                     table = desc
                 else:
-                    table = r1.c_ds_table[num]
+                    table = co.ds_table[num]
                     
-                lib_mysqlInsert(r1,0,table,'value',x)
+                lib_mysqlInsert(co,0,table,'value',x)
 #===================================================
 # End of file
 #===================================================
