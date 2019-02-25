@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-02-24
+// Date.......: 2019-02-25
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -11,17 +11,17 @@
 class gowDoc {
     public $sys_ts;
 
-    public $action;
+    public $feedback;
     public $topic;
     public $wrap;
     public $period;
-    public $url;
+    public $domain;
     public $platform;
     public $ssid;
     public $tags;
     public $desc;
 
-    public $no;
+    public $counter;
     public $dev_ts;
     public $rssi;
     public $payload;
@@ -79,7 +79,7 @@ function saveDynamicData($obj)
         fwrite($doc, "{\"gow\": {\n");
         fwrite($doc, "   \"sys_ts\":    \"$obj->sys_ts\",\n");
         fwrite($doc, "   \"dev_ts\":    \"$obj->dev_ts\",\n");
-        fwrite($doc, "   \"no\":        \"$obj->no\",\n");
+        fwrite($doc, "   \"counter\":   \"$obj->counter\",\n");
         fwrite($doc, "   \"rssi\":      \"$obj->rssi\",\n");
         fwrite($doc, "   \"fail\":      \"$obj->fail\"\n");
         fwrite($doc, "}}\n ");
@@ -129,10 +129,10 @@ function initLog($obj)
   return;
 }
 //=============================================
-function readActionFile($action_file)
+function readFeedbackFile($fb_file)
 //=============================================
 {
-  $file = fopen($action_file, "r");
+  $file = fopen($fb_file, "r");
   if ($file)
   {
       $result = ":";
@@ -145,7 +145,7 @@ function readActionFile($action_file)
       fclose($file);
       $result = $result.":";
       // Delete file
-      if (file_exists($action_file)) unlink($action_file);
+      if (file_exists($fb_file)) unlink($fb_file);
   }
   else
   {
@@ -154,14 +154,14 @@ function readActionFile($action_file)
   return $result;
 }
 //=============================================
-function readActionFileList($topic)
+function readFeedbackFileList($topic)
 //=============================================
 {
   $result = ' ';
-  $do = 'ls '.$topic.'/*_gow.action > '.$topic.'/action.work';
+  $do = 'ls '.$topic.'/*_gow.feedback > '.$topic.'/feedback.work';
   //echo $do;
   system($do);
-  $list_file = $topic.'/action.work';
+  $list_file = $topic.'/feedback.work';
   $no_of_lines = count(file($list_file));
   $file = fopen($list_file, "r");
   if ($file)
@@ -172,25 +172,25 @@ function readActionFileList($topic)
       if (strlen($line) > 2)
       {
           $line = trim($line);
-          $result = readActionFile($line);
+          $result = readFeedbackFile($line);
       }
   }
   $result = "[$no_of_lines]".$result;
   return $result;
 }
 //=============================================
-function writeActionFile($topic, $action, $tag)
+function writeFeedbackFile($topic, $feedback, $tag)
 //=============================================
 {
   if (is_null($topic))  return;
-  if (is_null($action)) return;
+  if (is_null($feedback)) return;
   if (is_null($tag)) $tag = 'notag';
 
-  $action_file = $topic.'/'.$tag.'_gow.action';
-  $file = fopen($action_file, "w");
+  $fb_file = $topic.'/'.$tag.'_gow.feedback';
+  $file = fopen($fb_file, "w");
   if ($file)
   {
-    fwrite($file,$action);
+    fwrite($file,$feedback);
     fclose($file);
   }
   else
@@ -311,7 +311,7 @@ if (isset($_GET['do']))
       {
         $msg   = $_GET['msg'];
         $tag   = $_GET['tag'];
-        writeActionFile($obj->topic, $msg, $tag);
+        writeFeedbackFile($obj->topic, $msg, $tag);
       }
       if ($do == 'clearlog')
       {
@@ -337,18 +337,18 @@ if (isset($_GET['do']))
         if (isset($_GET['platform'])) {
           $obj->platform = $_GET['platform'];
         }
-        if (isset($_GET['action'])) {
-          $obj->action = $_GET['action'];
+        if (isset($_GET['feedback'])) {
+          $obj->feedback = $_GET['feedback'];
         }
         else
         {
-          $obj->action = 1;
+          $obj->feedback = 1;
         }
         if (isset($_GET['ssid'])) {
           $obj->ssid = $_GET['ssid'];
         }
         if (isset($_GET['url'])) {
-          $obj->url = $_GET['url'];
+          $obj->domain = $_GET['domain'];
         }
         if (isset($_GET['tags'])) {
           $obj->tags = $_GET['tags'];
@@ -369,8 +369,8 @@ if (isset($_GET['do']))
       if ($do == 'dyn')
       {
 
-        if (isset($_GET['no'])) {
-          $obj->no = $_GET['no'];
+        if (isset($_GET['counter'])) {
+          $obj->counter = $_GET['counter'];
         }
         if (isset($_GET['dev_ts'])) {
           $obj->dev_ts = $_GET['dev_ts'];
