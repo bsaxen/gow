@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-02-25
+// Date.......: 2019-02-26
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -31,8 +31,6 @@ class gowDoc {
 
 $obj = new gowDoc();
 
-//=============================================
-$conf_action_file_name = 'action.gow';
 //=============================================
 $date         = date_create();
 $obj->sys_ts  = date_format($date, 'Y-m-d H:i:s');
