@@ -182,17 +182,24 @@ def lib_gowPublishMyLog(co, message ):
 
 	return msg
 #===================================================
+def lib_gowCreateMyUrl(co):
+#===================================================
+	url = 'http://' + co.mydomain + '/' + co.mytopic + '/'
+	return url
+#=====================================================
+def lib_buildMyUrl(co,dynstat):
+#===================================================
+    url =  'http://' + co.mydomain + '/' + co.mytopic + '/' + dynstat +'.json'
+    return url
+#===================================================
 def lib_gowCreateAnyUrl(domain,device):
 #===================================================
 	url = 'http://' + domain + '/' + device + '/'
-	print url
-
 	return url
-
 #=====================================================
 def lib_buildAnyUrl(domain,device,dynstat):
+#===================================================
     url =  'http://' + domain + '/' + device + '/' + dynstat +'.json'
-    print url
     return url
 #=====================================================
 def lib_init_history(fname):
