@@ -10,19 +10,27 @@ from gowLib import *
 from picamera import PiCamera
 
 #===================================================
-def take_picture(p1):
+def take_picture(co):
 #===================================================
     camera = PiCamera()
     camera.resolution = (1280, 1024)
     camera.capture("temp.jpg")
     camera.close()
+
+    api_host = lib_gowCreateMyUrl(co)
+    headers = {'Content-Type' : 'image/jpeg'}
+    image_url = 'temp.jpeg'
+	
+    img_file = urllib2.urlopen(image_url)
+    response = requests.post(api_host, data=img_file.read(), headers=headers, verify=False)
+	
     # copy image to server
     os.system("scp {0} {1}@{2}{3}{4}{5}".format("temp.jpg",
-                                              p1.image_user,
-                                              p1.image_url,
-                                              p1.image_path,
-                                              p1.image_prefix,
-                                              p1.image_name))
+                                              co.image_user,
+                                              co.image_url,
+                                              co.image_path,
+                                              co.image_prefix,
+                                              co.image_name))
 
 #===================================================
 # Setup
