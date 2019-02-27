@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-25
+# Date: 2019-02-27
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -18,14 +18,13 @@ STATE_ON      = 2
 MODE_OFFLINE  = 1
 MODE_ONLINE   = 2
 
-class Datastream:
-	topic = 'som/wq'
-	no = 0
-	period = 0
-	dev_ts = ""
-	sys_ts = ""
-	wifi_ss = 0
-	value = 0.0
+class Datastreams:
+        no        = []
+	period    = []
+	dev_ts    = []
+	sys_ts    = []
+	wifi_ss   = []
+	value     = []
 
 class ModuleDynamic:
    	mystate   = 0
@@ -74,11 +73,12 @@ class Configuration:
 	dbpassword = 'mypswd'
 
 	# datastreams subscriptions
-	ds_uri = []
-	ds_topic = []
+	ds_domain = []
+	ds_device = []
+	ds_param  = []
 	# Database tables and parameters
-	ds_table = []
-	ds_param = []
+	ds_db_table  = []
+	ds_db_par
 	nds = 0
 
 	# Image
@@ -90,7 +90,7 @@ class Configuration:
 
 
 co = Configuration()
-ds = Datastream()
+ds = Datastreams()
 md = ModuleDynamic()
 
 #===================================================
@@ -434,63 +434,79 @@ def lib_readConfiguration(confile,c1):
 	return
 
 #=============================================
-def lib_consumeDatastream(ds,url,par):
+def lib_getStaticDeviceJson(domain,device):
 #=============================================
-	j = lib_readDatastream(url)
-	n = lib_decodeDatastream(j,'no',1)
-	ds.sys_ts = lib_decodeDatastream(j,'sys_ts',1)
-	if n < ds.no:
-		msg = "Datastream sequence number out of order " + str(ds.topic)
-		log('lib',msg)
-	if n > ds.no or n == 1:
-		x = lib_decodeDatastream(j,par,0)
-		ds.value = x
-		ds.no = n
-	else:
-		x = ds.value
-	return x
-#=============================================
-def lib_decodeDatastream(j,par,meta):
-#=============================================
-	if meta == 1:
-		x =  j['gow'][par]
-	else:
-		x =  j['gow']['payload'][par]
-	return x
-#=============================================
-def lib_readDatastream(url):
-#=============================================
+    url = lib_buildAnyUrl(domain,device,'static')
     r = urllib2.urlopen(url)
     j = json.load(r)
     return j
 #=============================================
-def lib_readJsonMeta(url,par):
+def lib_getDynamicDeviceJson(domain,device):
 #=============================================
+    url = lib_buildAnyUrl(domain,device,'dynamic')
     r = urllib2.urlopen(url)
     j = json.load(r)
-    x =  j['gow'][par]
-    return x
+    return j
 #=============================================
-def lib_readJsonPayload(url,par):
+def lib_getPayloadDeviceJson(domain,device):
 #=============================================
-	#now = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-	r = urllib2.urlopen(url)
-	j = json.load(r)
-	#ts=j['gow']['sys_ts']
-	#period=j['gow']['period']
-	#xts1 = time.mktime(datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").timetuple())
-	#xts2 = time.mktime(datetime.datetime.strptime(now, "%Y-%m-%d %H:%M:%S").timetuple())
-	#diff = xts2 - xts1
-	#print str(period) + " " + str(diff)
-	#old = 0
-	#if diff > period:
-	#	old = 1
-	#	print "old data"
-	x =  j['gow']['payload'][par]
-	#if old == 1:
-	#	x = 123456789
-	return x
+    url = lib_buildAnyUrl(domain,device,'payload')
+    r = urllib2.urlopen(url)
+    j = json.load(r)
+    return j
 
+#=============================================
+def lib_checkMessageAge(co,ds,domain,device):
+#=============================================
+	now = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+	ts = lib_readDynamicParam(co,ds,domain,device,'sys_ts')
+	period = lib_readStaticParam(co,ds,domain,device,'period')
+	xts1 = time.mktime(datetime.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").timetuple())
+	xts2 = time.mktime(datetime.datetime.strptime(now, "%Y-%m-%d %H:%M:%S").timetuple())
+	diff = xts2 - xts1
+	print str(period) + " " + str(diff)
+	old = 0
+	if diff > period:
+		old = 1
+
+	return old
+#=============================================
+def lib_checkSequenceNumber(co,ds,domain,device):
+#=============================================
+	j = lib_getDynamicDeviceJson(domain,device)
+	
+	n = j['gow']['no']
+	m = ds.no[device]
+        k = m + 1
+	
+	if n < m and n != 1: # Out of order
+		message = "Sequence number out of order " + domain + ' ' + device + ' n='+n + ' old='+m
+		lib_gowPublishMyLog(co, message)
+		res = 2
+	if n == k or n == 1: # Expected number
+		ds.no[device] = n
+		res = 0
+	if n > k: # Missed number
+		message = "Missed seuence number " + domain + ' ' + device + ' n='+n + ' old='+m
+		lib_gowPublishMyLog(co, message)
+		res = 1
+	return res
+#=============================================
+def lib_readDynamicParam(co,ds,domain,device,par):
+#=============================================
+	j = lib_getDynamicDeviceJson(domain,device)
+        ok = lib_checkSequenceNumber(co,ds,domain,device)
+	if ok == 0:
+		x = j['gow'][par]
+	return x
+#=============================================
+def lib_readPayloadParam(co,ds,domain,device,par):
+#=============================================
+	j = lib_getPayloadDeviceJson(domain,device)
+        ok = lib_checkSequenceNumber(co,ds,domain,device)
+	if ok == 0:
+		x = j['gow']['payload'][par]
+	return x
 #===================================================
 def lib_placeOrder(domain, server, device, feedback):
 #===================================================
