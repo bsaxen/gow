@@ -1,7 +1,7 @@
 # =============================================
 # File: gowHeaterControl.py
 # Author: Benny Saxen
-# Date: 2019-02-25
+# Date: 2019-02-28
 # Description: GOW heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -96,6 +96,8 @@ def heater_model(co,md,hc):
         if md.mystate == STATE_ON:
             hc.need = 1
             if hc.temperature_indoor > 20:
+		hc.need = 0
+            if hc.temperature_indoor < hc.temperature_outdoor:
 		hc.need = 0
 
             temp = hc.temperature_outdoor
