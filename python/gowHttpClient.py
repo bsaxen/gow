@@ -1,7 +1,7 @@
 # =============================================
 # File: gowHttpClient.py
 # Author: Benny Saxen
-# Date: 2019-02-25
+# Date: 2019-02-28
 # Description:
 # =============================================
 from gowLib import *
@@ -16,17 +16,13 @@ lib_gowPublishMyStatic(co)
 #===================================================
 while True:
     lib_gowIncreaseMyCounter(co,md)
-
-	payload = '{}'
-	msg = lib_gowPublishMyDynamic(co,md,payload)
-	lib_common_action(co,msg)
-
-	message = 'counter:' + str(md.mycounter)
-	lib_gowPublishMyLog(co, message)
-
-	print "sleep: " + str(co.myperiod) + " triggered: " + str(co.mycounter)
-	time.sleep(float(co.myperiod))
-
+    payload = '{}'
+    msg = lib_gowPublishMyDynamic(co,md,payload)
+    lib_common_action(co,msg)
+    message = 'counter:' + str(md.mycounter)
+    lib_gowPublishMyLog(co, message)
+    print "sleep: " + str(co.myperiod) + " triggered: " + str(co.mycounter)
+    time.sleep(float(co.myperiod))
 #===================================================
 # End of file
 #===================================================
