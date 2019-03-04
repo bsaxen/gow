@@ -265,6 +265,7 @@ function searchTopics($search)
 if (isset($_GET['do']))
 {
     $do = $_GET['do'];
+    echo $do.'c<br>';
     if ($do == 'list_topics')
     {
       listAllTopics();
@@ -284,6 +285,7 @@ if (isset($_GET['do']))
     if (isset($_GET['topic']))
     {
       $obj->topic = $_GET['topic'];
+      echo $obj->topic.'b<br>';
       $error = 0;
       if (!is_dir($obj->topic))
       {
@@ -333,6 +335,7 @@ if (isset($_GET['do']))
       {
         if (isset($_GET['mac'])) {
           $obj->mac = $_GET['mac'];
+          echo $obj->mac.'a<br>';
         }
         if (isset($_GET['wrap'])) {
           $obj->wrap = $_GET['wrap'];
