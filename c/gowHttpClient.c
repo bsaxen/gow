@@ -1,6 +1,6 @@
 //=============================================
 // File.......: httpClient.c
-// Date.......: 2019-02-02
+// Date.......: 2019-03-04
 // Author.....: Benny Saxen
 // Description: Basic http client
 //=============================================
@@ -34,7 +34,7 @@ void setup() {
   lib_wifiBegin(c1);
   d1.counter = 0;
   stat_url = lib_buildUrlStatic(c1);
-  String dont_care = lib_wifiConnectandSend(c1, stat_url);
+  String dont_care = lib_wifiConnectandSend(c1,d1, stat_url);
 }
 
 
@@ -46,7 +46,7 @@ void loop() {
   d1.rssi = WiFi.RSSI();
   if (d1.counter > c1.conf_wrap) d1.counter = 1;
   dyn_url = lib_buildUrlDynamic(c1, d1);
-  String msg = lib_wifiConnectandSend(c1, dyn_url);
+  String msg = lib_wifiConnectandSend(c1,d1, dyn_url);
 }
 //=============================================
 // End of File
