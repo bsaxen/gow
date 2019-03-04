@@ -16,7 +16,7 @@ String dyn_url = " ";
 //=============================================
 void setup() {
 //=============================================  
-  c1.conf_topic = "test/topic/here/0";
+  c1.conf_topic = "ret/rum/0";
   c1.conf_period  = 10;
   c1.conf_wrap    = 999999;
   c1.conf_action  = 1;
@@ -24,14 +24,14 @@ void setup() {
   c1.conf_tags = "tag1,tag2,tag3";
   c1.conf_desc = "your_description";
   c1.conf_platform = "esp8266";
-  c1.conf_ssid       = "my_ssid";
-  c1.conf_password   = "my passw";
-  c1.conf_host       = "192.168.1.242";
+  c1.conf_ssid       = "ertyerty";
+  c1.conf_password   = "etyrt";
+  c1.conf_host       = "gow.simuino.com";
   c1.conf_streamId   = "....................";
   c1.conf_privateKey = "....................";
   Serial.begin(9600);
   delay(100);
-  lib_wifiBegin(c1);
+  lib_wifiBegin(&c1);
   d1.counter = 0;
   stat_url = lib_buildUrlStatic(c1);
   String dont_care = lib_wifiConnectandSend(c1,d1, stat_url);
