@@ -367,7 +367,7 @@ if (isset($_GET['do']))
         }
 
         saveStaticData($obj);
-        echo readActionFileList($obj->topic);
+        echo readFeedbackFileList($obj->topic);
 
       } // stat
 
@@ -395,7 +395,7 @@ echo "q1<br>";
           echo "q2<br>";
         savePayloadData($obj);
           echo "q3<br>";
-        echo readActionFileList($obj->topic);
+        echo readFeedbackFileList($obj->topic);
           echo "q4<br>";
 
       } // dyn
