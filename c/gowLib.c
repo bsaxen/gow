@@ -1,6 +1,6 @@
 //=============================================
 // File.......: gowLib.c
-// Date.......: 2019-02-22
+// Date.......: 2019-03-04
 // Author.....: Benny Saxen
 // Description:
 //=============================================
@@ -22,6 +22,7 @@ struct Configuration
   String conf_streamId   = "....................";
   String conf_privateKey = "....................";
   int conf_em_pulses = 1000;
+  String conf_mac = "void";
 };
 
 struct Data
@@ -76,6 +77,9 @@ String lib_buildUrlStatic(struct Configuration c2)
   stat_url += "&topic=";
   stat_url += c2.conf_topic;
 
+  stat_url += "&mac=";
+  stat_url += c2.conf_mac;
+
   stat_url += "&ssid=";
   stat_url += c2.conf_ssid;
 
@@ -85,7 +89,7 @@ String lib_buildUrlStatic(struct Configuration c2)
   stat_url += "&period=";
   stat_url += c2.conf_period;
 
-  stat_url += "&url=";
+  stat_url += "&domain=";
   stat_url += c2.conf_host;
 
   stat_url += "&platform=";
@@ -114,7 +118,7 @@ String lib_buildUrlDynamic(struct Configuration c2,struct Data d2)
   dyn_url += "&topic=";
   dyn_url += c2.conf_topic;
 
-  dyn_url += "&no=";
+  dyn_url += "&counter=";
   dyn_url += d2.counter;
 
   dyn_url += "&rssi=";
@@ -153,17 +157,17 @@ String lib_buildUrlLog(struct Configuration c2, char* message)
   return url;
 }  
 //=============================================
-void lib_wifiBegin(struct Configuration c2)
+void lib_wifiBegin(struct Configuration *c2)
 //=============================================
 {
   char ssid[100];
   char password[100];
   
   Serial.print("Connecting to ");
-  Serial.println(c2.conf_ssid);
+  Serial.println(c2->conf_ssid);
 
-   c2.conf_ssid.toCharArray(ssid,100);
-   c2.conf_password.toCharArray(password,100);
+   c2->conf_ssid.toCharArray(ssid,100);
+   c2->conf_password.toCharArray(password,100);
 
   /* Explicitly set the ESP8266 to be a WiFi-client, otherwise, it by default,
    would try to act as both a client and an access-point and could cause
@@ -179,6 +183,8 @@ void lib_wifiBegin(struct Configuration c2)
    Serial.println("WiFi connected");
    Serial.println("IP address: ");
    Serial.println(WiFi.localIP());
+   c2->conf_mac = WiFi.macAddress();
+   Serial.println(WiFi.macAddress());
 }
 //=============================================
 String lib_wifiConnectandSend(struct Configuration c2,struct Data d2, String cur_url)
