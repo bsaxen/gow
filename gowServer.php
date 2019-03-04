@@ -265,7 +265,6 @@ function searchTopics($search)
 if (isset($_GET['do']))
 {
     $do = $_GET['do'];
-    echo $do.'c<br>';
     if ($do == 'list_topics')
     {
       listAllTopics();
@@ -285,7 +284,6 @@ if (isset($_GET['do']))
     if (isset($_GET['topic']))
     {
       $obj->topic = $_GET['topic'];
-      echo $obj->topic.'b<br>';
       $error = 0;
       if (!is_dir($obj->topic))
       {
@@ -353,7 +351,7 @@ if (isset($_GET['do']))
         if (isset($_GET['ssid'])) {
           $obj->ssid = $_GET['ssid'];
         }
-        if (isset($_GET['url'])) {
+        if (isset($_GET['domain'])) {
           $obj->domain = $_GET['domain'];
         }
         if (isset($_GET['tags'])) {
@@ -390,13 +388,10 @@ if (isset($_GET['do']))
         if (isset($_GET['payload'])) {
           $obj->payload = $_GET['payload'];
         }
-echo "q1<br>";
+
         saveDynamicData($obj);
-          echo "q2<br>";
         savePayloadData($obj);
-          echo "q3<br>";
         echo readFeedbackFileList($obj->topic);
-          echo "q4<br>";
 
       } // dyn
  } // error
