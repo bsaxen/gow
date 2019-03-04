@@ -390,10 +390,13 @@ if (isset($_GET['do']))
         if (isset($_GET['payload'])) {
           $obj->payload = $_GET['payload'];
         }
-
+echo "q1<br>";
         saveDynamicData($obj);
+          echo "q2<br>";
         savePayloadData($obj);
+          echo "q3<br>";
         echo readActionFileList($obj->topic);
+          echo "q4<br>";
 
       } // dyn
  } // error
