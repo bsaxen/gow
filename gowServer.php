@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-02-26
+// Date.......: 2019-03-04
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -20,6 +20,7 @@ class gowDoc {
     public $ssid;
     public $tags;
     public $desc;
+    public $mac;
 
     public $counter;
     public $dev_ts;
@@ -56,6 +57,7 @@ function saveStaticData($obj)
         fwrite($doc, "   \"tags\":     \"$obj->tags\",\n");
         fwrite($doc, "   \"feedback\": \"$obj->feedback\",\n");
         fwrite($doc, "   \"topic\":    \"$obj->topic\",\n");
+        fwrite($doc, "   \"mac\":      \"$obj->mac\",\n");
         fwrite($doc, "   \"wrap\":     \"$obj->wrap\",\n");
         fwrite($doc, "   \"period\":   \"$obj->period\",\n");
         fwrite($doc, "   \"domain\":   \"$obj->domain\",\n");
@@ -302,6 +304,7 @@ if (isset($_GET['do']))
       echo "Error: no topic specified";
     }
 
+
     // API when topic is available
     if($error == 0)
     {
@@ -328,7 +331,9 @@ if (isset($_GET['do']))
 
       if ($do == 'stat')
       {
-
+        if (isset($_GET['mac'])) {
+          $obj->mac = $_GET['mac'];
+        }
         if (isset($_GET['wrap'])) {
           $obj->wrap = $_GET['wrap'];
         }
