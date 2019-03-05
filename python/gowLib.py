@@ -91,14 +91,14 @@ class Configuration:
 
 co = Configuration()
 ds = Datastreams()
-md = ModuleDynamic()
+dy = ModuleDynamic()
 
 #===================================================
-def lib_gowIncreaseMyCounter(co,md):
+def lib_gowIncreaseMyCounter(co,dy):
 #===================================================
-    md.mycounter += 1
-    if md.mycounter > co.mywrap:
-        md.mycounter = 1
+    dy.mycounter += 1
+    if dy.mycounter > co.mywrap:
+        dy.mycounter = 1
 #===================================================
 def lib_gowPublishMyStatic(co):
 #===================================================
@@ -130,7 +130,7 @@ def lib_gowPublishMyStatic(co):
     except urllib2.URLError as e:
         print e.reason
 #===================================================
-def lib_gowPublishMyDynamic(co,md,payload):
+def lib_gowPublishMyDynamic(co,dy,payload):
 #===================================================
     msg = '-'
     domain = co.mydomain
@@ -139,7 +139,7 @@ def lib_gowPublishMyDynamic(co,md,payload):
     # meta data
     data['do']       = 'dyn'
     data['topic']    = co.mytopic
-    data['counter']  = md.mycounter
+    data['counter']  = dy.mycounter
     data['rssi']     = 0
     data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data['fail']     = 0
