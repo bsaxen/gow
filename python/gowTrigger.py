@@ -1,7 +1,7 @@
 # ==================================================
 # File: gowTrigger.py
 # Author: Benny Saxen
-# Date: 2019-02-25
+# Date: 2019-03-05
 # Description:
 # Trigger send feedback
 # Note: configured period multiples of schedule period
@@ -33,16 +33,16 @@ lib_gowPublishMyStatic(co)
 # Loop
 #===================================================
 while True:
-    lib_gowIncreaseMyCounter(co,md)
+    lib_gowIncreaseMyCounter(co,dy)
 
     payload = '{}'
-    msg = lib_gowPublishMyDynamic(co,md,payload)
+    msg = lib_gowPublishMyDynamic(co,dy,payload)
     lib_common_action(co,msg)
 
-    message = 'counter:' + str(md.mycounter)
+    message = 'counter:' + str(dy.mycounter)
     lib_gowPublishMyLog(co, message)
 
-    print "sleep: " + str(co.myperiod) + " triggered: " + str(co.mycounter)
+    print "sleep: " + str(co.myperiod) + " triggered: " + str(dy.mycounter)
     schedule.run_pending()
     time.sleep(float(co.myperiod))
 #===================================================
