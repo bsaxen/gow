@@ -24,9 +24,9 @@ lib_gowPublishMyStatic(co)
 
 max_period = 0
 for num in range(0,co.nds):
-    url_static  = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'static')
-    url_dynamic = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'dynamic')
-    url_payload = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'payload')
+    url_static  = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'static')
+    url_dynamic = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'dynamic')
+    url_payload = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'payload')
 
     period = float(lib_readJsonMeta(url_static,'period'))
     print period
@@ -64,9 +64,9 @@ while True:
     time.sleep(1)
 
     for num in range(0,r1.c_nds):
-        url_static  = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'static')
-        url_dynamic = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'dynamic')
-        url_payload = lib_buildAnyUrl(co.ds_uri[num],co.ds_topic[num],'payload')
+        url_static  = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'static')
+        url_dynamic = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'dynamic')
+        url_payload = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'payload')
         work[num] -= 1
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
