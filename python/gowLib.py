@@ -497,6 +497,14 @@ def lib_readDynamicParam(co,ds,domain,device,par):
         x = j['gow'][par]
     return x
 #=============================================
+def lib_readStaticParam(co,ds,domain,device,par):
+#=============================================
+    j = lib_getStaticDeviceJson(domain,device)
+    ok = lib_checkSequenceNumber(co,ds,domain,device)
+    if ok == 0:
+        x = j['gow'][par]
+    return x
+#=============================================
 def lib_readPayloadParam(co,ds,domain,device,par):
 #=============================================
     j = lib_getPayloadDeviceJson(domain,device)
