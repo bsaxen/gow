@@ -27,7 +27,7 @@ for num in range(0,co.nds):
     print num
     domain = co.ds_domain[num]
     device = co.ds_device[num]
-    param  = co.ds_par[num]
+    param  = co.ds_db_par[num]
     period = float(lib_readStaticParam(co,ds,domain,device,'period'))
     print period
     desc = lib_readStaticParam(co,ds,domain,device,'desc')
