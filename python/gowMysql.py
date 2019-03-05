@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-02-25
+# Date.......: 2019-03-05
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -17,8 +17,6 @@ running  = []
 #=============================================
 # setup
 #=============================================
-print "======== gowMysql version 2019-02-01 =========="
-
 confile = 'gowmysql.conf'
 lib_readConfiguration(confile,co)
 print "Number of datastreams: " + str(co.nds)
@@ -80,9 +78,9 @@ while True:
             print desc
             schedule[num] = period
 
-            counter = float(lib_readJsonMeta(url_dynamic,'no'))
+            counter = float(lib_readJsonMeta(url_dynamic,'counter'))
             print counter
-            delta_no = counter - running[num]
+            delta_counter = counter - running[num]
             ok = 0
             if delta_counter == 1:
                 print "Correct data: " + str(delta_counter)
