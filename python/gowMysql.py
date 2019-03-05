@@ -24,20 +24,19 @@ lib_gowPublishMyStatic(co)
 
 max_period = 0
 for num in range(0,co.nds):
-    url_static  = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'static')
-    url_dynamic = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'dynamic')
-    url_payload = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'payload')
-
-    period = float(lib_readJsonMeta(url_static,'period'))
+    domain = co.ds_domain[num]
+    device = co.ds_device[num]
+    param  = co.ds_param[num]
+    period = float(lib_readStaticParam(co,ds,domain,device,'period'))
     print period
-    desc = lib_readJsonMeta(url_static,'desc')
+    desc = lib_readStaticParam(co,ds,domain,device,'desc')
     print desc
     schedule.append(period)
     work.append(period)
-    counter = float(lib_readJsonMeta(url_dynamic,'counter'))
+    counter = float(lib_readDynamicParam(co,ds,domain,device,'counter'))
     running.append(counter)
     print counter
-    x      = float(lib_readJsonPayload(url_payload,co.ds_param[num]))
+    x      = float(lib_readPayloadParam(co,ds,domain,device,param))
     print x
     if co.ds_table[num] == 'auto':
         table = desc
