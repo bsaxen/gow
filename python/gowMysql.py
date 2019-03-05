@@ -24,6 +24,7 @@ lib_gowPublishMyStatic(co)
 
 max_period = 0
 for num in range(0,co.nds):
+    print num
     domain = co.ds_domain[num]
     device = co.ds_device[num]
     param  = co.ds_param[num]
