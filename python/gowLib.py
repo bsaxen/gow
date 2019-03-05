@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-02-27
+# Date: 2019-03-05
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -493,6 +493,7 @@ def lib_readDynamicParam(co,ds,domain,device,par):
 #=============================================
     j = lib_getDynamicDeviceJson(domain,device)
     ok = lib_checkSequenceNumber(co,ds,domain,device)
+    x = 'void'
     if ok == 0:
         x = j['gow'][par]
     return x
@@ -501,6 +502,7 @@ def lib_readStaticParam(co,ds,domain,device,par):
 #=============================================
     j = lib_getStaticDeviceJson(domain,device)
     ok = lib_checkSequenceNumber(co,ds,domain,device)
+    x = 'void'
     if ok == 0:
         x = j['gow'][par]
     return x
@@ -509,6 +511,7 @@ def lib_readPayloadParam(co,ds,domain,device,par):
 #=============================================
     j = lib_getPayloadDeviceJson(domain,device)
     ok = lib_checkSequenceNumber(co,ds,domain,device)
+    x = 'void'
     if ok == 0:
         x = j['gow']['payload'][par]
     return x
