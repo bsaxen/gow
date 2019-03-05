@@ -472,7 +472,7 @@ def lib_checkSequenceNumber(co,ds,domain,device):
 #=============================================
     j = lib_getDynamicDeviceJson(domain,device)
 
-    n = j['gow']['no']
+    n = j['gow']['counter']
     m = ds.no[device]
     k = m + 1
 
