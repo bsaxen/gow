@@ -492,7 +492,8 @@ def lib_checkSequenceNumber(co,ds,domain,device):
 def lib_readDynamicParam(co,ds,domain,device,par):
 #=============================================
     j = lib_getDynamicDeviceJson(domain,device)
-    ok = lib_checkSequenceNumber(co,ds,domain,device)
+    #ok = lib_checkSequenceNumber(co,ds,domain,device)
+    ok = 0
     x = 'void'
     if ok == 0:
         x = j['gow'][par]
@@ -501,7 +502,8 @@ def lib_readDynamicParam(co,ds,domain,device,par):
 def lib_readStaticParam(co,ds,domain,device,par):
 #=============================================
     j = lib_getStaticDeviceJson(domain,device)
-    ok = lib_checkSequenceNumber(co,ds,domain,device)
+    #ok = lib_checkSequenceNumber(co,ds,domain,device)
+    ok = 0
     x = 'void'
     if ok == 0:
         x = j['gow'][par]
@@ -510,7 +512,8 @@ def lib_readStaticParam(co,ds,domain,device,par):
 def lib_readPayloadParam(co,ds,domain,device,par):
 #=============================================
     j = lib_getPayloadDeviceJson(domain,device)
-    ok = lib_checkSequenceNumber(co,ds,domain,device)
+    #ok = lib_checkSequenceNumber(co,ds,domain,device)
+    ok = 0
     x = 'void'
     if ok == 0:
         x = j['gow']['payload'][par]
