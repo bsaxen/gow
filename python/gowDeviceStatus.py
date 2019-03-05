@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowDeviceStatus.py
-# Date.......: 2019-02-25
+# Date.......: 2019-03-05
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -25,7 +25,7 @@ lib_gowPublishMyStatic(co)
 
 domain = co.mydomain
 
-lib_gowPublishMyDynamic(co,md,'{}')
+lib_gowPublishMyDynamic(co,dy,'{}')
 
 device_list = lib_apiListDomainDevices(domain)
 no_devices = len(device_list) - 1
@@ -56,7 +56,7 @@ for num in range(0,no_devices):
 now = datetime.datetime.now()#.strftime("%Y-%m-%d %H:%M:%S")
 time.sleep(3)
 total_duration = 0
-md.mycounter = 0
+dy.mycounter = 0
 report_freq = int(co.myperiod)
 
 while True:
@@ -66,7 +66,7 @@ while True:
     duration_in_s = duration.total_seconds()
     total_duration += duration_in_s
     time.sleep(1)
-    md.mycounter += 1
+    dy.mycounter += 1
     if md.mycounter%report_freq == 0:
         payload = '{'
         for num in range(0,no_devices-2):
