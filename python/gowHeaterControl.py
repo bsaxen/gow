@@ -1,7 +1,7 @@
 # =============================================
 # File: gowHeaterControl.py
 # Author: Benny Saxen
-# Date: 2019-02-28
+# Date: 2019-03-05
 # Description: GOW heater control algorithm
 # 90 degrees <=> 1152/4 steps = 288
 # =============================================
@@ -26,7 +26,7 @@ class HeaterControl:
    timeout_temperature_indoor    = 60
    timeout_temperature_outdoor   = 60
 #=====================================================
-def heater_model(co,md,hc):
+def heater_model(co,dy,hc):
     mintemp = float(co.mintemp)
     maxtemp = float(co.maxtemp)
     minheat = float(co.minheat)
@@ -75,25 +75,25 @@ def heater_model(co,md,hc):
 	old_data= 1
 	lib_gowPublishMyLog(co, message )
 
-    if md.mymode == MODE_OFFLINE:
+    if dy.mymode == MODE_OFFLINE:
 	if all_data_is_available == 1 and old_data == 0:
-	    md.mymode = MODE_ONLINE
+	    dy.mymode = MODE_ONLINE
             message = 'MODE_ONLINE'
 	    lib_gowPublishMyLog(co, message )
 
-    if md.mymode == MODE_ONLINE:
+    if dy.mymode == MODE_ONLINE:
 	if old_data == 1:
-	    md.mymode = MODE_OFFLINE
+	    dy.mymode = MODE_OFFLINE
 	    message = 'MODE_OFFLINE'
 	    lib_gowPublishMyLog(co, message )
 
-        if md.mystate == STATE_OFF:
-            if md.mystop == 0:
-                md.mystate = STATE_ON
+        if dy.mystate == STATE_OFF:
+            if dy.mystop == 0:
+                dy.mystate = STATE_ON
                 message = 'STATE_ON'
                 lib_gowPublishMyLog(co, message )
 
-        if md.mystate == STATE_ON:
+        if dy.mystate == STATE_ON:
             hc.need = 1
             if hc.temperature_indoor > 20:
 		hc.need = 0
@@ -113,7 +113,7 @@ def heater_model(co,md,hc):
                 y = coeff2*temp + mconst2
 
             y = y +hc.bias
-            if md.mystop == 1:
+            if dy.mystop == 1:
                 y = 999
 #========================================================================
     payload  = '{\n'
@@ -125,17 +125,17 @@ def heater_model(co,md,hc):
     payload += '"y_0" : "' + str(co.y_0) + '",\n'
     payload += '"need" : "' + str(hc.need) + '",\n'
     payload += '"target" : "' + str(y) + '",\n'
-    payload += '"mode" : "' + str(md.mymode) + '",\n'
-    payload += '"state" : "' + str(md.mystate) + '",\n'
-    payload += '"errors" : "' + str(md.myerrors) + '",\n'
-    payload += '"stop" : "' + str(md.mystop) + '",\n'
+    payload += '"mode" : "' + str(dy.mymode) + '",\n'
+    payload += '"state" : "' + str(dy.mystate) + '",\n'
+    payload += '"errors" : "' + str(dy.myerrors) + '",\n'
+    payload += '"stop" : "' + str(dy.mystop) + '",\n'
     payload += '"bias" : "' + str(hc.bias) + '",\n'
     payload += '"temperature_outdoor" : "' + str(hc.temperature_outdoor) + '",\n'
     payload += '"temperature_indoor" : "' + str(hc.temperature_indoor) + '"\n'
     payload += '}\n'
 
     print payload
-    msg = lib_gowPublishMyDynamic(co,md,payload)
+    msg = lib_gowPublishMyDynamic(co,dy,payload)
 
     if ":" in msg:
 		p = msg.split(':')
@@ -146,11 +146,11 @@ def heater_model(co,md,hc):
 			if q[0] == 'stopcontrol':
 				message = 'Stop control: '
 				lib_gowPublishMyLog(co, message )
-				md.mystop = 1
+				dy.mystop = 1
 			if q[0] == 'startcontrol':
 				message = 'Start control: '
 				lib_gowPublishMyLog(co, message )
-				md.mystop = 0
+				dy.mystop = 0
 		if m == 2:
 			if q[0] == 'bias':
 				hc.bias = float(q[1])
@@ -168,8 +168,8 @@ confile = "gowheatercontrol.conf"
 lib_readConfiguration(confile,co)
 lib_gowPublishMyStatic(co)
 
-md.mymode = MODE_OFFLINE
-md.mystate = STATE_OFF
+dy.mymode = MODE_OFFLINE
+dy.mystate = STATE_OFF
 #===================================================
 # Loop
 #===================================================
@@ -186,7 +186,7 @@ while True:
         message = 'Temperature indoor error: cur=' + str(hc.temperature_indoor) + ' prev=' + str(hc.temperature_indoor_prev)
     	#gowPublishLog(co, message )
     	hc.temperature_indoor = hc.temperature_indoor_prev
-    	md.myerrors += 1
+    	dy.myerrors += 1
     hc.timeout_temperature_indoor = 60
 
     url = 'http://' + co.ds_uri[1] + '/' + co.ds_topic[1] + '/payload.json'
@@ -199,11 +199,11 @@ while True:
         message = 'Temperature outdoor error: cur=' + str(hc.temperature_outdoor) + ' prev=' + str(hc.temperature_outdoor_prev)
     	#gowPublishLog(co, message )
     	hc.temperature_outdoor = hc.temperature_outdoor_prev
-    	md.myerrors += 1
+    	dy.myerrors += 1
     hc.timeout_temperature_outdoor = 60
 
     heater_model(co,md,hc)
-    print "sleep: " + str(co.myperiod) + " triggered: " + str(md.mycounter)
+    print "sleep: " + str(co.myperiod) + " triggered: " + str(dy.mycounter)
     time.sleep(float(co.myperiod))
 
 
