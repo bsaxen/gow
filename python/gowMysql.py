@@ -64,21 +64,21 @@ while True:
     time.sleep(1)
 
     for num in range(0,r1.c_nds):
-        url_static  = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'static')
-        url_dynamic = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'dynamic')
-        url_payload = lib_buildAnyUrl(co.ds_domain[num],co.ds_device[num],'payload')
+        domain = co.ds_domain[num]
+        device = co.ds_device[num]
+        param  = co.ds_db_par[num]
         work[num] -= 1
         #print str(num) + " " + str(work[num])
         if work[num] == 0:
             work[num] = schedule[num]
             
-            period = float(lib_readJsonMeta(url_static,'period'))
+            period = float(lib_readStaticParam(co,ds,domain,device,'period'))
             print period
-            desc = lib_readJsonMeta(url_static,'desc')
+            desc = lib_readStaticParam(co,ds,domain,device,'desc')
             print desc
             schedule[num] = period
 
-            counter = float(lib_readJsonMeta(url_dynamic,'counter'))
+            counter = float(lib_readDynamicParam(co,ds,domain,device,'counter'))
             print counter
             delta_counter = counter - running[num]
             ok = 0
@@ -95,7 +95,7 @@ while True:
                 ok = 1
             if ok == 1:
                 running[num] = counter
-                x  = float(lib_readJsonPayload(url_payload,co.ds_param[num]))
+                x  = float(lib_readPayloadParam(co,ds,domain,device,param))
                 print x
                 if co.ds_table[num] == 'auto':
                     table = desc
