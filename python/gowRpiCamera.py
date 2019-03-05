@@ -1,7 +1,7 @@
 # =============================================
 # File:        gowRpiCamera.py
 # Author:      Benny Saxen
-# Date:        2019-02-25
+# Date:        2019-03-05
 # Description: application for running a picamera
 # feedback: photo
 # =============================================
@@ -42,19 +42,19 @@ lib_gowPublishMyStatic(co)
 # Loop
 #===================================================
 while True:
-    lib_gowIncreaseMyCounter(co,md)
+    lib_gowIncreaseMyCounter(co,dy)
 
     payload = '{}'
-    msg = lib_gowPublishMyDynamic(co,md,payload)
+    msg = lib_gowPublishMyDynamic(co,dy,payload)
     action = lib_common_action(co,msg)
 
     if action == 'photo':
         print 'take photo'
-	message = 'counter:' + str(md.mycounter)
+	message = 'counter:' + str(dy.mycounter)
 	lib_gowPublishMyLog(co, message)
         take_picture(co)
 
-    print "sleep: " + str(co.myperiod) + " triggered: " + str(md.mycounter)
+    print "sleep: " + str(co.myperiod) + " triggered: " + str(dy.mycounter)
     time.sleep(float(co.myperiod))
 #===================================================
 # End of file
