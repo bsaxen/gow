@@ -97,10 +97,10 @@ while True:
                 running[num] = counter
                 x  = float(lib_readPayloadParam(co,ds,domain,device,param))
                 print x
-                if co.ds_table[num] == 'auto':
+                if co.ds_db_table[num] == 'auto':
                     table = desc
                 else:
-                    table = co.ds_table[num]
+                    table = co.ds_db_table[num]
                     
                 lib_mysqlInsert(co,0,table,'value',x)
 #===================================================
