@@ -1,7 +1,7 @@
 <?php
 //=============================================
 // File.......: gowServer.php
-// Date.......: 2019-03-04
+// Date.......: 2019-03-07
 // Author.....: Benny Saxen
 // Description: Glass Of Water Server
 //=============================================
@@ -80,6 +80,7 @@ function saveDynamicData($obj)
         fwrite($doc, "   \"sys_ts\":    \"$obj->sys_ts\",\n");
         fwrite($doc, "   \"dev_ts\":    \"$obj->dev_ts\",\n");
         fwrite($doc, "   \"counter\":   \"$obj->counter\",\n");
+        fwrite($doc, "   \"no\":        \"$obj->counter\",\n");
         fwrite($doc, "   \"rssi\":      \"$obj->rssi\",\n");
         fwrite($doc, "   \"fail\":      \"$obj->fail\"\n");
         fwrite($doc, "}}\n ");
@@ -375,6 +376,9 @@ if (isset($_GET['do']))
 
         if (isset($_GET['counter'])) {
           $obj->counter = $_GET['counter'];
+        }
+        if (isset($_GET['no'])) {
+          $obj->counter = $_GET['no'];
         }
         if (isset($_GET['dev_ts'])) {
           $obj->dev_ts = $_GET['dev_ts'];
