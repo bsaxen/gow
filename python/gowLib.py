@@ -36,6 +36,7 @@ class ModuleDynamic:
     mywifi_ss = 0
 
 class Configuration:
+    myid         = '1234'
     mytitle      = 'title'
     mytags       = 'tag'
     mydesc       = 'some'
@@ -109,6 +110,7 @@ def lib_gowPublishMyStatic(co):
     data = {}
     # meta data
     data['do']       = 'stat'
+    data['id']       = co.myid
     data['desc']     = co.mydesc
     data['tags']     = co.mytags
     data['topic']    = co.mytopic
@@ -138,6 +140,34 @@ def lib_gowPublishMyDynamic(co,dy,payload):
     data = {}
     # meta data
     data['do']       = 'dyn'
+    data['id']       = co.myid
+    data['topic']    = co.mytopic
+    data['counter']  = dy.mycounter
+    data['rssi']     = 0
+    data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    data['fail']     = 0
+    data['payload']  = 0
+    values = urllib.urlencode(data)
+    req = 'http://' + domain + '/' + server + '?' + values
+    print req
+    try:
+        response = urllib2.urlopen(req)
+        msg = response.read()
+        print 'Message to ' + co.mytopic + ': ' + msg
+    except urllib2.URLError as e:
+        print e.reason
+
+    return msg
+#===================================================
+def lib_gowPublishMyPayload(co,dy,payload):
+#===================================================
+    msg = '-'
+    domain = co.mydomain
+    server = co.myserver
+    data = {}
+    # meta data
+    data['do']       = 'dyn'
+    data['id']       = co.myid
     data['topic']    = co.mytopic
     data['counter']  = dy.mycounter
     data['rssi']     = 0
@@ -165,6 +195,7 @@ def lib_gowPublishMyLog(co, message ):
     data = {}
 
     data['do']       = 'log'
+    data['id']       = co.myid
     data['topic']    = co.mytopic
     data['dev_ts']   = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data['log']      = message
