@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowDeviceStatus.py
-# Date.......: 2019-03-05
+# Date.......: 2019-03-07
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -27,7 +27,7 @@ domain = co.mydomain
 
 lib_gowPublishMyDynamic(co,dy,'{}')
 
-device_list = lib_apiListDomainDevices(domain)
+device_list = lib_apiListDomainDevices(co)
 no_devices = len(device_list) - 1
 print "Number of devices: " + str(no_devices)
 
