@@ -63,7 +63,7 @@ while True:
     #print "sleep " + str(1)
     time.sleep(1)
 
-    for num in range(0,r1.c_nds):
+    for num in range(0,co.nds):
         domain = co.ds_domain[num]
         device = co.ds_device[num]
         param  = co.ds_db_par[num]
