@@ -1,7 +1,7 @@
 # =============================================
 # File: gowLib.py
 # Author: Benny Saxen
-# Date: 2019-03-05
+# Date: 2019-03-07
 # Description: GOW python library
 # =============================================
 import MySQLdb
@@ -535,7 +535,7 @@ def lib_placeOrder(domain, server, device, feedback):
         print e.reason
 #=============================================
 def lib_mysqlInsert(c1,cr,xTable,xPar,xValue):
-    db = MySQLdb.connect(host=c1.c_dbhost,user=c1.c_dbuser,db=c1.c_dbname)
+    db = MySQLdb.connect(host=c1.dbhost,user=c1.dbuser,db=c1.dbname)
     cursor = db.cursor()
     if cr == 1:
         sql = "CREATE TABLE IF NOT EXISTS " + xTable + " (id int(11) NOT NULL AUTO_INCREMENT,value float,ts timestamp, PRIMARY KEY (id))"
