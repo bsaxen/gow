@@ -241,31 +241,31 @@ def lib_getDeviceStatus(ds,domain,device):
         status = res
     return status
 #=====================================================
-def lib_apiListDomainTopics(domain):
-    url = 'http://' + domain + '/gowServer.php?do=list_topics'
+def lib_apiListDomainTopics(co):
+    url = 'http://' + co.mydomain + '/' + co.myserver + '?do=list_topics'
     print url
     response = urllib2.urlopen(url)
     the_page = response.read()
     the_page = the_page.replace('.reg','')
     the_page = the_page.replace('_','/')
     list = the_page.split(':')
-    print domain
+    print co.domain
     print the_page
     return list
 #=====================================================
-def lib_apiSearchTopics(domain,key):
-    url = 'http://' + domain + '/gowServer.php?do=search&search='+'key'
+def lib_apiSearchTopics(co,key):
+    url = 'http://' + co.domain + '/' + co.myserver + '?do=search&search=' + key
     print url
     response = urllib2.urlopen(url)
     the_page = response.read()
     the_page = the_page.replace('.reg','')
     the_page = the_page.replace('_','/')
     list = the_page.split(':')
-    print domain
+    print co.domain
     print the_page
     return list
 #===================================================
-def lib_common_action(c1,feedback):
+def lib_common_action(co,feedback):
     action = ' '
     if ":" in feedback:
         p = feedback.split(':')
@@ -280,13 +280,13 @@ def lib_common_action(c1,feedback):
                 action = 'photo'
         if m == 2:
             if q[0] == 'period':
-                c1.myperiod = q[1]
+                co.myperiod = q[1]
             if q[0] == 'feedback':
-                c1.myfeedback = q[1]
+                co.myfeedback = q[1]
             if q[0] == 'mytopic':
-                c1.mytopic = q[1]
+                co.mytopic = q[1]
             if q[0] == 'desc':
-                c1.mydesc = q[1]
+                co.mydesc = q[1]
     return action
 #===================================================
 def lib_evaluateAction( action):
