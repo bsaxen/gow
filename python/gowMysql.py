@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #=============================================
 # File.......: gowMysql.py
-# Date.......: 2019-03-05
+# Date.......: 2019-03-07
 # Author.....: Benny Saxen
 # Description:
 #=============================================
@@ -39,10 +39,10 @@ for num in range(0,co.nds):
     print counter
     x      = float(lib_readPayloadParam(co,ds,domain,device,param))
     print x
-    if co.ds_table[num] == 'auto':
+    if co.ds_db_table[num] == 'auto':
         table = desc
     else:
-        table = co.ds_table[num]
+        table = co.ds_db_table[num]
         
     lib_mysqlInsert(co,1,table,'value',x)
 #=============================================
