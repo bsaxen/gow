@@ -11,10 +11,10 @@ $flag_show_log     = $_SESSION["flag_show_log"];
 
 //=============================================
 // File.......: gowDeviceManager.php
-// Date.......: 2019-02-17
+// Date.......: 2019-03-30
 // Author.....: Benny Saxen
 // Description: Glass Of Water Platform Device Manager
-$version = '2019-02-15';
+$version = '2019-03-30';
 //=============================================
 // Configuration
 //=============================================
@@ -715,7 +715,7 @@ if ($form_send_action == 1)
 {
   $doc = 'http://'.$sel_domain.'/'.$sel_device;
   $status = getStatus($doc);
-  if ($g_action == 2)
+  if ($g_action > 0)
   {
   echo "<br><br>
   <table border=0>";
